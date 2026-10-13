@@ -128,7 +128,7 @@ class Page:
 
 def overview(file):
     p = Page(file, "01 整体部署 / AWS architecture", 1, "Onchain Control · AWS 部署架构",
-             "前后端分离  |  Agent 市场 · Agent 管理 · Agent 工作台 · MCP / Skill 管理  |  AWS Region: us-east-1")
+             "前后端分离  |  Agent 市场 · Agent 工作台（含管理）· MCP / Skill 管理  |  AWS Region: us-east-1")
     p.zone("aws", 370, 145, 2090, 1385, "AWS Cloud  ·  us-east-1 区域服务 + CloudFront 全球边缘服务")
     p.zone("gateway-zone", 830, 770, 1120, 440, "两座 AgentCore Gateway 共用 REQUEST / RESPONSE 拦截器 + Policy", GREEN, "#F3FAF8")
     p.card("browser", 60, 190, 265, 155, "users", "用户浏览器", "React / Vite\n买卖双方各自的工作空间")

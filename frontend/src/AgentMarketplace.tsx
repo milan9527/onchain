@@ -1,25 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Bot, Check, Clock3, Plus, Search, Store, Wallet, X } from "lucide-react";
 import { api } from "./api";
-import type { Task } from "./TaskTemplates";
+import { supportsTask, type Task } from "./TaskTemplates";
 import "./marketplace.css";
 
 type Agent = { id: string; name: string; skill_id: string; status: string; template_id?: string };
 type Listing = {
   id: string; title: string; publisher: string; description: string; price_units: number;
   strategy?: string; task_name?: string; task_mode?: string; template_id?: string; tools?: string[]; products?: string[];
+  agent_type?: string; skill_id?: string;
   max_trade_units: number; daily_limit_units: number; sales_count: number; status: string; is_mine: boolean;
 };
 type Order = { id: string; title: string; publisher: string; price_units: number; status: string;
   strategy?: string; agent_id?: string; grant_id?: string; expires_at?: number; created_at: number };
 type Market = { listings: Listing[]; purchases: Order[]; sales: Order[]; revenue_units: number };
 const money = (units: number) => (units / 1e6).toLocaleString("en-US", { maximumFractionDigits: 6 });
+const types: Record<string, string> = { ALL: "全部 Agent", BUY: "买入 Agent", SELL: "卖出 Agent", AUTO_BUY: "自动定投", RESEARCH: "研究与分析" };
+const listingType = (l: Listing) => l.agent_type || (l.strategy !== "TASK" ? "AUTO_BUY" : l.task_mode === "prepare" ? "BUY" : "RESEARCH");
 
 export function PurchaseSummary({ intent }: { intent: any }) {
   return <div className="approval-summary"><span className="paper-badge">模拟购买 · Agent 服务</span>
     <h3>{intent.title}</h3><p>发布者：{intent.publisher}</p>
     <div className="approval-amount">{money(intent.price_units)}<small>USDC 服务费 / 次</small></div>
-    {intent.strategy === "TASK" ? <><dl><dt>任务模板</dt><dd>{intent.task_name}</dd><dt>任务类型</dt><dd>{intent.task_mode === "prepare" ? "准备订单，成交需另行确认" : "只读任务"}</dd><dt>将启用 MCP</dt><dd>{intent.products?.join("、")}</dd><dt>Skill</dt><dd>{intent.skill_id}</dd></dl>
+    {intent.strategy === "TASK" ? <><dl><dt>任务模板</dt><dd>{intent.task_name}</dd><dt>任务类型</dt><dd>{intent.task_mode === "prepare" ? "准备订单，成交需另行确认" : "只读任务"}</dd>
+      {intent.task_mode === "prepare" && <><dt>交易方向</dt><dd>{intent.agent_type === "SELL" ? "ETH → USDC · 卖出已有持仓" : "USDC → ETH · 买入"}</dd><dt>单笔估值上限</dt><dd>{money(intent.max_trade_units)} USDC</dd><dt>每日上限</dt><dd>{money(intent.daily_limit_units)} USDC</dd></>}
+      <dt>将启用 MCP</dt><dd>{intent.products?.join("、")}</dd><dt>Skill</dt><dd>{intent.skill_id}</dd></dl>
       <div className="tool-tags">{intent.tools?.map((tool: string) => <code key={tool}>{tool}</code>)}</div><p className="muted">验证后支付一次性模拟服务费，创建你独有的 Agent。在工作台选择示例动作并运行任务；购买不包含交易执行授权。服务费不退还。</p></> : <><dl><dt>自动交易策略</dt><dd>Base · 定期用 USDC 买入 ETH</dd>
       <dt>每笔金额</dt><dd>{money(intent.amount_units)} USDC</dd>
       <dt>交易累计上限</dt><dd>{money(intent.total_units)} USDC</dd>
@@ -38,6 +43,8 @@ export function AgentMarketplace({ userId, agents, grants, tasks, skills, onRevi
   const [data, setData] = useState<Market | null>(null);
   const [tab, setTab] = useState<"discover" | "purchases" | "seller">("discover");
   const [query, setQuery] = useState("");
+  const [kind, setKind] = useState("ALL");
+  const [sort, setSort] = useState("newest");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [publish, setPublish] = useState(false);
@@ -62,10 +69,12 @@ export function AgentMarketplace({ userId, agents, grants, tasks, skills, onRevi
   }
   const own = data?.listings.filter(l => l.is_mine) || [];
   const listings = (data?.listings || []).filter(l => l.status === "PUBLISHED"
-    && `${l.title} ${l.publisher} ${l.description}`.toLowerCase().includes(query.toLowerCase()));
+    && (kind === "ALL" || listingType(l) === kind)
+    && `${l.title} ${l.publisher} ${l.description} ${l.task_name}`.toLowerCase().includes(query.toLowerCase()))
+    .sort((a, b) => sort === "price" ? a.price_units - b.price_units : sort === "sales" ? b.sales_count - a.sales_count : 0);
   return <div className="agent-market">
     <div className="market-hero"><div><span className="hero-tag"><Store size={15} /> AGENT MARKETPLACE</span>
-      <h2>找到适合任务的 Agent。</h2><p>卖家发布任务与能力，买家购买独立实例。研究、分析、下单与定投，在各自工作台完成。</p>
+      <h2>选择交易目标，找到你的 Agent。</h2><p>买入 ETH、卖出持仓或定期投资。卖家发布策略服务，买家确认费用后获得独立 Agent，在工作台运行。</p>
       <div className="market-promises"><span><Check size={14} /> 独立 Agent 与会话</span><span><Check size={14} /> 买卖双方订单</span><span><Check size={14} /> 随时停止自动执行</span></div>
     </div><div className="market-hero-stat"><Bot size={30} /><strong>{data?.listings.filter(l => l.status === "PUBLISHED").length || 0}</strong><span>在售任务 Agent</span></div></div>
     <div className="market-toolbar"><div className="market-tabs" role="tablist" aria-label="Agent 市场视图">
@@ -74,15 +83,19 @@ export function AgentMarketplace({ userId, agents, grants, tasks, skills, onRevi
     </div><button className="primary" onClick={() => setPublish(true)}><Plus size={16} />发布 Agent</button></div>
     {error && <div role="alert" className="banner error">{error}</div>}
     {!data ? <p className="muted">正在加载市场…</p> : tab === "discover" ? <>
-      <label className="market-search"><Search size={17} /><input aria-label="搜索市场 Agent" placeholder="搜索任务或发布者" value={query} onChange={e => setQuery(e.target.value)} /></label>
+      <div className="market-type-tabs" aria-label="Agent 类型">{Object.entries(types).map(([id, title]) => <button key={id} aria-pressed={kind === id} className={kind === id ? "primary compact" : "secondary compact"} onClick={() => setKind(id)}>{title}</button>)}</div>
+      <div className="market-discovery-filters"><label className="market-search"><Search size={17} /><input aria-label="搜索市场 Agent" placeholder="搜索任务或发布者" value={query} onChange={e => setQuery(e.target.value)} /></label>
+        <select aria-label="市场排序" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">最新发布</option><option value="price">服务费从低到高</option><option value="sales">销量优先</option></select></div>
       <div className="market-listings">{listings.map(l => <article className="panel listing-card" key={l.id} data-testid={"listing-" + l.id}>
-        <div className="listing-top"><span className="agent-icon"><Bot size={24} /></span><span className="paper-badge">{l.strategy === "TASK" ? l.task_mode === "prepare" ? "模拟下单" : "研究与分析" : "模拟 · ETH 定投"}</span></div>
+        <div className="listing-top"><span className="agent-icon"><Bot size={24} /></span><span className="paper-badge">{types[listingType(l)]} · 模拟</span></div>
         <h3>{l.title}</h3><span className="muted">由 {l.publisher} 发布{l.is_mine ? " · 你的发布" : ""}</span><p>{l.description}</p>
-        <div className="listing-limits">{l.strategy === "TASK" ? <span>任务模板<b>{l.task_name}</b></span> : <><span>单笔上限<b>{money(l.max_trade_units)} USDC</b></span><span>每日上限<b>{money(l.daily_limit_units)} USDC</b></span></>}</div>
+        <div className="listing-limits">{listingType(l) === "RESEARCH" ? <span>任务模板<b>{l.task_name}</b></span> : <><span>单笔估值上限<b>{money(l.max_trade_units)} USDC</b></span><span>每日上限<b>{money(l.daily_limit_units)} USDC</b></span></>}</div>
+        <p className="listing-fit">{listingType(l) === "SELL" ? "适合：已有 ETH 持仓，希望卖出换回 USDC。逐笔确认，禁止做空。" : listingType(l) === "BUY" ? "适合：使用 USDC 建立 ETH 持仓。每笔订单核对后执行。" : listingType(l) === "AUTO_BUY" ? "适合：提前设定投资预算和周期，在授权范围内自动运行。" : "适合：查询数据、分析持仓和风险，运行结果保存在本人会话。"} </p>
+        <details className="listing-capabilities"><summary>查看任务与 MCP 能力</summary><p>{l.task_name} · {l.skill_id}</p><div className="tool-tags">{l.tools?.map(tool => <code key={tool}>{tool}</code>)}</div><small>所需 MCP：{l.products?.join("、")}</small></details>
         <div className="listing-footer"><div><strong>{money(l.price_units)} <small>USDC</small></strong><span>一次性服务费 · 已售 {l.sales_count}</span></div>
           <button className="primary compact" disabled={l.is_mine} onClick={() => setBuy(l)}>{l.is_mine ? "我的发布" : l.strategy === "TASK" ? "购买 Agent" : "购买并授权"}<ArrowUpRight size={14} /></button></div>
       </article>)}</div>
-      {!listings.length && <div className="panel empty"><Store size={32} /><h3>市场等待第一位发布者</h3><p>发布任务 Agent，让其他用户购买独立实例完成任务。</p></div>}
+      {!listings.length && <div className="panel empty"><Store size={32} /><h3>{data.listings.length ? "没有匹配的 Agent" : "市场等待第一位发布者"}</h3><p>调整筛选条件，或发布一个新的任务 Agent。</p></div>}
     </> : tab === "purchases" ? <div className="market-orders">
       {!data.purchases.length && <div className="panel empty"><Bot /><h3>还没有购买的 Agent</h3><p>在市场选择任务，确认服务费与能力范围后开始运行。</p></div>}
       {data.purchases.map(order => {
@@ -107,8 +120,8 @@ export function AgentMarketplace({ userId, agents, grants, tasks, skills, onRevi
         {!data.sales.length && <p className="muted">首笔购买完成后，收入与订单会出现在这里。</p>}
         {data.sales.map(o => <div className="market-seller-row" key={o.id}><div><strong>{o.title}</strong><p className="muted">{o.id}</p></div><span>+{money(o.price_units)} USDC · 已收款</span></div>)}</section>
     </>}
-    {publish && <MarketModal title="发布 Agent" close={() => setPublish(false)}><PublishForm agents={agents} tasks={tasks} skills={skills} onPublish={async body => {
-      await api("/marketplace/listings", "POST", body); await reload(); setPublish(false); setTab("seller");
+    {publish && <MarketModal title="发布 Agent" close={() => setPublish(false)}><PublishForm agents={agents} tasks={tasks} skills={skills} onCreated={onChanged} onPublish={async body => {
+      await api("/marketplace/listings", "POST", body); await reload(); await onChanged(); setPublish(false); setTab("seller");
     }} /></MarketModal>}
     {buy && <MarketModal title={"购买 " + buy.title} close={() => setBuy(null)}><BuyForm listing={buy} onPrepare={async body => {
       const operation = await api(`/marketplace/listings/${buy.id}/purchase`, "POST", body);
@@ -123,29 +136,54 @@ function MarketModal({ title, close, children }: { title: string; close: () => v
     <div className="modal-heading"><h2>{title}</h2><button className="icon-btn" aria-label="关闭" onClick={close}><X size={20} /></button></div>{children}</section></div>;
 }
 
-function PublishForm({ agents, tasks, skills, onPublish }: { agents: Agent[]; tasks: Task[]; skills: any[]; onPublish: (body: any) => Promise<void> }) {
-  const compatible = (a: Agent) => tasks.filter(t => skills.find(s => s.id === a.skill_id)?.tools && t.tools.every(tool => skills.find(s => s.id === a.skill_id).tools.includes(tool)));
+function PublishForm({ agents, tasks, skills, onCreated, onPublish }: { agents: Agent[]; tasks: Task[]; skills: any[]; onCreated: () => Promise<void>; onPublish: (body: any) => Promise<void> }) {
+  const compatible = (a: Agent) => tasks.filter(t => {
+    const source = skills.find(s => s.id === a.skill_id), published = skills.find(s => s.id === t.skill_id);
+    return supportsTask(t, source) && published && published.tools.every((tool: string) => source.tools.includes(tool))
+      && (published.trade_sides || ["BUY"]).every((side: string) => (source.trade_sides || ["BUY"]).includes(side));
+  });
   const eligible = agents.filter(a => a.status === "ACTIVE" && compatible(a).length > 0);
-  const [agentId, setAgentId] = useState(eligible[0]?.id || "");
-  const agent = eligible.find(a => a.id === agentId) || eligible[0];
-  const available = agent ? compatible(agent) : [];
-  const preferred = agent?.template_id || (agent?.skill_id === "controlled-trader" ? "eth-dca" : available[0]?.id);
+  const [agentId, setAgentId] = useState("new");
+  const [templateId, setTemplateId] = useState("eth-buy");
+  const [created, setCreated] = useState<Agent | null>(null);
+  const agent = eligible.find(a => a.id === agentId) || (created?.id === agentId ? created : undefined);
+  const available = agentId === "new" ? tasks : agent ? compatible(agent) : [];
+  const task = available.find(t => t.id === templateId) || available[0];
+  const [title, setTitle] = useState(""), [publisher, setPublisher] = useState(""), [description, setDescription] = useState("");
+  const [price, setPrice] = useState("5");
   const [error, setError] = useState(""), [busy, setBusy] = useState(false);
   return <form className="form-stack" onSubmit={async e => {
-    e.preventDefault(); setBusy(true); setError("");
-    try { await onPublish(Object.fromEntries(new FormData(e.currentTarget))); }
-    catch (e) { setError((e as Error).message); } finally { setBusy(false); }
+    e.preventDefault(); if (!task) return;
+    setBusy(true); setError("");
+    const values = Object.fromEntries(new FormData(e.currentTarget));
+    try {
+      let sourceId = agentId;
+      if (sourceId === "new") {
+        const source = await api<Agent>("/agents", "POST", { name: title, template_id: task.id,
+          enable_template_products: true, max_trade: values.max_trade, daily_limit: values.daily_limit });
+        sourceId = source.id; setCreated(source); setAgentId(source.id);
+        await onCreated();
+      }
+      await onPublish({ agent_id: sourceId, template_id: task.id, title, publisher, description, price });
+    } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }}>
-    <p className="muted">发布当前 Agent 支持的已审核任务模板。买方获得独立 Agent，使用自己的会话、数据和授权。</p>
-    <label>来源 Agent<select name="agent_id" value={agent?.id || ""} onChange={e => setAgentId(e.target.value)} required>{eligible.map(a => <option value={a.id} key={a.id}>{a.name}</option>)}</select></label>
-    <label>发布任务模板<select name="template_id" key={agent?.id} defaultValue={preferred} required>{available.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>
-    {!eligible.length && <p className="inline-error">请先在 Agent 管理中从任务模板创建一个可运行的 Agent。</p>}
-    <label>市场名称<input name="title" minLength={2} maxLength={60} required placeholder="例如：ETH 稳健定投助手" /></label>
-    <label>发布者名称<input name="publisher" minLength={2} maxLength={40} required /></label>
-    <label>任务介绍<textarea name="description" minLength={10} maxLength={600} rows={3} required placeholder="介绍任务目标、适用场景和能力边界。请勿承诺收益。" /></label>
-    <label>一次性服务费（模拟 USDC）<input name="price" type="number" min="0.01" max="1000" step="0.01" defaultValue="5" required /></label>
+    <p className="muted">选择任务 → 设置服务与价格 → 核对并发布。买方获得独立 Agent，使用自己的持仓、会话和授权。</p>
+    <label>来源 Agent<select value={agentId} disabled={busy} onChange={e => {
+      setAgentId(e.target.value); const source = eligible.find(a => a.id === e.target.value);
+      setTemplateId(source?.template_id || (source?.skill_id === "controlled-trader" ? "eth-dca" : source ? compatible(source)[0]?.id : "eth-buy") || "");
+    }} required><option value="new">从模板新建并发布</option>{eligible.map(a => <option value={a.id} key={a.id}>{a.name}</option>)}
+      {created && !eligible.some(a => a.id === created.id) && <option value={created.id}>{created.name}</option>}</select></label>
+    <label>发布任务模板<select value={task?.id || ""} disabled={busy} onChange={e => setTemplateId(e.target.value)} required>{available.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>
+    {task && <div className="publish-preview"><strong>{task.name}</strong><p>{task.description}</p><small>Skill：{task.skill_id} · MCP：{task.products.join("、")}</small></div>}
+    {agentId === "new" && <div className="form-columns"><label>单笔交易上限（USDC）<input name="max_trade" type="number" min="0.01" max="1000" step="0.01" defaultValue="100" required /></label>
+      <label>每日交易上限（USDC）<input name="daily_limit" type="number" min="0.01" max="5000" step="0.01" defaultValue="500" required /></label></div>}
+    <label>市场名称<input value={title} onChange={e => setTitle(e.target.value)} minLength={2} maxLength={60} required placeholder="例如：ETH 持仓卖出助手" /></label>
+    <label>发布者名称<input value={publisher} onChange={e => setPublisher(e.target.value)} minLength={2} maxLength={40} required /></label>
+    <label>任务介绍<textarea value={description} onChange={e => setDescription(e.target.value)} minLength={10} maxLength={600} rows={3} required placeholder="介绍任务目标、适用场景和能力边界。请勿承诺收益。" /></label>
+    <label>一次性服务费（模拟 USDC）<input value={price} onChange={e => setPrice(e.target.value)} type="number" min="0.01" max="1000" step="0.01" required /></label>
+    <div className="publish-preview" aria-label="发布预览"><strong>{title || "市场名称"}</strong><p>{publisher || "发布者"} · {price} USDC 一次性服务费</p><small>{task?.mode === "approval" ? "买方确认服务费及持续授权后自动运行。" : task?.mode === "prepare" ? "买方购买后在工作台下单，每笔交易需独立确认。" : "买方购买后在独立工作台运行任务。"}</small></div>
     <p className="muted">发布后价格和策略版本固定。修改方案需发布新条目，已售策略保持原版本。</p>
-    {error && <p className="inline-error">{error}</p>}<button className="primary full" disabled={busy || !eligible.length}>确认发布</button>
+    {error && <p className="inline-error">{error}</p>}<button className="primary full" disabled={busy || !task}>{busy ? "正在发布…" : "确认发布"}</button>
   </form>;
 }
 
@@ -158,7 +196,7 @@ function BuyForm({ listing, onPrepare }: { listing: Listing; onPrepare: (body: a
     catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }}>
     <p>一次性模拟服务费 <strong>{money(listing.price_units)} USDC</strong> · 发布者 {listing.publisher}</p>
-    {listing.strategy === "TASK" ? <><p>任务：<strong>{listing.task_name}</strong></p><div className="tool-tags">{listing.tools?.map(tool => <code key={tool}>{tool}</code>)}</div>
+    {listing.strategy === "TASK" ? <><p>任务：<strong>{listing.task_name}</strong></p>{listingType(listing) === "SELL" && <p className="demo-notice">需要本人已有 ETH 持仓；订单输入为 ETH 数量，成交收到 USDC。购买服务不会卖出资产。</p>}<div className="tool-tags">{listing.tools?.map(tool => <code key={tool}>{tool}</code>)}</div>
       <p className="muted">将启用 MCP：{listing.products?.join("、")}。购买后在工作台运行任务。若任务需要下单，每笔交易仍须独立确认。</p></> : <><div className="form-columns"><label>每笔交易（USDC）<input name="amount" type="number" min="0.01" max={listing.max_trade_units / 1e6} step="0.01" defaultValue={Math.min(20, listing.max_trade_units / 1e6)} required /></label>
       <label>交易累计上限（USDC）<input name="total" type="number" min="0.01" max="100000" step="0.01" defaultValue="100" required /></label></div>
     <label>每日交易上限（USDC）<input name="daily_limit" type="number" min="0.01" max={listing.daily_limit_units / 1e6} step="0.01" defaultValue={Math.min(100, listing.daily_limit_units / 1e6)} required /></label>

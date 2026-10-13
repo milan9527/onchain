@@ -11,5 +11,5 @@ export async function cognitoLogin(page: Page, credentials: { email: string; pas
   await page.goto("/");
   await page.getByRole("button", { name: "通过 Cognito 登录" }).click();
   await cognitoSignIn(page, credentials);
-  await expect(page.getByRole("heading", { name: "Agent 管理", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
 }

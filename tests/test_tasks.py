@@ -36,8 +36,8 @@ def agent_claims(env, template, enabled=True):
 
 def test_catalog_size_and_legacy_skill_versions_do_not_expand():
     assert len(PRODUCTS) == 8
-    assert len(SKILLS) == 8
-    assert len(TASKS) == 13
+    assert len(SKILLS) == 10
+    assert len(TASKS) == 15
     assert len(EXTRA_SCHEMAS) == 12
     original = {
         "id": "controlled-trader", "name": "受控交易", "version": "1.0.0",

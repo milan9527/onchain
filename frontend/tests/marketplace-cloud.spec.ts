@@ -59,7 +59,8 @@ test("seller publishes, buyer purchases with Cognito and isolated automation set
     await buyer.getByRole("checkbox").check();
     await buyer.getByRole("button", { name: "验证并购买", exact: true }).click();
     await cognitoSignIn(buyer, credentials.buyer);
-    await expect(buyer.getByRole("heading", { name: "Agent 市场", exact: true })).toBeVisible();
+    await expect(buyer.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
+    await buyer.getByRole("button", { name: "Agent 市场", exact: true }).click();
     await expect(buyer.getByRole("status")).toContainText("购买成功");
     await buyer.getByRole("tab", { name: "我购买的", exact: true }).click();
     await expect(buyer.getByText(purchase.id, { exact: false })).toBeVisible();

@@ -547,7 +547,9 @@ async def chat(sid: str, body: Message, request: Request):
 @app.post("/api/operations/prepare")
 def prepare(body: Prepare, request: Request):
     p = current(request, True)
-    return context()[2].prepare_trade(p, body.agent_id, body.intent, uid("manual_"))
+    from .services import quote_eth
+    config, _store, control, *_ = context()
+    return control.prepare_trade(p, body.agent_id, body.intent, uid("manual_"), quote=quote_eth(config))
 
 
 @app.get("/api/operations/{op_id}")

@@ -8,7 +8,7 @@
         <mxCell id="title" value="Onchain Control · AWS 部署架构" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="30" width="2220" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" value="前后端分离  |  Agent 市场 · Agent 管理 · Agent 工作台 · MCP / Skill 管理  |  AWS Region: us-east-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+        <mxCell id="subtitle" value="前后端分离  |  Agent 市场 · Agent 工作台（含管理）· MCP / Skill 管理  |  AWS Region: us-east-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="86" width="2360" height="45" as="geometry" />
         </mxCell>
         <mxCell id="number" value="01 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">

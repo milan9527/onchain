@@ -3,10 +3,10 @@ import copy
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .catalog import skill_by_id
+from .catalog import TOOL_PRODUCTS, skill_by_id
 from .domain import amount_units, check_agent_capacity, event, now
 from .security import Denied, digest, uid
-from .tasks import task_by_id
+from .tasks import compatible_task, task_by_id
 
 CATALOG_KEY = "MARKETPLACE#CATALOG"
 
@@ -62,20 +62,27 @@ class Marketplace:
         task = task_by_id(template_id)
         skill = skill_by_id(source["skill_id"])
         if (not skill or skill["digest"] != source["skill_digest"]
-                or not set(task["tools"]).issubset(skill["tools"])):
+                or not compatible_task(task, skill)):
             raise Denied("MARKET_SKILL", "Source Agent does not support this reviewed task.", 422)
         price = amount_units(spec.price)
         if price > 1_000_000_000:
             raise Denied("MARKET_PRICE", "Service price must not exceed 1,000 paper USDC.", 422)
+        published_skill = skill_by_id(task["skill_id"])
+        if (not set(published_skill["tools"]).issubset(skill["tools"])
+                or not set(published_skill.get("trade_sides", ["BUY"])).issubset(skill.get("trade_sides", ["BUY"]))):
+            raise Denied("MARKET_SKILL", "The source Agent cannot grant additional tool capabilities.", 422)
         listing = {
             "id": uid("listing_"), "owner": p.owner, "source_agent_id": source["id"],
             "title": spec.title, "publisher": spec.publisher, "description": spec.description,
-            "price_units": price, "skill_id": source["skill_id"], "skill_digest": source["skill_digest"],
+            "price_units": price, "skill_id": published_skill["id"], "skill_digest": published_skill["digest"],
             "strategy": "ETH_DCA" if task["id"] == "eth-dca" else "TASK",
             "template_id": task["id"], "template_digest": task["digest"],
             "task_name": task["name"], "task_mode": task["mode"],
-            "tools": skill["tools"], "products": task["products"],
-            "chain": "8453", "buy_asset": "ETH", "max_slippage_bps": 50,
+            "tools": published_skill["tools"], "products": sorted({TOOL_PRODUCTS[t] for t in published_skill["tools"]}),
+            "agent_type": task.get("trade_side") or (
+                "AUTO_BUY" if task["id"] == "eth-dca" else "BUY" if task["id"] == "eth-order" else "RESEARCH"
+            ),
+            "chain": "8453", "buy_asset": "USDC" if task.get("trade_side") == "SELL" else "ETH", "max_slippage_bps": 50,
             "max_trade_units": source["max_trade_units"], "daily_limit_units": source["daily_limit_units"],
             "version": 1, "created_at": now(), "mode": "paper",
         }
@@ -120,6 +127,8 @@ class Marketplace:
             intent.update({key: copy.deepcopy(listing[key]) for key in (
                 "template_id", "template_digest", "task_name", "task_mode", "tools", "products",
             )})
+        if listing.get("agent_type"):
+            intent["agent_type"] = listing["agent_type"]
         if strategy == "TASK":
             if spec.model_fields_set:
                 raise Denied("INVALID_PURCHASE", "Task purchases do not authorize a trading schedule.", 422)
@@ -178,7 +187,7 @@ class Marketplace:
                 raise Denied("SKILL_CHANGED", "This strategy requires a new review.")
             if intent.get("template_id"):
                 task = task_by_id(intent["template_id"])
-                if task["digest"] != intent["template_digest"] or not set(task["tools"]).issubset(skill["tools"]):
+                if task["digest"] != intent["template_digest"] or not compatible_task(task, skill):
                     raise Denied("TEMPLATE_CHANGED", "This task requires a new review.")
             if not seller or seller["owner"] != intent["seller_owner"]:
                 raise Denied("NOT_FOUND", "Publisher is not available.", 404)

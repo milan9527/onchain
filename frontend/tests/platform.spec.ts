@@ -18,7 +18,7 @@ test("isolated users, intent, explicit approval and controlled execution", async
   await page.getByLabel("邮箱", { exact: true }).fill(actor.email);
   await page.getByLabel("密码", { exact: true }).fill(actor.password);
   await page.getByRole("button", { name: "验证并登录" }).click();
-  await expect(page.getByRole("heading", { name: "Agent 管理", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
   await page.screenshot({ path: "../.deployment/overview.png", fullPage: true });
 
   const before = await (await page.request.get("/api/dashboard")).json();
@@ -56,7 +56,7 @@ test("isolated users, intent, explicit approval and controlled execution", async
   await bob.getByLabel("邮箱", { exact: true }).fill(observer.email);
   await bob.getByLabel("密码", { exact: true }).fill(observer.password);
   await bob.getByRole("button", { name: "验证并登录" }).click();
-  await expect(bob.getByRole("heading", { name: "Agent 管理", exact: true })).toBeVisible();
+  await expect(bob.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
   const stolen = await bob.request.get("/api/operations/"+op.id);
   expect(stolen.status()).toBe(404);
   expect((await bob.request.get(`/api/agents/${op.agent_id}/conversations`)).status()).toBe(404);

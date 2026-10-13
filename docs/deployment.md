@@ -22,6 +22,34 @@ mode-0600 `.deployment/smoke-credentials.json`.
 
 ## Acceptance
 
+Trading Agent marketplace and unified workspace release, 2026-10-13:
+the three primary entries are **Agent 市场**, **Agent 工作台** and **MCP / Skill 管理**.
+The workbench contains Agent creation/templates, pause/resume/delete, conversations and buy/sell
+orders. The market supports direction filters, price/sales sorting, task/capability inspection and
+creating a source Agent directly in the publication form. Purchased Agents open in their workbench.
+There are 15 templates, 10 Skills, 8 MCP products and 18 tool names.
+
+New `eth-buy` and `eth-sell` templates pin independent reviewed Skills; legacy Skills remain
+buy-only. Sales use owned ETH holdings, quote-bound minimum USDC proceeds, conservative USDC
+valuation for limits, atomic balance updates and replay protection. Service purchases and each
+manual asset trade have separate operation-bound Cognito confirmation.
+
+Backend tests: the existing 94 tests plus 14 buy/sell boundary and marketplace cases pass.
+All 13 focused UI tests, Ruff and production builds pass. All six Lambda hashes, both READY
+Runtime artifacts and CloudFront's index match the deployed builds in demo/paper mode.
+Cloud acceptance is implemented in `frontend/tests/trade-market-cloud.spec.ts`, alongside
+the existing DCA, external MCP OAuth and task marketplace journeys.
+All four cloud journeys passed. The new trading journey passed its final run in 2.6 minutes:
+two Cognito purchases, a 30 USDC buy, a 0.005 ETH sale receiving 15 USDC, execution replay without
+a second settlement, cross-user denial, precision rejection, GPT-6 Sol recognition of an
+explicit sell request, cancellation of that proposal, and workspace pause/resume. Earlier UI
+publication created the two labeled demo listings; they remain for users to purchase.
+Test buyer instances were deleted. Desktop and mobile screenshots are retained under
+`.deployment/trade-agent-*`, `.deployment/market-{buy,sell}-completed.png` and
+`.deployment/unified-agent-workspace.png`; the mobile workbench also fits a 390px viewport.
+Local HTTP and cloud HTTPS Playwright runs now use separate artifact directories, preventing
+concurrent test cleanup from deleting another run's trace files.
+
 Four-module platform release, 2026-10-13: navigation is organized into **Agent 市场**, **Agent 管理**,
 **Agent 工作台**, and **MCP / Skill 管理**. Agent management includes templates, creation, workspace
 launch, pause/resume and deletion. Examples and order history are scoped to the selected Agent;

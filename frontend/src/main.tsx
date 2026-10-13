@@ -12,8 +12,9 @@ import { ConversationHistory, type Conversation } from "./ConversationHistory";
 import { RunTimeline } from "./RunTimeline";
 import { CognitoLogin, McpConnections } from "./OAuthAccess";
 import { AgentMarketplace, PurchaseSummary } from "./AgentMarketplace";
-import { TaskTemplates, CreateFromTemplate, TaskRunForm, TaskReport, type Task } from "./TaskTemplates";
+import { TaskTemplates, CreateFromTemplate, TaskRunForm, TaskReport, supportsTask, type Task } from "./TaskTemplates";
 import { OrderDesk } from "./OrderDesk";
+import { isSell, receiveAsset, tradeAmount, tradeTitle } from "./trades";
 import { AgentManagement, WorkspaceActions } from "./AgentManagement";
 import { navigationFor, rememberNavigation, rememberAuthReturn, takeAuthReturn, type Navigation, type View } from "./navigation";
 import "./styles.css";
@@ -38,12 +39,13 @@ function App() {
   const [health, setHealth] = useState<any>({});
   const [state, setState] = useState<State | null>(null);
   const [catalog, setCatalog] = useState<any>({ products: [], skills: [] });
-  const [view, setView] = useState<View>("overview");
+  const [view, setView] = useState<View>("workspace");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [create, setCreate] = useState(false);
   const [createSkill, setCreateSkill] = useState("controlled-trader");
-  const [workspacePanel, setWorkspacePanel] = useState<"conversation" | "orders">("conversation");
+  const [workspacePanel, setWorkspacePanel] = useState<"agents" | "templates" | "conversation" | "orders">("agents");
+  const [orderTemplate, setOrderTemplate] = useState("eth-order");
   const [mcpTab, setMcpTab] = useState("all");
   const [templateCreate, setTemplateCreate] = useState<Task | null>(null);
   const [taskRun, setTaskRun] = useState<{ agentId: string; templateId?: string } | null>(null);
@@ -75,7 +77,7 @@ function App() {
     setUser(null); setState(null); setSession(null); setHistory([]); setSelected("");
     setApproval(null); setSchedule(false); setCreate(false); setWorking(false); setExecutions({});
     setTemplateCreate(null); setTaskRun(null); setWorkspacePanel("conversation"); setCreateSkill("controlled-trader"); setMcpTab("all");
-    setCatalog({ products: [], skills: [] }); setInput(""); setNotice(""); setView("overview");
+    setCatalog({ products: [], skills: [] }); setInput(""); setNotice(""); setView("workspace"); setWorkspacePanel("agents");
     setCsrf(""); manualNew.current = false;
     oauthReturnHandled.current = false; restoringNavigation.current = false;
   }
@@ -183,7 +185,7 @@ function App() {
     const review = params.get("review_operation");
     oauthReturnHandled.current = true;
     const saved = navigationFor(user.sub);
-    if (saved) setView(saved.view === "templates" ? "overview" : saved.view === "trading" ? "workspace" : saved.view);
+    if (saved) { setView(["overview", "templates", "trading"].includes(saved.view) ? "workspace" : saved.view); setWorkspacePanel(saved.view === "templates" ? "templates" : saved.view === "overview" ? "agents" : "conversation"); }
     if (params.get("auth_error")) setError("认证未完成（" + params.get("auth_error") + "），操作尚未批准。");
     if (params.get("mcp") === "connected") { setView("market"); setNotice("MCP 连接授权已生效，可随时撤销。"); }
     if (verified || review) {
@@ -207,7 +209,7 @@ function App() {
         const approved = await api<Operation>(`/operations/${op.id}/approve`, "POST", { intent_hash: op.intent_hash });
         if (identity.current !== owner) return;
         if (approved.kind === "TRADE") await executeOperation(approved, destination.view === "workspace");
-        else { await refresh(); if (approved.kind === "MARKET_PURCHASE" && approved.intent.strategy === "TASK") { selectAgent(approved.agent_id); setView("workspace"); } setNotice(approved.kind === "MARKET_PURCHASE" ? approved.intent.strategy === "TASK" ? "购买成功，请在 Agent 工作台运行你的任务。" : "购买成功，你的独立 Agent 已进入自动调度。" : "定投授权已生效。"); }
+        else { await refresh(); if (approved.kind === "MARKET_PURCHASE") { selectAgent(approved.agent_id); setView("workspace"); } setNotice(approved.kind === "MARKET_PURCHASE" ? approved.intent.strategy === "TASK" ? "购买成功，请在 Agent 工作台运行你的任务。" : "购买成功，你的独立 Agent 已进入自动调度。" : "定投授权已生效。"); }
       })().catch(e => { if (identity.current === owner) fail(e); })
         .finally(() => { if (identity.current === owner) restoringNavigation.current = false; });
     }
@@ -349,7 +351,6 @@ function App() {
   const canOrder = currentSkill?.tools.includes("execute_trade");
   const nav: [View, string, React.ReactNode][] = [
     ["agents", "Agent 市场", <Store size={18} />],
-    ["overview", "Agent 管理", <LayoutDashboard size={18} />],
     ["workspace", "Agent 工作台", <MessageSquare size={18} />],
     ["market", "MCP / Skill 管理", <Boxes size={18} />],
   ];
@@ -361,11 +362,11 @@ function App() {
 
   return <div className="shell">
     <aside className="sidebar">
-      <a className="brand" onClick={() => setView("overview")}><span className="brand-icon"><Layers3 size={23} /></span><span>onchain<span className="brand-sub">CONTROL</span></span></a>
+      <a className="brand" onClick={() => { setView("workspace"); setWorkspacePanel("agents"); }}><span className="brand-icon"><Layers3 size={23} /></span><span>onchain<span className="brand-sub">CONTROL</span></span></a>
       <div className="workspace-tag"><span className="workspace-avatar">{user.email[0].toUpperCase()}</span><div>个人工作空间<small>独立身份 · 独立会话</small></div><LockKeyhole size={14} /></div>
       <span className="nav-label">WORKSPACE</span>
-      <nav aria-label="主要功能">{nav.map(([id, label, icon]) => <button key={id} className={view === id ? "active" : ""} onClick={() => setView(id)}>{icon}<span>{label}</span>{id === "approvals" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
-      <nav className="aux-nav" aria-label="账户控制">{auxiliary.map(([id, label, icon]) => <button key={id} className={view === id ? "active" : ""} onClick={() => setView(id)}>{icon}<span>{label}</span>{id === "approvals" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
+      <nav aria-label="主要功能">{nav.map(([id, label, icon]) => <button key={id} className={view === id ? "active" : ""} onClick={() => { setView(id); if (id === "workspace") setWorkspacePanel(selected ? "conversation" : "agents"); }}>{icon}<span>{label}</span>{id === "approvals" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
+      <nav className="aux-nav" aria-label="账户控制">{auxiliary.map(([id, label, icon]) => <button key={id} className={view === id ? "active" : ""} onClick={() => { setView(id); if (id === "workspace") setWorkspacePanel(selected ? "conversation" : "agents"); }}>{icon}<span>{label}</span>{id === "approvals" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
       <div className="sidebar-bottom"><div className="infra-status"><i /><span>{health.runtime === "aws" ? "AWS AgentCore" : "本地开发环境"}</span></div><small>Bedrock · GPT-6 Sol</small><button className="profile" onClick={logout}><span className="avatar">{user.email[0].toUpperCase()}</span><span>{user.email}<small>退出登录</small></span><LogOut size={16} /></button></div>
     </aside>
     <main>
@@ -373,13 +374,20 @@ function App() {
       <div className="content">
         {error && <div role="alert" className="banner error"><ShieldAlert size={18} /><span>{error}</span><button onClick={() => setError("")}><X size={16} /></button></div>}
         {notice && <div role="status" className="banner success"><CircleCheck size={18} />{notice}</div>}
-        <div className="page-heading"><div><span className="eyebrow">ONCHAIN CONTROL PLATFORM</span><h1>{title}</h1><p>{{ overview: "创建、运行与管理你的 Agent，按任务选择模板。", trading: "准备订单、确认授权、查看成交与持仓变化。", agents: "卖家发布任务 Agent，买家购买独立实例完成任务。", templates: "选择任务、配置参数，让 Agent 按已审核步骤运行。", workspace: "用自然语言提出意图，所有操作经过权限检查。", market: "选择工具能力，明确每一个 Skill 的权限。", approvals: "查看操作内容，确认授权，随时停止自动执行。", security: "每次调用都有身份，每次拦截都有依据。" }[view]}</p></div>
+        <div className="page-heading"><div><span className="eyebrow">ONCHAIN CONTROL PLATFORM</span><h1>{title}</h1><p>{{ overview: "创建、运行与管理你的 Agent，按任务选择模板。", trading: "准备订单、确认授权、查看成交与持仓变化。", agents: "卖家发布任务 Agent，买家购买独立实例完成任务。", templates: "选择任务、配置参数，让 Agent 按已审核步骤运行。", workspace: "创建、管理和运行 Agent，查看任务、交易与完整会话记录。", market: "选择工具能力，明确每一个 Skill 的权限。", approvals: "查看操作内容，确认授权，随时停止自动执行。", security: "每次调用都有身份，每次拦截都有依据。" }[view]}</p></div>
 
           {view === "approvals" && <button className="primary" disabled={!selected} onClick={() => setSchedule(true)}><Clock3 size={17} />创建定投授权</button>}
         </div>
         {!state ? <div className="loading-inline">正在加载工作空间…</div> : <>
           {view === "agents" && <AgentMarketplace key={user.sub} userId={user.sub} agents={state.agents} grants={state.grants} tasks={catalog.templates || []} skills={catalog.skills} onReview={setApproval} onChanged={refresh} onOpen={id => { selectAgent(id); setView("workspace"); }} />}
-          {view === "overview" && <AgentManagement agents={state.agents} skills={catalog.skills} tasks={catalog.templates || []} busy={busy}
+          {view === "workspace" && <>
+            <div className="workspace-toolbar"><div className="market-tabs" role="tablist" aria-label="工作台功能">
+              <button role="tab" aria-selected={workspacePanel === "agents"} className={workspacePanel === "agents" ? "active" : ""} onClick={() => setWorkspacePanel("agents")}>我的 Agents</button>
+              <button role="tab" aria-selected={workspacePanel === "templates"} className={workspacePanel === "templates" ? "active" : ""} onClick={() => setWorkspacePanel("templates")}>任务模板</button>
+              <button role="tab" aria-selected={workspacePanel === "conversation"} className={workspacePanel === "conversation" ? "active" : ""} onClick={() => setWorkspacePanel("conversation")}>任务与会话</button>
+              {canOrder && <button className={workspacePanel === "orders" ? "active" : ""} onClick={() => setWorkspacePanel("orders")}>交易下单</button>}
+            </div>{["conversation", "orders"].includes(workspacePanel) && <select aria-label="选择 Agent" value={selected} onChange={e => selectAgent(e.target.value)}><option value="" disabled>选择 Agent</option>{state.agents.map(a => <option key={a.id} value={a.id}>{a.name} · {labels[a.status]}</option>)}</select>}</div>
+            {["agents", "templates"].includes(workspacePanel) ? <AgentManagement agents={state.agents} skills={catalog.skills} tasks={catalog.templates || []} busy={busy} templates={workspacePanel === "templates"} onTemplates={() => setWorkspacePanel("templates")}
             onCreate={() => { setCreateSkill("controlled-trader"); setCreate(true); }} onTemplate={setTemplateCreate}
             onOpen={agent => { selectAgent(agent.id); setView("workspace"); }}
             onStatus={agent => action(() => api(`/agents/${agent.id}/status`, "POST", { status: agent.status === "ACTIVE" ? "PAUSED" : "ACTIVE" }))}
@@ -389,15 +397,11 @@ function App() {
               if (identity.current !== owner) return;
               localStorage.removeItem("onchain:last-session:" + owner + ":" + agent.id);
               if (selected === agent.id) { selectAgent(""); localStorage.removeItem("onchain:last-agent:" + owner); }
-              await refresh(); setNotice("Agent 已删除，持续授权和待执行操作已撤销。");
-            }} />}
-          {view === "workspace" && <>
-            <div className="workspace-toolbar"><select aria-label="选择 Agent" value={selected} onChange={e => selectAgent(e.target.value)}><option value="" disabled>选择 Agent</option>{state.agents.map(a => <option key={a.id} value={a.id}>{a.name} · {labels[a.status]}</option>)}</select>
-              <div className="market-tabs"><button className={workspacePanel === "conversation" ? "active" : ""} onClick={() => setWorkspacePanel("conversation")}>任务与会话</button>
-                {canOrder && <button className={workspacePanel === "orders" ? "active" : ""} onClick={() => setWorkspacePanel("orders")}>买入下单</button>}</div></div>
+              await refresh(); setWorkspacePanel("agents"); setNotice("Agent 已删除，持续授权和待执行操作已撤销。");
+            }} /> : <>
             {workspacePanel === "orders" && canOrder ? <OrderDesk key={selected} agents={currentAgent ? [currentAgent] : []} skills={catalog.skills}
               orders={state.operations} wallet={state.wallet} subscriptions={state.subscriptions} executions={executions}
-              task={catalog.templates?.find((t: Task) => t.id === "eth-order")} selected={selected}
+              tasks={(catalog.templates || []).filter((t: Task) => t.mode === "prepare" && supportsTask(t, currentSkill))} initialTemplate={currentAgent?.template_id === "eth-sell" ? "eth-sell" : orderTemplate} selected={selected}
               onPrepare={prepareOrder} onCreate={setTemplateCreate} onReview={op => openOrder(op, true)}
               onExecute={op => executeOperation(op, true)}
               onCancel={op => action(() => api(`/operations/${op.id}/reject`, "POST"), "订单已撤回，不会执行。")}
@@ -406,7 +410,7 @@ function App() {
             <ConversationHistory items={history} selected={session?.id} loading={historyLoading} onSelect={openConversation} onNew={newConversation} />
             <section className="panel chat-panel"><div className="chat-header"><span className="agent-icon small"><Bot size={18} /></span><strong>{currentAgent?.name || "请选择 Agent"}</strong><button className="text-btn" disabled={!selected || working || currentAgent?.status !== "ACTIVE"} onClick={newConversation}>新会话</button></div>
               <WorkspaceActions agent={currentAgent} tasks={catalog.templates || []} skills={catalog.skills} working={working}
-                onTask={task => setTaskRun({ agentId: selected, templateId: task.id })} onOrder={() => setWorkspacePanel("orders")} />
+                onTask={task => setTaskRun({ agentId: selected, templateId: task.id })} onOrder={task => { setOrderTemplate(task.id); setWorkspacePanel("orders"); }} />
               <button className="text-btn task-launch" disabled={!selected || working || currentAgent?.status !== "ACTIVE"} onClick={() => setTaskRun({ agentId: selected, templateId: currentAgent?.template_id })}><ClipboardList size={14} />运行任务模板</button>
               {session?.title && <div className="chat-title">{session.title}</div>}
               <div className="messages">{!session?.messages?.length ? <div className="chat-empty"><span className="big-symbol"><Layers3 size={35} /></span><h2>你想让 Agent 做什么？</h2><p>先理解意图，再验证权限，最后执行。</p>{!selected && <button className="primary" onClick={() => setCreate(true)}>先创建一个 Agent</button>}</div> : session.messages.map((m: any, i: number) => <div className={"message " + m.role} key={i}><div className="message-icon">{m.role === "user" ? user.email[0].toUpperCase() : <Bot size={17} />}</div><div className="message-body"><span className="message-author">{m.role === "user" ? "你" : m.content?.action === "task" ? "Agent · 任务模板" : "Agent · GPT-6 Sol"}</span>{typeof m.content === "string" ? <p>{m.content}</p> : <Result result={m.content} operations={state.operations} executions={executions} onReview={setApproval} onExecute={executeOperation} />}</div></div>)}
@@ -415,7 +419,7 @@ function App() {
               {session?.can_resume === false ? <div className="history-readonly">历史会话只读，可查看消息和运行记录。<br /><button className="text-btn" onClick={newConversation}>新建会话继续</button></div> : <form className="composer" onSubmit={e => { e.preventDefault(); send(); }}><textarea aria-label="输入操作意图" value={input} onChange={e => setInput(e.target.value)} placeholder={canOrder ? "描述交易目标，例如：用 20 USDC 买入 ETH" : "描述当前 Agent 的任务，或选择上方的示例动作"} maxLength={4000} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} /><div><small><LockKeyhole size={12} /> 身份与会话由后端绑定</small><button className="send-btn" aria-label="发送" disabled={!selected || working || currentAgent?.status !== "ACTIVE" || !input.trim()}><Send size={17} /></button></div></form>}
             </section>
             <RunTimeline session={session} />
-          </div>}</>}
+          </div>}</>}</>}
           {view === "market" && <>
             <div className="market-tabs mcp-tabs">{[["all", "全部能力"], ["mcp", "MCP 服务"], ["skills", "Skills"], ["oauth", "OAuth 连接"]].map(([id, name]) => <button key={id} className={mcpTab === id ? "active" : ""} onClick={() => setMcpTab(id)}>{name}</button>)}</div>
             {health.oauth && ["all", "oauth"].includes(mcpTab) && <McpConnections agents={state.agents} />}
@@ -432,7 +436,7 @@ function App() {
                 <div className="table-wrap"><table><thead><tr><th>操作</th><th>范围</th><th>创建时间</th><th>状态</th><th /></tr></thead><tbody>{state.operations.map(op => {
                   const running = executions[op.id]?.status === "EXECUTING" && op.status === "APPROVED";
                   const expired = ["PENDING", "APPROVED"].includes(op.status) && op.expires_at * 1000 <= Date.now();
-                  return <tr key={op.id}><td><strong>{op.kind === "MARKET_PURCHASE" ? "购买 Agent 服务" : op.kind === "GRANT" ? "定投授权" : "买入 ETH"}</strong><small>{op.id.slice(0, 15)}…</small></td><td>{fmt((op.kind === "MARKET_PURCHASE" ? op.intent.price_units : op.intent.amount_units) / 1e6)} USDC<small>{op.kind === "MARKET_PURCHASE" ? op.intent.title : "Base · 模拟交易"}</small></td><td>{when(op.created_at)}</td><td><Pill status={running ? "EXECUTING" : expired ? "EXPIRED" : op.status} />{executions[op.id]?.status === "UNKNOWN" && <small>尚未确认成交，请刷新状态；可安全重试。</small>}</td><td><div className="row-actions">
+                  return <tr key={op.id}><td><strong>{op.kind === "MARKET_PURCHASE" ? "购买 Agent 服务" : op.kind === "GRANT" ? "定投授权" : tradeTitle(op.intent)}</strong><small>{op.id.slice(0, 15)}…</small></td><td>{op.kind === "MARKET_PURCHASE" ? fmt(op.intent.price_units / 1e6) + " USDC" : tradeAmount(op.intent)}<small>{op.kind === "MARKET_PURCHASE" ? op.intent.title : "Base · 模拟交易"}</small></td><td>{when(op.created_at)}</td><td><Pill status={running ? "EXECUTING" : expired ? "EXPIRED" : op.status} />{executions[op.id]?.status === "UNKNOWN" && <small>尚未确认成交，请刷新状态；可安全重试。</small>}</td><td><div className="row-actions">
                     {op.status === "PENDING" && !expired && <button className="primary compact" onClick={() => setApproval(op)}>核对并确认</button>}
                     {op.status === "APPROVED" && !expired && <button className="primary compact" disabled={busy || running} onClick={() => executeOperation(op)}>{running ? "执行中…" : "执行"}</button>}
                     {["PENDING", "APPROVED"].includes(op.status) && !running && <button className="text-btn" onClick={() => action(() => api(`/operations/${op.id}/reject`, "POST"))}>拒绝</button>}
@@ -450,7 +454,7 @@ function App() {
         <footer>ONCHAIN CONTROL <span>用户掌握授权，Agent 在边界内执行。</span></footer>
       </div>
     </main>
-    {create && <Modal title="创建 Agent" onClose={() => setCreate(false)}><CreateAgent initialSkill={createSkill} skills={catalog.skills} onCreate={async (body: any) => { const agent = await api<Agent>("/agents", "POST", body); selectAgent(agent.id); await refresh(); setCreate(false); }} /></Modal>}
+    {create && <Modal title="创建 Agent" onClose={() => setCreate(false)}><CreateAgent initialSkill={createSkill} skills={catalog.skills} onCreate={async (body: any) => { const agent = await api<Agent>("/agents", "POST", body); selectAgent(agent.id); await refresh(); setCreate(false); setView("workspace"); }} /></Modal>}
     {templateCreate && <Modal title={"从模板创建：" + templateCreate.name} onClose={() => setTemplateCreate(null)}><CreateFromTemplate task={templateCreate} products={catalog.products} onCreated={async agent => {
       if (identity.current !== user.sub) return;
       selectAgent(agent.id); setView("workspace");
@@ -460,14 +464,14 @@ function App() {
     {taskRun && <Modal title="运行任务模板" onClose={() => setTaskRun(null)}><TaskRunForm key={taskRun.agentId} initial={taskRun.templateId} tasks={(catalog.templates || []).filter((t: Task) => {
       const agent = state?.agents.find(a => a.id === taskRun.agentId);
       const skill = catalog.skills.find((s: any) => s.id === agent?.skill_id);
-      return skill && t.tools.every(tool => skill.tools.includes(tool));
+      return supportsTask(t, skill);
     })} onRun={runTask} /></Modal>}
     {approval && <Modal title={approval.kind === "MARKET_PURCHASE" ? (approval.intent.strategy === "TASK" ? "确认购买任务 Agent" : "确认购买与自动交易授权") : approval.kind === "TRADE" ? "核对并执行交易" : "核对并批准授权"} onClose={() => setApproval(null)}><Approval operation={approval} user={user} oauth={!!health.oauth} returnTo={{ view, agentId: selected, conversationId: session?.id }} onDone={async approved => {
       if (identity.current !== user.sub) return;
       setApproval(null);
       setState(previous => previous && ({ ...previous, operations: previous.operations.map(op => op.id === approved.id ? approved : op) }));
       if (approved.kind === "TRADE") await executeOperation(approved);
-      else { await refresh(); if (approved.kind === "MARKET_PURCHASE" && approved.intent.strategy === "TASK") { selectAgent(approved.agent_id); setView("workspace"); } setNotice(approved.kind === "MARKET_PURCHASE" ? approved.intent.strategy === "TASK" ? "购买成功，请在 Agent 工作台运行你的任务。" : "购买成功，你的独立 Agent 已进入自动调度。" : "定投授权已生效，将按已确认的计划运行。"); }
+      else { await refresh(); if (approved.kind === "MARKET_PURCHASE") { selectAgent(approved.agent_id); setView("workspace"); } setNotice(approved.kind === "MARKET_PURCHASE" ? approved.intent.strategy === "TASK" ? "购买成功，请在 Agent 工作台运行你的任务。" : "购买成功，你的独立 Agent 已进入自动调度。" : "定投授权已生效，将按已确认的计划运行。"); }
     }} /></Modal>}
     {schedule && <Modal title="创建定投授权" onClose={() => setSchedule(false)}><Schedule agents={state?.agents || []} selected={selected} onCreate={async (body: any) => { const op = await api<Operation>("/grants/prepare", "POST", body); await refresh(); setSchedule(false); setApproval(op); }} /></Modal>}
   </div>;
@@ -544,7 +548,7 @@ function Approval({ operation: op, user, oauth, returnTo, onDone }: { operation:
     {error && <p className="inline-error">{error}</p>}
     <button className="primary full" disabled={!checked || busy}><Fingerprint size={17} />{busy ? "正在验证…" : "验证并购买"}</button>
   </form>;
-  return <form className="form-stack" onSubmit={approve}><div className="approval-summary"><span className="paper-badge">模拟交易</span><h3>{op.kind === "GRANT" ? "授权自动定投" : "USDC → ETH"}</h3><div className="approval-amount">{fmt(op.intent.amount_units / 1e6)}<small>USDC / 笔</small></div><dl><dt>网络</dt><dd>Base</dd><dt>最大滑点</dt><dd>{op.intent.max_slippage_bps / 100}%</dd><dt>收款账户</dt><dd>本人模拟账户</dd>{op.intent.reference_price && <><dt>订单参考价</dt><dd>{fmt(op.intent.reference_price)} USDC / ETH</dd><dt>最少接收</dt><dd>{fmt(op.intent.minimum_received, 8)} ETH</dd></>}{op.kind === "GRANT" && <><dt>累计额度</dt><dd>{fmt(op.intent.total_units / 1e6)} USDC</dd><dt>间隔</dt><dd>{op.intent.interval_seconds / 60} 分钟</dd><dt>授权到期</dt><dd>{when(op.intent.expires_at)}</dd></>}<dt>确认截止</dt><dd>{when(op.expires_at)}</dd></dl></div><label className="checkbox"><input type="checkbox" checked={checked} onChange={e => setChecked(e.target.checked)} />{op.kind === "TRADE" ? "我已核对操作内容，同意验证后立即执行这笔模拟交易。" : "我已核对并同意上述自动定投范围。"}</label>{oauth ? <p className="muted">将跳转至 Cognito 重新验证身份，然后继续当前操作。</p> : challenge ? <label>多因素验证码<input autoComplete="one-time-code" value={code} onChange={e => setCode(e.target.value)} required /></label> : <label>重新输入密码验证本人身份<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>}{error && <p className="inline-error">{error}</p>}<button className="primary full" disabled={!checked || busy}><Fingerprint size={17} />{busy ? "正在验证…" : op.kind === "TRADE" ? "验证并执行" : "验证并授权"}</button><small className="muted">批准仅适用于当前操作内容，无法被其他用户或操作复用。{op.kind === "TRADE" && "验证通过后自动提交，成交结果将在当前页面更新。"}</small></form>;
+  return <form className="form-stack" onSubmit={approve}><div className="approval-summary"><span className="paper-badge">模拟交易</span><h3>{op.kind === "GRANT" ? "授权自动定投" : isSell(op.intent) ? "ETH → USDC" : "USDC → ETH"}</h3><div className="approval-amount">{tradeAmount(op.intent)}<small>/ 笔</small></div><dl><dt>网络</dt><dd>Base</dd><dt>最大滑点</dt><dd>{op.intent.max_slippage_bps / 100}%</dd><dt>收款账户</dt><dd>本人模拟账户</dd>{op.intent.reference_price && <><dt>订单参考价</dt><dd>{fmt(op.intent.reference_price)} USDC / ETH</dd><dt>最少接收</dt><dd>{fmt(op.intent.minimum_received, 8)} {receiveAsset(op.intent)}</dd></>}{op.kind === "GRANT" && <><dt>累计额度</dt><dd>{fmt(op.intent.total_units / 1e6)} USDC</dd><dt>间隔</dt><dd>{op.intent.interval_seconds / 60} 分钟</dd><dt>授权到期</dt><dd>{when(op.intent.expires_at)}</dd></>}<dt>确认截止</dt><dd>{when(op.expires_at)}</dd></dl></div><label className="checkbox"><input type="checkbox" checked={checked} onChange={e => setChecked(e.target.checked)} />{op.kind === "TRADE" ? "我已核对操作内容，同意验证后立即执行这笔模拟交易。" : "我已核对并同意上述自动定投范围。"}</label>{oauth ? <p className="muted">将跳转至 Cognito 重新验证身份，然后继续当前操作。</p> : challenge ? <label>多因素验证码<input autoComplete="one-time-code" value={code} onChange={e => setCode(e.target.value)} required /></label> : <label>重新输入密码验证本人身份<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>}{error && <p className="inline-error">{error}</p>}<button className="primary full" disabled={!checked || busy}><Fingerprint size={17} />{busy ? "正在验证…" : op.kind === "TRADE" ? "验证并执行" : "验证并授权"}</button><small className="muted">批准仅适用于当前操作内容，无法被其他用户或操作复用。{op.kind === "TRADE" && "验证通过后自动提交，成交结果将在当前页面更新。"}</small></form>;
 }
 function Schedule({ agents, selected, onCreate }: any) {
   const [agent, setAgent] = useState(selected);
@@ -573,10 +577,10 @@ function Result({ result, operations, executions, onReview, onExecute }: {
     : result.action === "task" ? (tool?.error ? "任务调用被阻止，请查看原因。" : "已按模板完成工具调用，结果如下。") : result.intent?.explanation || (result.action === "execute" ? "执行服务已返回操作状态。" : "请求已处理。");
   return <><p>{explanation}</p>{result.intent?.action && <span className="intent-tag">意图 · {result.intent.action}</span>}{tool?.error && <div className="tool-error"><ShieldAlert size={16} />{tool.error.message || JSON.stringify(tool.error)}</div>}{tool?.wallet && <div className="tool-result"><span>模拟资产</span><strong>{fmt(tool.wallet.USDC)} USDC</strong><strong>{fmt(tool.wallet.ETH, 6)} ETH</strong></div>}{tool?.price && <div className="tool-result"><span>ETH / USD</span><strong>${fmt(tool.price)}</strong><small>{tool.source}</small></div>}
     {op && <div className="operation-card" data-testid={"operation-" + op.id}>
-      <div><Fingerprint size={20} /><strong>{fmt(op.intent.amount_units / 1e6)} USDC → ETH</strong></div>
+      <div><Fingerprint size={20} /><strong>{tradeAmount(op.intent)} → {receiveAsset(op.intent)}</strong></div>
       <Pill status={running ? "EXECUTING" : expired ? "EXPIRED" : op.status} />
-      {op.intent.reference_price && <p className="muted">订单参考价 {fmt(op.intent.reference_price)} USDC / ETH · 最少接收 {fmt(op.intent.minimum_received, 8)} ETH</p>}
-      {op.status === "CONFIRMED" ? <><p>模拟交易已完成，已买入 {fmt(op.execution?.received, 8)} ETH。</p><small>成交价：{fmt(op.execution?.price)} USDC / ETH</small><small>成交回执：{op.execution?.receipt}</small></>
+      {op.intent.reference_price && <p className="muted">订单参考价 {fmt(op.intent.reference_price)} USDC / ETH · 最少接收 {fmt(op.intent.minimum_received, 8)} {receiveAsset(op.intent)}</p>}
+      {op.status === "CONFIRMED" ? <><p>模拟交易已完成，已收到 {fmt(op.execution?.received, 8)} {receiveAsset(op.intent)}。</p><small>成交价：{fmt(op.execution?.price)} USDC / ETH</small><small>成交回执：{op.execution?.receipt}</small></>
         : running ? <p role="status">交易已提交，正在执行。成交结果会自动更新。</p>
         : expired ? <p>操作已过期，请重新提出交易意图。</p>
         : op.status === "PENDING" ? <><p>操作已准备，等待你核对和授权。</p><button className="primary compact" onClick={() => onReview(op)}>查看操作详情</button></>

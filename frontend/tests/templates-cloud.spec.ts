@@ -18,8 +18,8 @@ test("keyless templates run all read plans through AgentCore and preserve demo d
   const headers = { "X-CSRF-Token": me.csrf };
   const before = await (await page.request.get("/api/dashboard")).json();
   const agents = new Map<string, any>(before.agents.filter((a: any) => a.status === "ACTIVE").map((a: any) => [a.skill_id, a]));
-  await page.getByRole("button", { name: "Agent 管理", exact: true }).click();
-  await page.getByRole("button", { name: "任务模板", exact: true }).click();
+  await page.getByRole("tab", { name: "我的 Agents", exact: true }).click();
+  await page.getByRole("tab", { name: "任务模板", exact: true }).click();
   await expect(page.getByTestId("template-token-research")).toContainText("可运行 · 演示数据");
   await page.screenshot({ path: "../.deployment/keyless-task-templates.png", fullPage: true });
   if (!agents.has("token-researcher")) {

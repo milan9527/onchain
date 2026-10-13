@@ -5,9 +5,16 @@ import "./tasks.css";
 
 export type Task = { id: string; name: string; description: string; category: string; skill_id: string;
   mode: string; tools: string[]; products: string[]; availability: string; digest: string;
+  trade_side?: "BUY" | "SELL";
   data_mode?: string; examples?: Record<string, Record<string, string | number>>;
   parameters: { properties: Record<string, any>; required: string[] } };
 const chains: Record<string, string> = { "8453": "Base", "1": "Ethereum", "42161": "Arbitrum", "56": "BNB Chain", "137": "Polygon", "196": "X Layer", "501": "Solana" };
+
+export function supportsTask(task: Task, skill: any) {
+  const side = task.trade_side || (["eth-order", "eth-dca"].includes(task.id) ? "BUY" : undefined);
+  return skill && task.tools.every(tool => skill.tools.includes(tool))
+    && (!side || (skill.trade_sides || ["BUY"]).includes(side));
+}
 
 export function TaskTemplates({ tasks, onChoose }: { tasks: Task[]; onChoose: (task: Task) => void }) {
   const [query, setQuery] = useState(""), [category, setCategory] = useState("全部");

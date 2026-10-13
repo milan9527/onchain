@@ -13,6 +13,27 @@ def step(tool, **arguments):
 
 
 TASKS = [
+    {"id": "eth-buy", "name": "ETH 买入 Agent", "category": "交易",
+     "description": "专注用 USDC 买入 ETH。读取余额和报价，生成订单，由买方确认后执行。",
+     "skill_id": "eth-buyer", "trade_side": "BUY", "mode": "prepare",
+     "parameters": schema({"amount": AMOUNT, "max_slippage_bps": {
+         "type": "integer", "minimum": 0, "maximum": 100, "default": 50, "title": "最大滑点（基点）",
+     }}),
+     "steps": [step("get_portfolio"), step("get_quote", symbol="ETH"),
+               step("prepare_trade", amount="$amount", buy_asset="ETH", chain="8453",
+                    max_slippage_bps="$max_slippage_bps")]},
+    {"id": "eth-sell", "name": "ETH 卖出 Agent", "category": "交易",
+     "description": "卖出本人持有的 ETH 换回 USDC。输入 ETH 数量，核对最低接收金额并确认后执行；不允许做空。",
+     "skill_id": "eth-seller", "trade_side": "SELL", "mode": "prepare",
+     "parameters": schema({"amount": {
+         "type": "string", "pattern": r"^(?:0|[1-9]\d*)(?:\.\d{1,18})?$", "maxLength": 32,
+         "default": "0.005", "title": "卖出数量（ETH）",
+     }, "max_slippage_bps": {
+         "type": "integer", "minimum": 0, "maximum": 100, "default": 50, "title": "最大滑点（基点）",
+     }}),
+     "steps": [step("get_portfolio"), step("get_quote", symbol="ETH"),
+               step("prepare_trade", amount="$amount", buy_asset="USDC", chain="8453",
+                    max_slippage_bps="$max_slippage_bps")]},
     {"id": "eth-order", "name": "ETH 买入下单", "category": "交易",
      "description": "读取余额与报价，创建 Base 上的 USDC → ETH 模拟订单；核对并通过 Cognito 确认后执行。",
      "skill_id": "controlled-trader", "mode": "prepare",
@@ -82,6 +103,13 @@ def task_by_id(template_id):
     if not task:
         raise Denied("TASK_NOT_FOUND", "Task template is not available.", 404)
     return task
+
+
+def compatible_task(task, skill):
+    if not skill or not set(task["tools"]).issubset(skill["tools"]):
+        return False
+    side = task.get("trade_side") or ("BUY" if task["id"] in {"eth-order", "eth-dca"} else None)
+    return not side or side in skill.get("trade_sides", ["BUY"])
 
 
 def task_plan(template_id, parameters, expected_digest=None):

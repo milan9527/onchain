@@ -1,7 +1,8 @@
 # Onchain OS tools, Skills and task templates
 
-The platform exposes 18 reviewed MCP tools in eight products, eight Skills and thirteen task templates.
-The original six trading/portfolio tools and the original two Skill digests are unchanged. Existing
+The platform exposes 18 reviewed MCP tools in eight products, ten Skills and fifteen task templates.
+The original six tool names and original two Skill digests are unchanged. `prepare_trade` now also
+accepts `buy_asset=USDC` with an ETH amount, but only the new sell Skill may use that direction. Existing
 Agents do not silently receive the new capabilities.
 
 Endpoint paths and parameter mappings were checked against the official
@@ -29,6 +30,8 @@ base-unit amounts (`1000000` means one unit of a six-decimal token); they do not
 
 | Task | Skill | Execution |
 |---|---|---|
+| ETH 买入 Agent | `eth-buyer` | USDC amount → prepare buy → separate confirmation → ETH fill |
+| ETH 卖出 Agent | `eth-seller` | Existing ETH quantity → prepare sell → separate confirmation → USDC proceeds |
 | ETH 买入下单 | `controlled-trader` | Own balance → quote → pending order; separate Cognito confirmation → paper fill |
 | 持仓健康检查 | `portfolio-auditor` | Own holdings + paper allocation/budget analysis |
 | 交易与授权复盘 | `portfolio-auditor` | Own history + aggregate analysis |
@@ -58,7 +61,7 @@ the invocation capability binds the exact task request. Templates stop after a f
 ## Provider configuration and current availability
 
 The deployed environment has no OKX data credential and explicitly runs `ONCHAIN_DATA_MODE=demo`.
-All thirteen templates are available: eight research templates use synthetic fixtures, and the five
+All fifteen templates are available: eight research templates use synthetic fixtures, and the seven
 account/trade templates use the authenticated user's own paper account and existing approval flow.
 The four provider MCP products show **演示数据 · 无需 OKX Key**. No external HTTP or credential lookup
 occurs in the demo adapter. Cognito, Bedrock chat intent recognition, AgentCore Runtime, Gateway,

@@ -12,9 +12,13 @@ function valid(value: any): value is Navigation {
     && (value.conversationId === undefined || typeof value.conversationId === "string");
 }
 
+function normalized(value: Navigation): Navigation {
+  return ["overview", "templates", "trading"].includes(value.view) ? { ...value, view: "workspace" } : value;
+}
+
 export function navigationFor(owner: string): Navigation | null {
   const value = read("onchain:navigation:" + owner);
-  return valid(value) ? value : null;
+  return valid(value) ? normalized(value) : null;
 }
 
 export function rememberNavigation(owner: string, navigation: Navigation) {
@@ -36,5 +40,5 @@ export function takeAuthReturn(owner: string, operationId?: string): Navigation 
   try { sessionStorage.removeItem(key); } catch { /* Optional persistence. */ }
   if (!valid(value) || typeof expiresAt !== "number" || expiresAt <= Date.now()
       || (operationId && savedOperationId !== operationId)) return null;
-  return value;
+  return normalized(value);
 }

@@ -1,26 +1,24 @@
 import { useState } from "react";
 import { ArrowUpRight, Bot, Pause, Play, Plus, Trash2 } from "lucide-react";
-import { TaskTemplates, type Task } from "./TaskTemplates";
+import { TaskTemplates, supportsTask, type Task } from "./TaskTemplates";
 import "./agents.css";
 
-export function AgentManagement({ agents, skills, tasks, busy, onCreate, onTemplate, onOpen, onStatus, onDelete }: {
+export function AgentManagement({ agents, skills, tasks, busy, templates, onTemplates, onCreate, onTemplate, onOpen, onStatus, onDelete }: {
   agents: any[]; skills: any[]; tasks: Task[]; busy: boolean;
+  templates: boolean; onTemplates: () => void;
   onCreate: () => void; onTemplate: (task: Task) => void; onOpen: (agent: any) => void;
   onStatus: (agent: any) => void; onDelete: (agent: any) => Promise<void>;
 }) {
-  const [templates, setTemplates] = useState(false);
   const [removing, setRemoving] = useState<any>(null);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
   return <>
-    <div className="management-toolbar"><div className="market-tabs">
-      <button className={!templates ? "active" : ""} onClick={() => setTemplates(false)}>我的 Agents · {agents.length}</button>
-      <button className={templates ? "active" : ""} onClick={() => setTemplates(true)}>任务模板</button>
-    </div><button className="secondary" onClick={onCreate}><Plus size={16} />自定义创建</button></div>
+    <div className="management-toolbar"><span className="muted">我的 Agents · {agents.length} / 10</span>
+      <button className="secondary" onClick={onCreate}><Plus size={16} />自定义创建</button></div>
     {templates ? <TaskTemplates tasks={tasks} onChoose={onTemplate} /> : <>
       <div className="task-intro"><Bot size={30} /><div><h2>一个 Agent，一项明确的任务</h2>
         <p>从模板创建或在市场购买 Agent，在工作台运行任务、查看历史与工具调用。</p></div>
-        <button className="primary" onClick={() => setTemplates(true)}>从模板创建</button></div>
+        <button className="primary" onClick={onTemplates}>从模板创建</button></div>
       {!agents.length && <div className="panel empty"><h3>创建你的第一个 Agent</h3><p>选择任务模板，所需 Skill 和 MCP 会一并列出。</p></div>}
       <div className="agent-grid">{agents.map(agent => {
         const task = tasks.find(t => t.id === agent.template_id);
@@ -55,18 +53,18 @@ export function AgentManagement({ agents, skills, tasks, busy, onCreate, onTempl
 
 export function WorkspaceActions({ agent, tasks, skills, working, onTask, onOrder }: {
   agent: any; tasks: Task[]; skills: any[]; working: boolean;
-  onTask: (task: Task) => void; onOrder: () => void;
+  onTask: (task: Task) => void; onOrder: (task: Task) => void;
 }) {
   const skill = skills.find(s => s.id === agent?.skill_id);
-  const compatible = tasks.filter(t => skill && t.tools.every(tool => skill.tools.includes(tool)))
+  const compatible = tasks.filter(t => supportsTask(t, skill))
     .sort((a, b) => Number(b.id === agent?.template_id) - Number(a.id === agent?.template_id));
   if (!agent) return null;
   return <section className="workspace-actions" aria-label="当前 Agent 示例动作">
     <div><strong>{tasks.find(t => t.id === agent.template_id)?.name || skill?.name || agent.name}</strong>
       <span>选择示例动作，核对参数后运行</span></div>
-    {agent.status !== "ACTIVE" && <p className="inline-error">此 Agent 已暂停。请到 Agent 管理恢复后运行。</p>}
+    {agent.status !== "ACTIVE" && <p className="inline-error">此 Agent 已暂停。请在本工作台「我的 Agents」中恢复后运行。</p>}
     <div className="workspace-examples">{compatible.map(task => <button key={task.id} className="secondary compact"
-      disabled={working || agent.status !== "ACTIVE"} onClick={() => task.id === "eth-order" && skill?.tools.includes("execute_trade") ? onOrder() : onTask(task)}>
+      disabled={working || agent.status !== "ACTIVE"} onClick={() => task.mode === "prepare" && skill?.tools.includes("execute_trade") ? onOrder(task) : onTask(task)}>
       {task.name}<ArrowUpRight size={13} /></button>)}</div>
     {!compatible.length && <p className="muted">可用工具：{skill?.tools.join("、") || "暂无"}。可以在下方描述任务。</p>}
   </section>;

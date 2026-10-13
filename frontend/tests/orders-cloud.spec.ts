@@ -21,7 +21,7 @@ test("paper order: Gateway preparation, Cognito confirmation, single settlement,
   }
   await page.getByRole("button", { name: "Agent 工作台", exact: true }).click();
   await page.getByLabel("选择 Agent").selectOption(agent.id);
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   const agentId = agent.id;
   const before = await (await page.request.get("/api/dashboard")).json();
   let me = await (await page.request.get("/api/auth/me")).json();
@@ -81,13 +81,13 @@ test("paper order: Gateway preparation, Cognito confirmation, single settlement,
     return history.runs.find((r: any) => r.id === replayRun.run_id)?.status;
   }, { timeout: 90_000 }).toBe("SUCCEEDED");
   expect((await (await page.request.get("/api/dashboard")).json()).wallet).toEqual(after.wallet);
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   await expect(page.getByTestId("order-" + op.id)).toContainText("已成交");
   await expect(page.getByTestId("order-" + op.id)).toContainText(fill.execution.receipt);
   await page.screenshot({ path: "../.deployment/order-history.png", fullPage: true });
   await page.reload();
   await expect(page.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   await expect(page.getByTestId("order-" + op.id)).toContainText("已成交");
   // A second fresh order can be withdrawn without affecting the first fill.
   await page.getByLabel("买入金额（USDC）").fill("5");
@@ -98,7 +98,7 @@ test("paper order: Gateway preparation, Cognito confirmation, single settlement,
   const next = await (await page.request.get("/api/dashboard")).json();
   const cancellation = next.operations.find((o: any) => o.conversation_id === nextSid && o.status === "PENDING");
   expect(cancellation).toBeTruthy();
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   await page.getByTestId("order-" + cancellation.id).getByRole("button", { name: "撤单", exact: true }).click();
   await expect(page.getByTestId("order-" + cancellation.id)).toContainText("已撤单");
   const cancelledExecution = await page.request.post(`/api/operations/${cancellation.id}/execute`, { headers: { "X-CSRF-Token": me.csrf } });

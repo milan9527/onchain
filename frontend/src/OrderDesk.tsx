@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowUpRight, CircleCheck, ShoppingCart, Wallet } from "lucide-react";
 import type { Task } from "./TaskTemplates";
+import { isSell, receiveAsset, tradeAmount, tradeTitle } from "./trades";
 import "./orders.css";
 
 const number = (value: any, digits = 6) => Number(value).toLocaleString("en-US", { maximumFractionDigits: digits });
@@ -9,19 +10,24 @@ const statuses: Record<string, string> = {
   REJECTED: "已撤单", CANCELLED: "已取消", EXPIRED: "已过期",
 };
 
-export function OrderDesk({ agents, skills, orders, wallet, subscriptions, executions, task, selected,
+export function OrderDesk({ agents, skills, orders, wallet, subscriptions, executions, tasks, initialTemplate, selected,
   onPrepare, onCreate, onReview, onExecute, onCancel, onOpen, onMcp }: {
   agents: any[]; skills: any[]; orders: any[]; wallet: { USDC: string; ETH: string };
-  subscriptions: string[]; executions: Record<string, any>; task?: Task; selected: string;
+  subscriptions: string[]; executions: Record<string, any>; tasks: Task[]; initialTemplate?: string; selected: string;
   onPrepare: (agentId: string, task: Task, parameters: any) => Promise<void>;
   onCreate: (task: Task) => void; onReview: (op: any) => Promise<void>;
   onExecute: (op: any) => Promise<void>; onCancel: (op: any) => Promise<void>;
   onOpen: (op: any) => Promise<void>; onMcp: () => void;
 }) {
+  const [templateId, setTemplateId] = useState(initialTemplate);
+  const task = tasks.find(t => t.id === templateId) || tasks[0];
+  const selling = task?.trade_side === "SELL";
+  const buyTask = tasks.find(t => t.trade_side === "BUY") || tasks.find(t => t.id === "eth-order");
+  const sellTask = tasks.find(t => t.trade_side === "SELL");
   const eligible = agents.filter(a => a.status === "ACTIVE" && skills.some(s => s.id === a.skill_id
     && [...(task?.tools || []), "execute_trade"].every(tool => s.tools.includes(tool))));
   const agent = eligible.find(a => a.id === selected);
-  const [amount, setAmount] = useState("20"), [slippage, setSlippage] = useState("50");
+  const [amount, setAmount] = useState(selling ? "0.005" : "20"), [slippage, setSlippage] = useState("50");
   const [filter, setFilter] = useState("ALL"), [error, setError] = useState(""), [busy, setBusy] = useState(false);
   const missing = task?.products.filter(p => !subscriptions.includes(p)) || [];
   function status(op: any) {
@@ -35,25 +41,30 @@ export function OrderDesk({ agents, skills, orders, wallet, subscriptions, execu
     try { await action(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   return <div className="order-desk">
-    <div className="order-intro"><ShoppingCart size={29} /><div><h2>从下单到成交，全程留有记录</h2><p>填写买入金额 → 核对订单并验证身份 → 自动执行 → 查看成交回执。当前为模拟交易，无需 OKX Key。</p></div></div>
+    <div className="order-intro"><ShoppingCart size={29} /><div><h2>从下单到成交，全程留有记录</h2><p>选择交易方向和数量 → 核对订单并验证身份 → 自动执行 → 查看成交回执。当前为模拟交易，无需 OKX Key。</p></div></div>
     {error && <p role="alert" className="inline-error">{error}</p>}
-    <div className="order-layout"><section className="panel order-ticket" aria-label="买入订单">
-      <div className="panel-heading"><h2>买入 ETH</h2><span className="paper-badge">模拟市价单</span></div>
-      <div className="order-pair"><strong>USDC <ArrowUpRight size={19} /> ETH</strong><span>Base · 本人模拟账户</span></div>
+    <div className="order-layout"><section className="panel order-ticket" aria-label={selling ? "卖出订单" : "买入订单"}>
+      <div className="panel-heading"><h2>{selling ? "卖出 ETH" : "买入 ETH"}</h2><span className="paper-badge">模拟市价单</span></div>
+      <div className="market-tabs" aria-label="交易方向">{[buyTask, sellTask].filter(Boolean).map(t => <button key={t!.id}
+        className={task?.id === t!.id || (!selling && t === buyTask) ? "active" : ""} disabled={busy}
+        onClick={() => { setTemplateId(t!.id); setAmount(t!.trade_side === "SELL" ? "0.005" : "20"); setError(""); }}>{t!.trade_side === "SELL" ? "卖出" : "买入"}</button>)}</div>
+      <div className="order-pair"><strong>{selling ? "ETH" : "USDC"} <ArrowUpRight size={19} /> {selling ? "USDC" : "ETH"}</strong><span>Base · 本人模拟账户</span></div>
       {!agent ? <div className="order-empty"><p>当前 Agent 需要处于运行状态并具备交易执行权限才能下单。</p>
         <button className="primary" disabled={!task} onClick={() => task && onCreate(task)}>创建交易 Agent</button></div>
         : <form className="form-stack" onSubmit={e => { e.preventDefault(); if (agent && task) perform(() => onPrepare(agent.id, task, { amount, max_slippage_bps: Number(slippage) })); }}>
           <p className="muted">下单 Agent：<strong>{agent.name}</strong></p>
-          <label>买入金额（USDC）<input name="order_amount" type="number" min="0.000001" step="0.000001"
-            max={agent.max_trade_units / 1e6} value={amount} onChange={e => setAmount(e.target.value)} required /></label>
-          <div className="order-presets">{["5", "20", "100"].map(value => <button key={value} type="button" className="secondary compact"
-            disabled={Number(value) > agent.max_trade_units / 1e6 || Number(value) > Number(wallet.USDC)} onClick={() => setAmount(value)}>{value} USDC</button>)}</div>
+          <label>{selling ? "卖出数量（ETH）" : "买入金额（USDC）"}<input name="order_amount" type="number" min={selling ? "0.000000000000000001" : "0.000001"} step={selling ? "any" : "0.000001"}
+            max={selling ? wallet.ETH : agent.max_trade_units / 1e6} value={amount} onChange={e => setAmount(e.target.value)} required /></label>
+          <div className="order-presets">{(selling ? ["0.001", "0.005", "0.01"] : ["5", "20", "100"]).map(value => <button key={value} type="button" className="secondary compact"
+            disabled={selling ? Number(value) > Number(wallet.ETH) : Number(value) > agent.max_trade_units / 1e6 || Number(value) > Number(wallet.USDC)} onClick={() => setAmount(value)}>{value} {selling ? "ETH" : "USDC"}</button>)}</div>
+          {selling && <p className="muted">只能卖出已有持仓。交易额度按 ETH 的 USDC 估值检查，成交前会再次核验。</p>}
+          {selling && Number(wallet.ETH) <= 0 && <p className="inline-error">当前没有可卖出的 ETH，请先通过买入 Agent 获得模拟持仓。</p>}
           <label>最大滑点<select aria-label="最大滑点" value={slippage} onChange={e => setSlippage(e.target.value)}>
             <option value="0">0%</option><option value="50">0.5%</option><option value="100">1%</option>
           </select></label>
           <p className="muted">单笔上限 {number(agent.max_trade_units / 1e6)} USDC · 每日上限 {number(agent.daily_limit_units / 1e6)} USDC。报价与最低接收数量会写入待确认订单。</p>
           {missing.length > 0 && <div className="demo-notice">所需 MCP 尚未启用：{missing.join("、")}。<button type="button" className="text-btn" onClick={onMcp}>前往启用 MCP</button></div>}
-          <button className="primary full" disabled={busy || !task || missing.length > 0}>{busy ? "正在准备订单…" : "生成待确认订单"}</button>
+          <button className="primary full" disabled={busy || !task || missing.length > 0 || (selling && Number(wallet.ETH) <= 0)}>{busy ? "正在准备订单…" : "生成待确认订单"}</button>
           <small className="muted">生成订单不会扣款。核对并通过 Cognito 确认后才会执行；价格超出批准的滑点范围时会阻止成交。</small>
         </form>}
     </section><section className="panel order-account"><Wallet size={24} /><h3>我的模拟账户</h3>
@@ -68,13 +79,13 @@ export function OrderDesk({ agents, skills, orders, wallet, subscriptions, execu
       {!shown.length ? <p className="muted">暂无符合条件的订单。准备订单后可在这里跟踪状态。</p> : <div className="order-list">{shown.map(op => {
         const current = status(op);
         return <article className="order-record" data-testid={"order-" + op.id} key={op.id}>
-          <div className="order-record-title"><div><strong>买入 ETH · {number(op.intent.amount_units / 1e6)} USDC</strong>
+          <div className="order-record-title"><div><strong>{tradeTitle(op.intent)} · {tradeAmount(op.intent)}</strong>
             <small>{agents.find(a => a.id === op.agent_id)?.name || "交易 Agent"} · {new Date(op.created_at * 1000).toLocaleString("zh-CN")}</small></div>
             <span className={"pill " + current.toLowerCase()}>{statuses[current] || current}</span></div>
           <small className="order-id">订单号：{op.id}</small>
-          {op.execution ? <dl className="order-fill"><dt>成交数量</dt><dd>{number(op.execution.received, 8)} ETH</dd>
+          {op.execution ? <dl className="order-fill"><dt>{isSell(op.intent) ? "收到金额" : "成交数量"}</dt><dd>{number(op.execution.received, 8)} {receiveAsset(op.intent)}</dd>
             <dt>成交价格</dt><dd>{number(op.execution.price)} USDC / ETH</dd><dt>模拟回执</dt><dd>{op.execution.receipt}</dd></dl>
-            : op.intent.reference_price && <p className="muted">参考价 {number(op.intent.reference_price)} USDC / ETH · 最少接收 {number(op.intent.minimum_received, 8)} ETH</p>}
+            : op.intent.reference_price && <p className="muted">参考价 {number(op.intent.reference_price)} USDC / ETH · 最少接收 {number(op.intent.minimum_received, 8)} {receiveAsset(op.intent)}</p>}
           <div className="row-actions">
             {current === "PENDING" && <button className="primary compact" disabled={busy} onClick={() => perform(() => onReview(op))}>核对并确认</button>}
             {current === "APPROVED" && <button className="primary compact" disabled={busy} onClick={() => perform(() => onExecute(op))}>执行已批准订单</button>}

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("four modules, task-specific examples, Agent-scoped orders and deletion cleanup", async ({ page }) => {
+test("three modules, task-specific examples, Agent-scoped orders and deletion cleanup", async ({ page }) => {
   const tasks = [
     { id: "token-risk", name: "代币风险扫描", skill_id: "risk-reviewer", mode: "read", tools: ["get_token_risk"], products: ["risk"] },
     { id: "eth-order", name: "ETH 买入下单", skill_id: "controlled-trader", mode: "prepare", tools: ["prepare_trade"], products: ["trade"] },
@@ -31,16 +31,16 @@ test("four modules, task-specific examples, Agent-scoped orders and deletion cle
     await route.fulfill({ json: body });
   });
   await page.goto("/");
-  await expect(page.getByRole("navigation", { name: "主要功能" }).getByRole("button")).toHaveCount(4);
+  await expect(page.getByRole("navigation", { name: "主要功能" }).getByRole("button")).toHaveCount(3);
   await page.getByTestId("agent-research").getByRole("button", { name: "运行 Agent" }).click();
   await expect(page.getByRole("region", { name: "当前 Agent 示例动作" }).getByRole("button", { name: "代币风险扫描" })).toBeVisible();
   await expect(page.getByRole("button", { name: "ETH 买入下单" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "买入下单", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "交易下单", exact: true })).toHaveCount(0);
   await page.getByLabel("选择 Agent").selectOption("trader");
   await page.getByRole("button", { name: "ETH 买入下单" }).click();
   await expect(page.getByRole("region", { name: "买入订单" })).toContainText("交易助手");
   await expect(page.getByTestId("order-other-agent-order")).toHaveCount(0);
-  await page.getByRole("button", { name: "Agent 管理", exact: true }).click();
+  await page.getByRole("tab", { name: "我的 Agents", exact: true }).click();
   await page.getByRole("button", { name: "删除 Agent 交易助手", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "删除 Agent" })).toContainText("撤销持续授权");
   await page.getByRole("button", { name: "确认删除", exact: true }).click();
@@ -49,5 +49,5 @@ test("four modules, task-specific examples, Agent-scoped orders and deletion cle
   expect(deletedCsrf).toBe("module-csrf");
   await page.getByRole("button", { name: "Agent 工作台", exact: true }).click();
   await expect(page.getByLabel("选择 Agent")).toHaveValue("research");
-  await expect(page.getByRole("button", { name: "买入下单", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "交易下单", exact: true })).toHaveCount(0);
 });

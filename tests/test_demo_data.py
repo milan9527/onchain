@@ -20,7 +20,7 @@ def test_explicit_mode_and_catalog_do_not_change_audited_versions():
     demo = task_catalog(Settings())
     live = task_catalog(Settings(onchain_data_mode="live"))
     assert all(t["availability"] == "READY" for t in demo)
-    assert sum(t["availability"] == "REQUIRES_OKX" for t in live) == 10
+    assert sum(t["availability"] == "REQUIRES_OKX" for t in live) == 12
     assert [t["digest"] for t in demo] == [t["digest"] for t in live] == [t["digest"] for t in TASKS]
     assert not any("examples" in t for t in live)
     with pytest.raises(ValidationError):

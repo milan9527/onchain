@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
-  outputDir: process.env.TEST_BASE_URL ? "test-results-cloud" : "test-results",
+  outputDir: process.env.TEST_BASE_URL?.startsWith("https://") ? "test-results-cloud" : "test-results",
   timeout: 240_000,
   expect: { timeout: 25_000 },
   use: {

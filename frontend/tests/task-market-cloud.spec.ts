@@ -17,7 +17,7 @@ test("seller publishes a task, buyer purchases and runs it through MCP, then del
     const title = "示例 · 持仓健康任务";
     let source = beforeSeller.agents.find((a: any) => a.name === "市场任务发布验收 Agent");
     if (!source) {
-      await seller.getByRole("button", { name: "任务模板", exact: true }).click();
+      await seller.getByRole("tab", { name: "任务模板", exact: true }).click();
       await seller.getByTestId("template-portfolio-health").getByRole("button", { name: "使用模板" }).click();
       await seller.getByLabel("Agent 名称", { exact: true }).fill("市场任务发布验收 Agent");
       await seller.getByRole("button", { name: "创建模板 Agent", exact: true }).click();
@@ -61,7 +61,7 @@ test("seller publishes a task, buyer purchases and runs it through MCP, then del
     expect(after.grants).toEqual(beforeBuyer.grants);
     expect(Number(after.wallet.USDC)).toBe(Number(beforeBuyer.wallet.USDC)-1);
     expect(Number((await (await seller.request.get("/api/dashboard")).json()).wallet.USDC)).toBe(Number(beforeSeller.wallet.USDC)+1);
-    await expect(buyer.getByRole("button", { name: "买入下单", exact: true })).toHaveCount(0);
+    await expect(buyer.getByRole("button", { name: "交易下单", exact: true })).toHaveCount(0);
     await buyer.getByRole("region", { name: "当前 Agent 示例动作" }).getByRole("button", { name: "持仓健康检查" }).click();
     await buyer.getByRole("button", { name: "运行任务", exact: true }).click();
     await expect(buyer.getByRole("region", { name: "任务结果" })).toContainText("analyze_portfolio", { timeout: 120_000 });
@@ -75,7 +75,7 @@ test("seller publishes a task, buyer purchases and runs it through MCP, then del
     expect((await seller.request.get("/api/conversations/" + sid)).status()).toBe(404);
     expect((await seller.request.delete("/api/agents/" + purchasedId, { headers: { "X-CSRF-Token": sellerMe.csrf } })).status()).toBe(404);
     await buyer.screenshot({ path: "../.deployment/task-agent-workspace.png", fullPage: true });
-    await buyer.getByRole("button", { name: "Agent 管理", exact: true }).click();
+    await buyer.getByRole("tab", { name: "我的 Agents", exact: true }).click();
     await buyer.screenshot({ path: "../.deployment/agent-management.png", fullPage: true });
     await buyer.getByTestId("agent-" + purchasedId).getByRole("button", { name: "删除 Agent " + title, exact: true }).click();
     await buyer.getByRole("button", { name: "确认删除", exact: true }).click();

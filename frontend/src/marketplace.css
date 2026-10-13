@@ -46,3 +46,4 @@
 .market-listings{grid-template-columns:1fr}
 .market-order .row-actions{justify-content:flex-start}
 }
+.market-type-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.market-discovery-filters{display:flex;gap:14px;align-items:center;margin-bottom:22px}.market-discovery-filters .market-search{flex:1;margin:0}.market-discovery-filters>select{width:auto;max-width:180px}.listing-fit{font-size:12px!important;line-height:1.7;color:#667c8c}.listing-capabilities{font-size:12px;color:#667c8c;margin-bottom:18px}.listing-capabilities summary{cursor:pointer}.publish-preview{padding:15px 18px;border:1px solid #dfece8;border-radius:12px;background:#f6faf8}.publish-preview p{font-size:13px;line-height:1.6;margin:8px 0}.publish-preview small{color:#6d8290}@media(max-width:650px){.market-discovery-filters{flex-wrap:wrap}.market-discovery-filters .market-search{min-width:100%}}

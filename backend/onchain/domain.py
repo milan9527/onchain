@@ -1,7 +1,7 @@
 import copy
 import time
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_CEILING, ROUND_DOWN
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -14,7 +14,7 @@ from .history import History, RETENTION
 class TradeIntent(BaseModel):
     model_config = ConfigDict(extra="forbid")
     amount: str
-    buy_asset: Literal["ETH"] = "ETH"
+    buy_asset: Literal["ETH", "USDC"] = "ETH"
     chain: Literal["8453"] = "8453"
     max_slippage_bps: int = Field(default=50, ge=0, le=100)
 
@@ -46,6 +46,20 @@ def amount_units(amount: str) -> int:
 
 def display_units(units: int) -> str:
     return format(Decimal(units) / 1_000_000, "f")
+
+
+def eth_amount(amount: str) -> Decimal:
+    try:
+        if len(str(amount)) > 32:
+            raise ValueError
+        value = Decimal(str(amount))
+        if not value.is_finite() or value <= 0 or value > 100_000:
+            raise ValueError
+        if value != value.quantize(Decimal("0.000000000000000001")):
+            raise ValueError
+        return value
+    except (InvalidOperation, ValueError) as e:
+        raise Denied("INVALID_AMOUNT", "ETH amount must be positive with at most 18 decimals.", 422) from e
 
 
 def quote_price(quote):
@@ -346,30 +360,51 @@ class Control(History):
                 self.check_executable(p, operation, agent)
         return p
 
-    def validate_intent(self, agent, intent):
-        units = amount_units(intent.amount)
+    def validate_intent(self, agent, intent, price=None):
+        side = "SELL" if intent.buy_asset == "USDC" else "BUY"
+        skill = skill_by_id(agent["skill_id"])
+        if side not in skill.get("trade_sides", ["BUY"]):
+            raise Denied("TRADE_SIDE_DENIED", "This Agent does not allow this trading direction.")
+        if side == "SELL":
+            quantity = eth_amount(intent.amount)
+            if price is None:
+                return None  # Executor checks USDC limits using its own trusted quote.
+            units = int((quantity * price * 1_000_000).to_integral_value(rounding=ROUND_CEILING))
+        else:
+            units = amount_units(intent.amount)
         if units > agent["max_trade_units"]:
             raise Denied("TRADE_LIMIT", "Amount exceeds this agent's single-trade limit.")
         return units
 
     def prepare_trade(self, p, agent_id, intent, source_id, grant_id=None, conversation_id=None, quote=None):
         agent = self.agent(p, agent_id)
-        units = self.validate_intent(agent, intent)
+        selling = intent.buy_asset == "USDC"
+        if selling and grant_id:
+            raise Denied("GRANT_INVALID", "Buy-only automation cannot authorize ETH sales.")
+        price = quote_price(quote) if quote is not None or selling else None
+        units = self.validate_intent(agent, intent, price)
         # User-owned aggregate is the source of truth; neither receiver nor wallet is model-selectable.
         canonical = {
-            "action": "swap", "chain": intent.chain, "sell_asset": "USDC",
+            "action": "swap", "chain": intent.chain, "sell_asset": "ETH" if selling else "USDC",
             "buy_asset": intent.buy_asset, "amount_units": units,
             "max_slippage_bps": intent.max_slippage_bps, "wallet": f"paper:{p.owner}",
             "receiver": f"paper:{p.owner}", "mode": "paper",
         }
+        if selling:
+            canonical["sell_amount"] = format(eth_amount(intent.amount), "f")
         # The same invocation retains its original order even if its quote changes on retry.
-        op_id = "op_" + digest([p.owner, agent_id, source_id, canonical])[:32]
+        stable = {k: v for k, v in canonical.items() if not (selling and k == "amount_units")}
+        op_id = "op_" + digest([p.owner, agent_id, source_id, stable])[:32]
         if quote is not None:
-            price = quote_price(quote)
+            expected = eth_amount(intent.amount) * price if selling else Decimal(units) / Decimal(1_000_000) / price
+            minimum = expected * (1 - Decimal(intent.max_slippage_bps) / Decimal(10_000))
+            if selling:
+                minimum = minimum.quantize(Decimal("0.000001"), rounding=ROUND_DOWN)
+                if minimum <= 0:
+                    raise Denied("INVALID_AMOUNT", "Sell proceeds must be at least one micro-USDC.", 422)
             canonical.update(
                 reference_price=str(price),
-                minimum_received=str(Decimal(units) / Decimal(1_000_000) / price
-                                     * (1 - Decimal(intent.max_slippage_bps) / Decimal(10_000))),
+                minimum_received=str(minimum),
             )
         op = {
             "id": op_id, "owner": p.owner, "agent_id": agent_id, "agent_epoch": agent["epoch"],
@@ -387,14 +422,17 @@ class Control(History):
             # Quote-bound manual orders fail before asking for approval; execution rechecks atomically.
             if quote is not None:
                 day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-                if state["wallet"]["USDC"] < units:
+                if selling and Decimal(state["wallet"]["ETH"]) < eth_amount(intent.amount):
+                    raise Denied("INSUFFICIENT_BALANCE", "Insufficient paper ETH; short selling is not allowed.")
+                if not selling and state["wallet"]["USDC"] < units:
                     raise Denied("INSUFFICIENT_BALANCE", "Insufficient paper USDC.")
                 if state["daily_spend"].get(agent_id+":"+day, 0) + units > agent["daily_limit_units"]:
                     raise Denied("DAILY_LIMIT", "Daily trading budget would be exceeded.")
             if len(state["operations"]) >= 200:
                 raise Denied("HISTORY_LIMIT", "Export and archive terminal operations before adding more.", 409)
             state["operations"][op_id] = op
-            event(state, "INTENT_PREPARED", f"Swap {display_units(units)} USDC for ETH",
+            detail = f"Swap {canonical['sell_amount']} ETH for USDC" if selling else f"Swap {display_units(units)} USDC for ETH"
+            event(state, "INTENT_PREPARED", detail,
                   agent_id=agent_id, operation_id=op_id)
             return op
         return self.mutate(p, apply)
@@ -467,6 +505,7 @@ class Control(History):
                 or op["intent"]["buy_asset"] != grant["buy_asset"]
                 or op["intent"]["chain"] != grant["chain"]
                 or op["intent"]["max_slippage_bps"] > grant["max_slippage_bps"]
+                or op["intent"]["sell_asset"] != "USDC"
             ):
                 raise Denied("GRANT_INVALID", "Automatic trading grant is inactive or exhausted.")
         elif op["status"] != "APPROVED":
@@ -485,25 +524,40 @@ class Control(History):
             if op["status"] == "CONFIRMED":
                 return op
             units = op["intent"]["amount_units"]
+            selling = op["intent"]["sell_asset"] == "ETH"
+            received = (eth_amount(op["intent"]["sell_amount"]) * price).quantize(
+                Decimal("0.000001"), rounding=ROUND_DOWN,
+            ) if selling else Decimal(units) / Decimal(1_000_000) / price
+            if selling:
+                units = max(units, int((eth_amount(op["intent"]["sell_amount"]) * price * 1_000_000)
+                                      .to_integral_value(rounding=ROUND_CEILING)))
+            if units > agent["max_trade_units"]:
+                raise Denied("TRADE_LIMIT", "Current trade value exceeds this agent's single-trade limit.")
             day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
             spend_key = agent["id"]+":"+day
             spent = state["daily_spend"].get(spend_key, 0)
             if spent + units > agent["daily_limit_units"]:
                 raise Denied("DAILY_LIMIT", "Daily trading budget would be exceeded.")
-            if state["wallet"]["USDC"] < units:
+            if selling and Decimal(state["wallet"]["ETH"]) < eth_amount(op["intent"]["sell_amount"]):
+                raise Denied("INSUFFICIENT_BALANCE", "Insufficient paper ETH; short selling is not allowed.")
+            if not selling and state["wallet"]["USDC"] < units:
                 raise Denied("INSUFFICIENT_BALANCE", "Insufficient paper USDC.")
-            received = Decimal(units) / Decimal(1_000_000) / price
             if op["intent"].get("minimum_received") is not None and received < Decimal(op["intent"]["minimum_received"]):
                 raise Denied("SLIPPAGE_EXCEEDED", "Price moved beyond the approved limit; cancel and prepare a new order.", 409)
-            state["wallet"]["USDC"] -= units
-            state["wallet"]["ETH"] = str(Decimal(state["wallet"]["ETH"]) + received)
+            if selling:
+                state["wallet"]["ETH"] = str(Decimal(state["wallet"]["ETH"]) - eth_amount(op["intent"]["sell_amount"]))
+                state["wallet"]["USDC"] += int(received * 1_000_000)
+            else:
+                state["wallet"]["USDC"] -= units
+                state["wallet"]["ETH"] = str(Decimal(state["wallet"]["ETH"]) + received)
             state["daily_spend"] = {k: v for k, v in state["daily_spend"].items() if k.endswith(day)}
             state["daily_spend"][spend_key] = spent + units
             if op.get("grant_id"):
                 state["grants"][op["grant_id"]]["used_units"] += units
             op.update(
                 status="CONFIRMED", executed_at=now(),
-                execution={"mode": "paper", "received": str(received), "price": quote["price"],
+                execution={"mode": "paper", "received": str(received), "received_asset": op["intent"]["buy_asset"],
+                           "price": quote["price"],
                            "source": quote["source"], "receipt": "paper_"+op_id, "tx_hash": None},
             )
             event(state, "PAPER_TRADE_EXECUTED", "Simulated fill; no onchain transaction submitted.",
@@ -512,6 +566,8 @@ class Control(History):
         return self.mutate(p, apply)
 
     def prepare_grant(self, p, agent_id, intent, total, interval, hours):
+        if intent.buy_asset != "ETH":
+            raise Denied("INVALID_GRANT", "Standing grants currently support USDC to ETH purchases only.", 422)
         agent = self.agent(p, agent_id)
         units = self.validate_intent(agent, intent)
         total_units = amount_units(total)

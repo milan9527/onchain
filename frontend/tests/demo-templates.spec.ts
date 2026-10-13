@@ -38,7 +38,7 @@ test("demo examples populate after an asynchronous Agent refresh and stay consis
     await route.fulfill({ json: body });
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "任务模板", exact: true }).click();
+  await page.getByRole("tab", { name: "任务模板", exact: true }).click();
   await page.getByTestId("template-token-research").getByRole("button", { name: "使用模板" }).click();
   await page.getByRole("button", { name: "创建模板 Agent", exact: true }).click();
   await expect(page.getByText("当前 Skill 没有适用的任务模板，请从「任务模板」创建专用 Agent。")).toBeVisible();

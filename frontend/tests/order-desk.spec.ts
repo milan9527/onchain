@@ -35,9 +35,9 @@ test("order desk uses an execution-capable Agent, prepares an immutable task and
   });
   await page.goto("/");
   await page.getByRole("button", { name: "Agent 工作台", exact: true }).click();
-  await expect(page.getByRole("button", { name: "买入下单", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "交易下单", exact: true })).toHaveCount(0);
   await page.getByLabel("选择 Agent").selectOption("trader");
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   await expect(page.getByRole("region", { name: "买入订单" })).toContainText("交易助手");
   await expect(page.getByRole("combobox", { name: "下单 Agent" })).toHaveCount(0);
   await expect(page.getByLabel("买入金额（USDC）")).toHaveValue("20");
@@ -47,7 +47,7 @@ test("order desk uses an execution-capable Agent, prepares an immutable task and
   await expect(page.getByTestId("operation-order-fixture")).toContainText("3,000");
   expect(submitted).toEqual({ template_id: task.id, template_digest: task.digest, parameters: { amount: "20", max_slippage_bps: 50 } });
   expect(executions).toBe(0);
-  await page.getByRole("button", { name: "买入下单", exact: true }).click();
+  await page.getByRole("button", { name: "交易下单", exact: true }).click();
   await page.getByRole("button", { name: "刷新", exact: true }).click();
   await page.getByTestId("order-order-fixture").getByRole("button", { name: "撤单", exact: true }).click();
   await expect(page.getByTestId("order-order-fixture")).toContainText("已撤单");
