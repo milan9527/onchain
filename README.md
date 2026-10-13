@@ -55,11 +55,159 @@ MCP 市场是可用的、平台维护的工具目录；不执行用户上传的 
 连接默认只读，交易准备和执行需要分别开启；允许执行也不能替代具体交易的用户确认。
 
 外部客户端无需 IAM 凭据。Gateway 原生验证 Cognito 令牌，拦截器校验连接、scope、Skill、
-订阅和审批。Gateway 到私有 MCP Runtime 的服务调用仍使用 IAM；用户身份由已验证的
+订阅和审批。Gateway 到受 IAM 保护的 MCP Runtime 的服务调用仍使用 IAM；用户身份由已验证的
 工具执行上下文传递。内部 Worker/定投调度使用独立的受限执行凭据。
 
 仓库提供可运行的 PKCE 客户端：`scripts/mcp_oauth_client.py`。客户端需使用固定回调
 `http://localhost:8765/callback`；暂不提供动态客户端注册。详见 [OAuth MCP 接入](docs/oauth-mcp.md)。
+
+## Runtime → Gateway → MCP 的认证与用户隔离
+
+以下描述当前实现。用户使用 Cognito 登录，后端为该用户的会话签发受限执行凭据；
+Agent Runtime、Gateway 和 MCP Runtime 分别验证自己的入站请求，Executor 在访问数据或成交前再次校验。
+**IAM 验证服务调用身份；签名执行上下文和服务端记录验证用户、会话与操作权限。**
+用户登录、工具调用权限、具体交易批准是三个独立条件；模型识别出的意图不能授予权限。
+
+### 调用路径与凭据
+
+```mermaid
+flowchart TD
+    User["用户 / 浏览器"] -->|Cognito 授权码 + PKCE| BFF["BFF：登录、会话归属、CSRF"]
+    BFF -->|签发执行凭据并入队| Worker["SQS / Worker：验证当前授权"]
+    Worker -->|聊天 / 模板：runtime_token| Agent["Agent Runtime：验签及会话绑定"]
+    Agent -->|gateway_token| Gateway["内部 Gateway：JWT + REQUEST 拦截器 + Policy ENFORCE"]
+    Worker -->|已批准订单：gateway_token + operation_id| Gateway
+    External["外部 MCP 客户端"] -->|Cognito access token| OAuth["对外 OAuth Gateway：连接、scope 与相同工具校验"]
+    Gateway -->|IAM SigV4 + security_context| MCP["MCP Runtime：验签、会话、工具及参数摘要"]
+    OAuth -->|IAM SigV4 + security_context| MCP
+    MCP -->|Runtime IAM Role + 原始签名上下文| Executor["Executor Lambda：再次验签与授权"]
+    Executor -->|按 owner 访问 / 原子成交| DB["DynamoDB：用户、会话、订单与授权"]
+```
+
+图中 REQUEST 拦截器与 Policy 是两项必须满足的检查，不假定它们在 AWS 内部的先后顺序。
+返回结果经过 Gateway RESPONSE 拦截器过滤和脱敏后进入原用户的运行时间线。
+
+| 凭据 | 签发方与传输位置 | 接收方 / 有效期 |
+|---|---|---|
+| Cognito access token | Cognito；网页由 BFF 保管，外部 MCP 客户端使用自己的 token 调用对外 Gateway | 验证 Cognito issuer、client、资源 audience、scope；当前 access token 为 15 分钟 |
+| `runtime_token` | BFF 入队时签发；Worker → Agent Runtime 的 `Authorization: Bearer` | `aud=onchain-runtime`，300 秒 |
+| `gateway_token` | BFF 入队时签发；Agent Runtime 或 Worker → 内部 Gateway 的 `Authorization: Bearer` | `aud=onchain-gateway`，300 秒 |
+| `security_context` | REQUEST 拦截器在工具授权通过后签发，注入下游工具参数 | MCP Runtime 和 Executor；`aud=onchain-tools`，120 秒 |
+| Gateway IAM 临时凭证 | AWS 为 Gateway 服务角色管理，使用 SigV4 签名调用 MCP Runtime | AWS 服务调用认证；不表示某个终端用户，也不构成交易批准 |
+
+三个内部 JWT 使用不同 audience，不能相互替代。定投调度器也签发受限执行凭据，其权限来自已批准的持续授权，
+不能将网页登录的短期凭据当作永久授权。浏览器不接收这些内部 JWT，模型的提示词和工具描述也不包含它们。
+
+### `security_context` 的实现
+
+`security_context` 是本项目自定义的签名 JWT 字段，**不是 AgentCore 自动提供的用户隔离功能**。
+生产环境通过 AWS KMS 的 RSA 密钥执行 RS256 签名，私钥不离开 KMS；Agent/MCP Runtime 只有获取公钥的权限，
+没有 `kms:Sign` 权限。JWT 内容可解码，签名保护完整性而非加密内容，不应在其中放入密码或 API Key。
+
+其主要字段如下；值全部来自已验证的身份、服务端记录或已通过校验的本次调用：
+
+| 字段 | 绑定内容 |
+|---|---|
+| `sub`、`tenant`、`owner` | Cognito 用户与平台数据归属；个人租户为 `personal-{sub}`，`owner = SHA256(tenant + ":" + sub)` |
+| `agent_id`、`sid`、`runtime_sid`、`run_id` | 当前 Agent、应用会话、Runtime 会话与本次运行 |
+| `agent_epoch`、`session_epoch`、`skill_digest` | 授权版本与已审核 Skill；状态或版本变化后旧凭据不能继续授权工具调用 |
+| `tool`、`arguments_hash` | 确切工具名与参数摘要；摘要使用键排序的紧凑 JSON 做 SHA256，执行订单 ID 也在摘要范围内 |
+| `iss`、`aud`、`iat`、`nbf`、`exp`、`jti` | 签发方、接收方、生效与过期时间、随机凭证标识 |
+
+交互调用还携带 Cognito scope 和过期时间等约束。用户数据分区的哈希只是稳定标识；
+防止冒充依赖 Cognito 验证、KMS 签名和每次调用的服务端归属检查。
+Agent 提交的额外 `userId`、接收地址或 `security_context` 参数会被公开工具 schema 拒绝；
+只有 REQUEST 拦截器在授权通过后注入签名上下文。
+
+### 每一层如何验证
+
+1. **登录与入队。** BFF 验证 Cognito OAuth 回调并建立服务端登录，浏览器持有 HttpOnly Cookie。
+   修改请求校验 CSRF；会话必须属于当前用户和当前登录。BFF 从数据库取得 Agent、会话和 Runtime ID，
+   生成 `run_id`、签发两种执行 JWT 并入队。Worker 验签并重新检查当前会话和 Agent 授权。
+2. **Agent Runtime 入站。** AgentCore JWT authorizer 和应用代码验证 Runtime 凭据。
+   应用比较实际 `X-Amzn-Bedrock-AgentCore-Runtime-Session-Id`、请求体 Runtime ID、`run_id` 与签名 claims；
+   进程内 `SessionBinding` 锁定 `(owner, sid, runtime_sid)`。模板还校验任务参数摘要与模板版本。
+   Bedrock 仅生成受 schema 约束的意图；每次 Gateway 调用创建新的 MCP 客户端会话，不跨用户共享客户端。
+3. **Gateway 入站与 REQUEST 拦截器。** 内部 Gateway 验证平台 JWT；对外 Gateway 验证 Cognito JWT。
+   拦截器再验证身份和当前授权，检查用户/Agent/会话归属、状态、epoch、Skill、OAuth scope、
+   MCP 订阅、工具白名单、参数 schema、速率和操作权限。内部 MCP session 绑定 `(owner, sid, run_id)`，
+   不能在其他用户、会话或运行之间复用。通过后签发 `security_context`。
+4. **Policy 与 IAM 服务调用。** Cedar Policy 在 `ENFORCE` 模式限制平台工具；动态用户权限由拦截器和 Executor 检查。
+   Gateway 以 `GATEWAY_IAM_ROLE`、`service=bedrock-agentcore` 调用 MCP Runtime。
+   Runtime 与 DEFAULT endpoint 的资源策略允许 Gateway Role，显式拒绝其他 principal 的调用。
+5. **MCP Runtime。** 验证 `security_context` 的 RS256 签名、issuer、audience、时间；
+   再做进程内会话绑定，并比较实际工具名、参数摘要。检查通过才以自身 IAM Role 调用指定 Executor Lambda。
+   MCP Runtime 没有数据库读写权限，也不能签发凭据。
+6. **Executor 与成交。** Executor 独立验签、比较工具及参数摘要，再调用 `authorize_tool` 读取当前授权状态。
+   查询钱包和订单只使用验证得到的 `owner`；订单还必须属于当前 Agent。
+   执行交易时检查订单意图摘要、批准或持续授权、有效期、余额/持仓、报价、滑点和额度，
+   原子更新用户状态并保存成交回执。依赖或校验失败会拒绝调用，不自动放行。
+7. **返回与审计。** RESPONSE 拦截器按 Skill、订阅和外部 OAuth scope 过滤工具列表，
+   隐藏工具 schema 中的 `security_context`，对 token、密钥等字段脱敏。
+   Gateway/Executor 允许、拒绝及结果事件进入有用户归属检查的会话时间线。
+
+以“用 20 USDC 买入 ETH”为例，聊天阶段最多生成 `PENDING` 订单。用户核对后经 Cognito 重新认证，
+回调必须匹配原登录用户、订单和 `intent_hash`；BFF 消费 120 秒内的一次性证明后将订单批准。
+随后 Worker **直接经 Gateway 调用 `execute_trade(operation_id)`**，不再让模型决定成交参数，
+但仍经过 Gateway、MCP 和 Executor 的全部执行校验。`trade.execute` scope 或成功验签均不能代替订单批准。
+
+### 用户隔离与实际边界
+
+| 隔离对象 | 当前实现 |
+|---|---|
+| 用户与数据 | 由已验证的 Cognito `sub` 派生 `owner`，用户聚合保存于 `USER#{owner}`；订单 ID 只能在当前用户数据中查询 |
+| 会话与历史 | 每个会话记录 owner、Agent、独立随机 Runtime ID、状态和版本；读取历史及运行结果也检查 owner |
+| Runtime 执行环境 | 平台按会话指定 Runtime session；Agent/MCP 进程绑定首个用户与会话身份，身份变化立即拒绝 |
+| 外部 MCP 连接 | 绑定 owner、OAuth client、token family、已批准连接及 MCP session；其他登录或被撤销的连接不能复用 |
+| 买卖方 Agent | 购买创建买方拥有的独立 Agent；卖方无权读取买方会话或控制买方执行 |
+| 失效与撤销 | 每次授权重读状态；退出使绑定该登录的会话失效，暂停/删除改变 Agent epoch，撤销 grant 阻止后续自动执行 |
+
+典型拒绝场景：A 读取 B 的订单返回不可用；向工具参数注入 B 的身份触发 `INVALID_TOOL_ARGUMENTS`；
+更换已签名的工具参数触发 `ARGUMENTS_CHANGED`；跨会话复用内部 MCP session 触发 `GATEWAY_SESSION_MISMATCH`；
+Agent 状态/版本改变后旧授权不能继续使用。同一 Agent 在 60 秒内出现三次指定严重违规
+（`OWNER_MISMATCH`、`INTENT_CHANGED`、`SKILL_CHANGED`、`INVALID_TOOL_ARGUMENTS`）会自动暂停并增加 epoch。
+
+当前多个用户共享 Runtime 部署、服务 IAM Role 和 DynamoDB 表，**没有每用户独立 IAM Role、数据库或数据库层租户 ABAC**。
+用户数据隔离依赖上述签名、会话及可信 Executor 的归属检查。两个 Runtime 当前配置 `networkMode=PUBLIC`；
+MCP 是受 IAM 限制的后端端点，不是 VPC 私网端点，网络认证不替代用户授权。
+
+`security_context` 是短期持有者凭证；`jti` 当前不做一次性消费，交易防重放依靠订单的原子状态转换与幂等回执。
+停止旧会话不会自动撤销用户另行批准的定投 grant，应显式暂停 Agent 或撤销 grant。
+输出脱敏不能撤回已发生的交易，因此成交前校验始终在 Executor 执行。
+
+### IAM 与 OAuth 的选择
+
+当前同平台的 Gateway → MCP Runtime 使用 IAM，AWS 管理服务临时凭证，用户绑定由签名上下文承担。
+对外客户端入口已经使用 Cognito OAuth。下游也可以改为用户委托 OAuth，但目前**没有配置 outbound OAuth provider**：
+`client_credentials` 仍代表服务身份；用户授权码方案需要下游授权、回调、连接绑定与令牌刷新，
+并保留会话归属及交易批准检查。OAuth 令牌不能自动替代全部 `security_context` 业务约束。
+
+AWS MCP target 支持 OAuth 授权码和 token exchange；后者还要求授权服务器支持对应 grant，
+当前 Cognito token endpoint 不原生提供标准 token exchange。`JWT_PASSTHROUGH` 适用于 HTTP target，
+不能直接用于本项目的 MCP server target。参考 [AWS MCP target 授权](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html)、
+[target 凭据配置](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-building-adding-targets-authorization.html)、
+[Cognito grant 类型](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html)。
+
+### 实现与验证入口
+
+代码入口：[OAuth 身份](backend/onchain/oauth.py)、[入队签发](backend/onchain/api.py)、
+[Worker](backend/onchain/worker.py)、[JWT 签发与验签](backend/onchain/security.py)、
+[Agent Runtime](runtimes/agent.py)、[Gateway 拦截器](backend/onchain/interceptors.py)、
+[MCP Runtime](runtimes/mcp_server.py)、[Runtime 身份绑定](runtimes/isolation.py)、
+[Executor](backend/onchain/services.py)、[授权与订单归属](backend/onchain/domain.py)、
+[IAM 权限](infra/template.py)、[Runtime 资源策略与 Gateway 配置](scripts/deploy.py)。
+
+现有 [安全测试](tests/test_security.py) 和 [OAuth 测试](tests/test_oauth.py) 覆盖跨用户访问、
+会话复用、参数替换、错误 audience、暂停/退出撤销、scope、批准绑定、并发额度和重复成交；
+可在本地无 AWS 调用地运行：
+
+```bash
+.venv/bin/pytest -q tests/test_security.py tests/test_oauth.py
+```
+
+真实 AWS 登录与工具链路由 [OAuth 云端验收](frontend/tests/oauth-cloud.spec.ts) 覆盖，
+买卖方隔离与订单确认由 [买卖 Agent 云端验收](frontend/tests/trade-market-cloud.spec.ts) 覆盖。
+本地规则测试不能替代部署后的 IAM、Gateway 和 Runtime 验收；当前成交仍为 paper 模拟执行。
 
 ## Agent 市场与自动交易
 

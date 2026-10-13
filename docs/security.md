@@ -2,6 +2,10 @@
 
 No Amazon Bedrock Guardrails are configured. Authorization is deterministic and checked outside model code.
 
+For the current Runtime → Gateway → MCP credential flow, signature checks, user/session bindings,
+IAM/OAuth choices and code references, see
+[the implementation walkthrough in the README](../README.md#runtime--gateway--mcp-的认证与用户隔离).
+
 | Threat | Enforcement |
 |---|---|
 | Cross-user conversation / order access | Authenticated owner lookup on every API and executor request |

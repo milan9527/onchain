@@ -67,4 +67,7 @@ platform exposes only owner-scoped conversation history and sanitized Gateway/ex
 The internal Gateway used by trusted workers has a different issuer and audience. It carries delegated
 execution context and supports separately approved offline schedules. Neither a Cognito token sent to
 that Gateway nor a platform capability sent to the public OAuth Gateway is accepted. Both Gateways
-use IAM only to reach the private MCP Runtime, which independently verifies exact signed tool context.
+use IAM only to reach the IAM-protected MCP Runtime, which independently verifies exact signed tool context.
+The Runtime uses `networkMode=PUBLIC`; it is not a VPC-private endpoint. For the full token flow,
+per-hop validation, user/session isolation and implementation links, see
+[Runtime → Gateway → MCP authentication](../README.md#runtime--gateway--mcp-的认证与用户隔离).
