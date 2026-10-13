@@ -1,4 +1,4 @@
-"""Reviewed Onchain OS read capabilities. These never sign, broadcast or pay provider fees."""
+"""Reviewed onchain data read capabilities. These never sign, broadcast or pay provider fees."""
 CHAINS = {"8453": "Base", "1": "Ethereum", "42161": "Arbitrum", "56": "BNB Chain",
           "137": "Polygon", "196": "X Layer", "501": "Solana"}
 CHAIN = {"type": "string", "enum": list(CHAINS), "title": "网络", "default": "8453"}
@@ -39,13 +39,13 @@ EXTRA_SCHEMAS = {
 }
 
 EXTRA_PRODUCTS = [
-    {"id": "token-data", "name": "Onchain OS · 代币与行情", "description": "搜索代币、合约资料、实时价格、K 线和持有人分析。",
+    {"id": "token-data", "name": "链上数据 · 代币与行情", "description": "搜索代币、合约资料、实时价格、K 线和持有人分析。",
      "tools": ["search_tokens", "get_token_info", "get_token_price", "get_candles", "get_token_holders"]},
-    {"id": "token-security", "name": "Onchain OS · 风险扫描", "description": "读取代币风险报告；未知结果不会被当作安全。",
+    {"id": "token-security", "name": "链上数据 · 风险扫描", "description": "读取代币风险报告；未知结果不会被当作安全。",
      "tools": ["scan_token_risk"]},
-    {"id": "smart-money", "name": "Onchain OS · 聪明钱信号", "description": "查看链上交易信号，仅用于研究，不自动跟单。",
+    {"id": "smart-money", "name": "链上数据 · 聪明钱信号", "description": "查看链上交易信号，仅用于研究，不自动跟单。",
      "tools": ["get_smart_money_signals"]},
-    {"id": "route-data", "name": "Onchain OS · 路由与 Gas", "description": "兑换路由报价、Gas 价格和支持网络；不签名或广播。",
+    {"id": "route-data", "name": "链上数据 · 路由与 Gas", "description": "兑换路由报价、Gas 价格和支持网络；不签名或广播。",
      "tools": ["get_swap_quote", "get_gas_price", "get_supported_chains"]},
     {"id": "account-insights", "name": "账户分析与交易预检", "description": "分析本人模拟资产、成交与额度，预检指定金额，不创建交易。",
      "tools": ["analyze_portfolio", "preview_trade"]},
@@ -53,9 +53,9 @@ EXTRA_PRODUCTS = [
 for product in EXTRA_PRODUCTS:
     product.update(category="research", risk="private-read" if product["id"] == "account-insights" else "read",
                    version="1.0.0", publisher="Onchain Control", status="PUBLISHED",
-                   provider="platform" if product["id"] == "account-insights" else "okx")
+                   provider="platform" if product["id"] == "account-insights" else "chain-data")
 
-LIVE_TOOLS = {tool for product in EXTRA_PRODUCTS if product["provider"] == "okx" for tool in product["tools"]}
+LIVE_TOOLS = {tool for product in EXTRA_PRODUCTS if product["provider"] == "chain-data" for tool in product["tools"]}
 EXTRA_SKILLS = [
     {"id": "token-researcher", "name": "代币尽调", "description": "检查代币资料、价格、持有人与风险，保留数据来源和未知项。",
      "tools": ["search_tokens", "get_token_info", "get_token_price", "get_token_holders", "scan_token_risk"]},

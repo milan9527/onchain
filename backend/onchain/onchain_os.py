@@ -23,7 +23,7 @@ def credentials(arn, region, rotation_window):
     value = boto3.client("secretsmanager", region_name=region).get_secret_value(SecretId=arn)
     secret = json.loads(value["SecretString"])
     if not all(isinstance(secret.get(k), str) and secret[k] for k in ("api_key", "secret_key", "passphrase")):
-        raise Denied("OKX_CONFIGURATION", "OKX credentials are not configured correctly.", 503)
+        raise Denied("PROVIDER_CONFIGURATION", "Data provider credentials are not configured correctly.", 503)
     return secret
 
 
@@ -65,7 +65,7 @@ def request_spec(tool, args):
         return "GET", "/api/v6/dex/pre-transaction/gas-price", {"chainIndex": chain}
     if tool == "get_supported_chains":
         return "GET", "/api/v6/dex/pre-transaction/supported/chain", {}
-    raise Denied("TOOL_DENIED", "No reviewed Onchain OS endpoint for this tool.")
+    raise Denied("TOOL_DENIED", "No reviewed data provider endpoint for this tool.")
 
 
 def bounded_data(value):
@@ -81,10 +81,10 @@ def invoke(config, tool, args):
     if config.onchain_data_mode == "demo":
         from .demo_data import invoke as demo_invoke
         return demo_invoke(tool, args)
-    if not config.okx_secret_arn:
-        raise Denied("OKX_NOT_CONFIGURED", "尚未配置 OKX 数据凭据，无法查询实时链上数据。", 503)
+    if not config.data_provider_secret_arn:
+        raise Denied("PROVIDER_NOT_CONFIGURED", "尚未配置实时数据凭据，无法查询实时链上数据。", 503)
     try:
-        secret = credentials(config.okx_secret_arn, config.region, int(time.time()) // 300)
+        secret = credentials(config.data_provider_secret_arn, config.region, int(time.time()) // 300)
         body = "" if method == "GET" else json.dumps(parameters, separators=(",", ":"), ensure_ascii=False)
         relative = path + ("?" + urlencode(parameters) if method == "GET" and parameters else "")
         timestamp = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
@@ -104,7 +104,7 @@ def invoke(config, tool, args):
                 if response.status_code == 402:
                     raise Denied("PROVIDER_PAYMENT_REQUIRED", "数据源要求付费；平台未授权自动支付。", 503)
                 if response.status_code == 429:
-                    raise Denied("PROVIDER_RATE_LIMIT", "OKX 数据源限流，请稍后重试。", 503)
+                    raise Denied("PROVIDER_RATE_LIMIT", "实时数据源限流，请稍后重试。", 503)
                 response.raise_for_status()
                 chunks, size = [], 0
                 for chunk in response.iter_bytes():
@@ -114,14 +114,14 @@ def invoke(config, tool, args):
                     chunks.append(chunk)
                 payload = json.loads(b"".join(chunks))
         if not isinstance(payload, dict) or str(payload.get("code")) != "0" or not isinstance(payload.get("data"), (list, dict)):
-            raise Denied("PROVIDER_UNAVAILABLE", "OKX 未返回有效数据，无法形成结论。", 503)
+            raise Denied("PROVIDER_UNAVAILABLE", "数据源未返回有效数据，无法形成结论。", 503)
         from .interceptors import redact
         data, truncated = bounded_data(redact(payload["data"]))
-        return {"provider": "OKX Onchain OS", "source": path, "observed_at": int(time.time()),
+        return {"provider": "链上数据服务", "source": path, "observed_at": int(time.time()),
                 "data_mode": "live", "simulated": False, "read_only": True, "data": data, "truncated": truncated,
                 "notice": "数据仅供研究；风险扫描不构成安全保证。"}
     except Denied:
         raise
     except Exception as e:
         # Never return provider bodies, credential values or signed URLs in exceptions.
-        raise Denied("PROVIDER_UNAVAILABLE", "OKX 数据服务暂不可用；请检查凭据、接口权限和服务状态。", 503) from e
+        raise Denied("PROVIDER_UNAVAILABLE", "实时数据服务暂不可用；请检查凭据、接口权限和服务状态。", 503) from e

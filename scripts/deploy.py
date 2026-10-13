@@ -22,9 +22,10 @@ def main():
     parser.add_argument("--stack", default="OnchainControl")
     parser.add_argument("--frontend-only", action="store_true")
     parser.add_argument("--skip-stack", action="store_true")
-    parser.add_argument("--okx-secret-arn", help="Existing Secrets Manager secret for the read-only OKX adapter")
+    parser.add_argument("--data-provider-secret-arn", help="Existing Secrets Manager secret for the read-only data adapter")
+    parser.add_argument("--okx-secret-arn", dest="data_provider_secret_arn", help=argparse.SUPPRESS)
     parser.add_argument("--onchain-data-mode", choices=["demo", "live"],
-                        help="Explicit research data source; demo requires no OKX key, live never falls back")
+                        help="Explicit research data source; demo requires no API key, live never falls back")
     args = parser.parse_args()
     session = boto3.Session(region_name=args.region)
     account = session.client("sts").get_caller_identity()["Account"]
@@ -100,20 +101,23 @@ def main():
             "COGNITO_EXTERNAL_CLIENT_ID": outputs["ExternalMcpClientId"],
             "OAUTH_VAULT_KEY_ID": outputs["OAuthVaultKeyId"],
         }
-        okx_arn = args.okx_secret_arn if args.okx_secret_arn is not None else state.get("environment", {}).get("OKX_SECRET_ARN")
+        previous_env = state.get("environment", {})
+        provider_arn = args.data_provider_secret_arn if args.data_provider_secret_arn is not None else (
+            previous_env.get("DATA_PROVIDER_SECRET_ARN") or previous_env.get("OKX_SECRET_ARN")
+        )
         env["ONCHAIN_DATA_MODE"] = (
             args.onchain_data_mode or state.get("environment", {}).get("ONCHAIN_DATA_MODE")
-            or ("live" if okx_arn else "demo")
+            or ("live" if provider_arn else "demo")
         )
-        if okx_arn:
-            if not okx_arn.startswith(f"arn:aws:secretsmanager:{args.region}:{account}:secret:"):
-                raise ValueError("OKX secret must be in this deployment's AWS account and region.")
-            env["OKX_SECRET_ARN"] = okx_arn
+        if provider_arn:
+            if not provider_arn.startswith(f"arn:aws:secretsmanager:{args.region}:{account}:secret:"):
+                raise ValueError("Data provider secret must be in this deployment's AWS account and region.")
+            env["DATA_PROVIDER_SECRET_ARN"] = provider_arn
             executor_role = lambdas.get_function_configuration(FunctionName=outputs["ExecutorFunctionArn"])["Role"].split("/")[-1]
             session.client("iam").put_role_policy(
                 RoleName=executor_role, PolicyName="okx-read-credentials",
                 PolicyDocument=json.dumps({"Version": "2012-10-17", "Statement": [{
-                    "Effect": "Allow", "Action": ["secretsmanager:GetSecretValue"], "Resource": okx_arn,
+                    "Effect": "Allow", "Action": ["secretsmanager:GetSecretValue"], "Resource": provider_arn,
                 }]}),
             )
         if state.get("oauth_gateway"):

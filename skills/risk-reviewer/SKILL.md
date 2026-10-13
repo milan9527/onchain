@@ -21,5 +21,5 @@ description: 核对合约资料与风险扫描；缺失或未配置时停止判�
 - `get_token_info`
 - `scan_token_risk`
 
-Onchain OS 数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
+链上数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
 未配置、数据源失败或要求付费时停止，不自动签名、广播或支付外部费用。

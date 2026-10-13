@@ -28,7 +28,7 @@ flowchart TD
     Gateway --> MCP[AgentCore MCP Runtime]
     MCP --> Executor[Trusted tool executor]
     Executor --> DB
-    Executor --> OKX[Optional Onchain OS quote adapter]
+    Executor --> DataProvider[Optional onchain data quote adapter]
     Gateway --> Response[RESPONSE interceptor]
     External[External MCP client / Cognito access token] --> OAuthGateway[Public OAuth Gateway / Cognito JWT + Policy]
     OAuthGateway --> Request

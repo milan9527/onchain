@@ -1,24 +1,22 @@
-# Onchain OS tools, Skills and task templates
+# Onchain data tools, Skills and task templates
 
 The platform exposes 18 reviewed MCP tools in eight products, ten Skills and fifteen task templates.
 The original six tool names and original two Skill digests are unchanged. `prepare_trade` now also
 accepts `buy_asset=USDC` with an ETH amount, but only the new sell Skill may use that direction. Existing
 Agents do not silently receive the new capabilities.
 
-Endpoint paths and parameter mappings were checked against the official
-[OKX Onchain OS source](https://github.com/okx/onchainos-skills/tree/9d9c66f5c296461b8687a71cdab188acedcb781d):
-`cli/src/commands/{market,token,security,signal,swap,gateway}.rs`.
-Task ideas follow the official [workflow index](https://github.com/okx/onchainos-skills/blob/9d9c66f5c296461b8687a71cdab188acedcb781d/workflows/INDEX.md).
-This deployment wraps fixed read endpoints; it does not install or execute the upstream CLI.
+The [read-only data adapter](../backend/onchain/onchain_os.py) uses fixed, reviewed endpoint paths
+and parameter mappings. It does not install or execute an external CLI. Provider configuration
+is managed by the deployment; users interact with the platform’s chain-data tools.
 
 ## Added MCP products
 
 | Product | Tools | Data |
 |---|---|---|
-| 代币与行情 | `search_tokens`, `get_token_info`, `get_token_price`, `get_candles`, `get_token_holders` | OKX public chain data |
-| 风险扫描 | `scan_token_risk` | OKX token security report |
-| 聪明钱信号 | `get_smart_money_signals` | OKX market signals; no automatic copy trading |
-| 路由与 Gas | `get_swap_quote`, `get_gas_price`, `get_supported_chains` | OKX read-only quotes/network data |
+| 代币与行情 | `search_tokens`, `get_token_info`, `get_token_price`, `get_candles`, `get_token_holders` | Public chain data |
+| 风险扫描 | `scan_token_risk` | Token security report |
+| 聪明钱信号 | `get_smart_money_signals` | Market signals; no automatic copy trading |
+| 路由与 Gas | `get_swap_quote`, `get_gas_price`, `get_supported_chains` | Read-only quotes/network data |
 | 账户分析与交易预检 | `analyze_portfolio`, `preview_trade` | Authenticated user's own paper account |
 
 Public research accepts explicitly selected Base, Ethereum, Arbitrum, BNB Chain, Polygon, X Layer
@@ -60,10 +58,10 @@ the invocation capability binds the exact task request. Templates stop after a f
 
 ## Provider configuration and current availability
 
-The deployed environment has no OKX data credential and explicitly runs `ONCHAIN_DATA_MODE=demo`.
+The deployed environment has no live data credential and explicitly runs `ONCHAIN_DATA_MODE=demo`.
 All fifteen templates are available: eight research templates use synthetic fixtures, and the seven
 account/trade templates use the authenticated user's own paper account and existing approval flow.
-The four provider MCP products show **演示数据 · 无需 OKX Key**. No external HTTP or credential lookup
+The four provider MCP products show **演示数据 · 无需 API 密钥**. No external HTTP or credential lookup
 occurs in the demo adapter. Cognito, Bedrock chat intent recognition, AgentCore Runtime, Gateway,
 MCP, subscriptions, scope/Skill checks, immutable approvals and session isolation all remain active.
 
@@ -84,7 +82,7 @@ Signals, holder identities, gas and network support are also synthetic. Quotes c
 transaction. Truncated task reports retain the demo source and notice.
 
 `ONCHAIN_DATA_MODE=live` selects only the real adapter. Missing credentials then show configuration
-required, and provider failures never fall back to demo data. Live OKX responses have not been
+required, and provider failures never fall back to demo data. Live data provider responses have not been
 validated with a provisioned account; endpoint mapping, HMAC signing and failure handling are tested
 with controlled HTTP responses.
 
@@ -93,7 +91,7 @@ key, containing `api_key`, `secret_key`, `passphrase` and optionally `project_id
 out of browser forms and model messages. Then run:
 
 ```bash
-.venv/bin/python scripts/deploy.py --skip-stack --onchain-data-mode live --okx-secret-arn <existing-secret-arn>
+.venv/bin/python scripts/deploy.py --skip-stack --onchain-data-mode live --data-provider-secret-arn <existing-secret-arn>
 ```
 
 The deployer grants only the executor role `secretsmanager:GetSecretValue` for that exact ARN.

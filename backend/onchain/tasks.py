@@ -134,12 +134,15 @@ def task_plan(template_id, parameters, expected_digest=None):
 def task_catalog(config):
     tasks = copy.deepcopy(TASKS)
     for task in tasks:
+        # Presentation-only wording preserves existing Agents and signed template versions.
+        if task["id"] == "chain-discovery":
+            task["description"] = "查询链上数据网关当前支持的网络。"
         uses_provider = bool(set(task["tools"]) & LIVE_TOOLS) or (
             config.onchain_data_mode == "live" and "get_quote" in task["tools"]
         )
         task["data_mode"] = config.onchain_data_mode if uses_provider else "paper"
         task["availability"] = (
-            "REQUIRES_OKX" if uses_provider and config.onchain_data_mode == "live" and not config.okx_secret_arn else "READY"
+            "REQUIRES_DATA_PROVIDER" if uses_provider and config.onchain_data_mode == "live" and not config.data_provider_secret_arn else "READY"
         )
         if uses_provider and config.onchain_data_mode == "demo":
             from .demo_data import example_parameters

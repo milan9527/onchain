@@ -49,7 +49,7 @@ export function McpConnections({ agents }: { agents: { id: string; name: string;
         <button className="danger-btn" disabled={busy} onClick={async () => { setBusy(true); try { await api("/mcp/connections/" + info.client_id, "DELETE"); await load(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }}>撤销连接</button></div>}
       <div className="form-stack"><label>授权给哪个 Agent<select aria-label="MCP 绑定 Agent" value={agent} onChange={e => setAgent(e.target.value)}><option value="" disabled>选择 Agent</option>{agents.filter(a => a.status === "ACTIVE").map(a => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
         <span className="muted">默认允许查询持仓、行情和操作记录。</span>
-        <label className="checkbox"><input type="checkbox" checked={market} onChange={e => setMarket(e.target.checked)} />允许 Onchain OS 公共行情、风险和路由研究</label>
+        <label className="checkbox"><input type="checkbox" checked={market} onChange={e => setMarket(e.target.checked)} />允许 链上公共行情、风险和路由研究</label>
         <label className="checkbox"><input type="checkbox" checked={prepare} onChange={e => setPrepare(e.target.checked)} />允许准备交易</label>
         <label className="checkbox"><input type="checkbox" checked={execute} onChange={e => setExecute(e.target.checked)} />允许执行我已明确批准的交易</label>
         <button className="primary" disabled={!agent || busy} onClick={authorize}><Fingerprint size={17} />{busy ? "正在跳转…" : active ? "验证并替换连接授权" : "验证并授权连接"}</button>

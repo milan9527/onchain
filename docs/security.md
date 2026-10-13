@@ -51,7 +51,7 @@ External MCP calls require a resource-bound access token, a registered client an
 connection. Read/prepare/execute scopes are distinct, and the external client cannot request the BFF's
 `control` or `approve` scopes. Scope permission to execute never constitutes approval of a transaction.
 
-Public Onchain OS research additionally uses `market.read`; private paper-account analysis remains
+Public onchain data research additionally uses `market.read`; private paper-account analysis remains
 under `portfolio.read`. New tools require explicit MCP enablement and a reviewed Skill. Existing
 Skill digests retain their original tool lists. Task invocations bind the template version and exact
 parameters into the signed Runtime capability, then recheck each tool at Gateway and executor.

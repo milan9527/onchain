@@ -53,16 +53,16 @@
         <mxCell id="external-detail" value="Cognito Access Token&lt;br&gt;连接授权 + MCP scopes&lt;br&gt;无需 AWS IAM 凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="external">
           <mxGeometry x="20" y="77" width="225" height="86" as="geometry" />
         </mxCell>
-        <mxCell id="okx" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
+        <mxCell id="data-provider" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="1300" width="265" height="165" as="geometry" />
         </mxCell>
-        <mxCell id="okx-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="okx">
+        <mxCell id="data-provider-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="data-provider">
           <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="okx-title" value="OKX Onchain OS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="okx">
+        <mxCell id="data-provider-title" value="链上数据服务" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="data-provider">
           <mxGeometry x="80" y="16" width="169" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="okx-detail" value="外部实时数据服务（可选）&lt;br&gt;当前未配置 OKX Key&lt;br&gt;不含实盘签名与广播" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="okx">
+        <mxCell id="data-provider-detail" value="外部实时数据服务（可选）&lt;br&gt;实时数据源尚未配置&lt;br&gt;不含实盘签名与广播" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="data-provider">
           <mxGeometry x="20" y="77" width="225" height="81" as="geometry" />
         </mxCell>
         <mxCell id="cf" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -314,7 +314,7 @@
         <mxCell id="demo-title" value="内置演示适配器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="demo">
           <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="demo-detail" value="明确标注 demo / paper&lt;br&gt;无 OKX Key 也可运行完整流程" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="demo">
+        <mxCell id="demo-detail" value="明确标注 demo / paper&lt;br&gt;无需 API 密钥即可体验完整流程" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="demo">
           <mxGeometry x="20" y="77" width="290" height="46" as="geometry" />
         </mxCell>
         <mxCell id="secrets" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
@@ -505,7 +505,7 @@
         <mxCell id="executor-secrets" value="仅 live" source="executor" target="secrets" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="live-okx" value="可选 live adapter · 当前关闭" source="executor" target="okx" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
+        <mxCell id="live-data-provider" value="可选 live adapter · 当前关闭" source="executor" target="data-provider" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1990" y="1290" />

@@ -6,7 +6,7 @@
 - CloudFormation stack: `OnchainControl`
 - Bedrock inference profile: `us.openai.gpt-6-sol`
 - Trading mode: `paper`
-- Research data mode: `demo` (no OKX key required)
+- Research data mode: `demo` (no data provider key required)
 - Public OAuth MCP: https://onchain-oauth-gateway-ud4iglagnm.gateway.bedrock-agentcore.us-east-1.amazonaws.com/mcp
 - External public client ID: `17drk512rc7nr51esoflfonpd8`
 - External callback: `http://localhost:8765/callback`
@@ -16,11 +16,28 @@ HTTP API. Agent reasoning and MCP tools run in separate AgentCore Runtimes. The 
 JWT authentication, REQUEST/RESPONSE interceptors and a Cedar policy engine in `ENFORCE` mode.
 
 Exact resource identifiers and environment configuration are saved in `.deployment/resources.json`.
-No wallet or OKX secret has been provisioned. Registration is available through the website; the
+No wallet or data provider secret has been provisioned. Registration is available through the website; the
 synthetic acceptance accounts are retained in Cognito, with credentials kept only in the ignored,
 mode-0600 `.deployment/smoke-credentials.json`.
 
 ## Acceptance
+
+Provider-neutral presentation release, 2026-10-13:
+MCP products, task forms, data notices, errors, tool results, documentation and the editable
+architecture diagram use generic chain-data labels. Historical result metadata is normalized
+only for display; stored audit records and signed operation data are not rewritten.
+All 10 Skill digests and 15 template digests remain unchanged, preserving existing Agents and listings.
+The documented credential setting is `DATA_PROVIDER_SECRET_ARN`, with
+`--data-provider-secret-arn` for deployment; previous configuration names remain accepted during upgrades.
+
+Ruff, all 109 backend tests, six focused frontend regressions and the production build pass.
+The backend bundle SHA256 is `665b3590ef070aab89991684e0cec18e850c695462ce8570184bf915f4876ba2`;
+the frontend entry is `index-DqSbib0X.js`. All six Lambda hashes, both READY Runtime artifacts,
+both Gateway ENFORCE configurations and CloudFront's index were checked against this release.
+Cloud acceptance used an existing synthetic research account: Cognito login, neutral template/MCP
+catalogs, a 390px mobile layout, and the real four-tool research plan through Agent Runtime,
+Gateway and MCP all passed. Fresh results retain demo disclosure, contain generic provider labels,
+and leave the paper wallet unchanged. Screenshots are retained under `.deployment/neutral-*.png`.
 
 Trading Agent marketplace and unified workspace release, 2026-10-13:
 the three primary entries are **Agent 市场**, **Agent 工作台** and **MCP / Skill 管理**.
@@ -61,7 +78,7 @@ owned history and preventing revival. MCP management exposes service enablement,
 bindings, and external OAuth connections. There are 13 templates, 8 Skills and 8 MCP products.
 94 backend tests and 11 focused UI regressions pass, as do Ruff and the production frontend build.
 All six Lambda code hashes, both READY Runtime artifacts and CloudFront's index were verified against
-this release in demo mode without an OKX secret. Test accounts are separate from the platform owner's
+this release in demo mode without a data-provider secret. Test accounts are separate from the platform owner's
 account. Task marketplace acceptance: `frontend/tests/task-market-cloud.spec.ts`.
 All four cloud journeys passed in 4.4 minutes: DCA purchase/automatic settlement (1.2 minutes), external
 Cognito MCP OAuth and trade continuation (56.6 seconds), the Agent-embedded 20 USDC buy/replay/cancel
@@ -88,13 +105,13 @@ order and verified cancellation, over-limit and cross-user denials. Market purch
 regression passed in 34.4 seconds. External Cognito MCP OAuth regression passed in 56.5 seconds,
 including scope filtering, connection revocation and the original six-tool Skill.
 All six Lambda bundles, both Runtime artifacts and CloudFront's frontend were verified against the
-current builds, in demo mode without an OKX secret. Screenshots are retained as
+current builds, in demo mode without a data-provider secret. Screenshots are retained as
 `.deployment/order-{desk,history,confirmed-session}.png`.
 Local and cloud Playwright runs now use separate artifact directories to prevent trace-cleanup collisions.
 
 Keyless demo release, 2026-10-13: 75 backend tests, eight focused frontend regressions and the production
 build pass. All six Lambda functions and both AgentCore Runtimes were verified against the current
-bundle and `ONCHAIN_DATA_MODE=demo`; no OKX secret is configured. CloudFront's index matches the local
+bundle and `ONCHAIN_DATA_MODE=demo`; no data provider secret is configured. CloudFront's index matches the local
 production build. All twelve templates are available, with explicit synthetic-data badges and
 per-network examples for the eight research templates. Backend coverage executes every research
 plan on all seven supported demo networks, checks coherent quotes/unknown risks, retained-secret
@@ -110,7 +127,7 @@ The seller/buyer marketplace journey (54.9 seconds) verifies purchase consent, a
 settlement, isolated scheduler execution, budget accounting and revocation. Its test grant was revoked.
 Screenshots are retained under `.deployment/keyless-{task-templates,research-run,mcp-skills}.png`.
 
-Task template / Onchain OS release, 2026-10-13: 63 backend tests and seven frontend regressions pass;
+Task template / onchain data release, 2026-10-13: 63 backend tests and seven frontend regressions pass;
 the production build is deployed. Both real cloud journeys passed in 1.9 minutes. The new template
 journey (41.6 seconds) creates a scoped Agent, runs `get_portfolio → analyze_portfolio` through Agent
 Runtime, Gateway and MCP, rejects trading under its read-only Skill, and verifies a Bedrock chat
@@ -119,7 +136,7 @@ six tools for the original trader Skill and four for its read-only OAuth scope, 
 isolation and revocation checks intact. The catalog now contains 12 templates, eight products,
 eight Skills and 18 tools. That release required credentials for eight research templates; the current keyless
 demo release removes that dependency with explicitly labeled synthetic data.
-See [capabilities and configuration](onchain-os-capabilities.md).
+See [capabilities and configuration](data-capabilities.md).
 
 Agent marketplace release, 2026-10-13: 51 backend tests, seven focused UI regressions and the production
 build pass. The real two-user cloud journey passed in 40.7 seconds: seller publication, operation-specific
@@ -197,7 +214,7 @@ It revokes its grant and pauses its agent on completion.
 This is a deployed paper-trading implementation. Real wallet signatures, live settlement and arbitrary
 third-party MCP publication are not enabled. All templates can run in explicit demo mode without a key;
 synthetic chain data and paper transactions are disclosed throughout the UI and tool results.
-The live Onchain OS adapter requires `ONCHAIN_DATA_MODE=live`, an OKX secret and scoped Secrets Manager
+The live onchain data adapter requires `ONCHAIN_DATA_MODE=live`, a data-provider secret and scoped Secrets Manager
 access. Live failures never fall back to synthetic data.
 
 The [Agent service marketplace](agent-marketplace.md) supports priced, immutable task and ETH DCA templates,

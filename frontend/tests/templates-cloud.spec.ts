@@ -116,6 +116,6 @@ test("keyless templates run all read plans through AgentCore and preserve demo d
   } finally { await otherContext.close(); }
   expect((await (await page.request.get("/api/dashboard")).json()).wallet).toEqual(before.wallet);
   await page.getByRole("button", { name: "MCP / Skill 管理", exact: true }).click();
-  await expect(page.getByText("演示数据 · 无需 OKX Key", { exact: true })).toHaveCount(4);
+  await expect(page.getByText("演示数据 · 无需 API 密钥", { exact: true })).toHaveCount(4);
   await page.screenshot({ path: "../.deployment/keyless-mcp-skills.png", fullPage: true });
 });

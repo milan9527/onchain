@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Activity, Bot, Check, CircleAlert, Clock3, Plug, ShieldCheck, Wrench } from "lucide-react";
 import { api } from "./api";
+import { providerJson } from "./providerDisplay";
 
 type RunSummary = { id: string; kind: string; status: string; started_at: number; finished_at?: number };
 type Event = { id: string; kind: string; label: string; source: string; at: number; status: string; details: any; duration_ms?: number };
@@ -53,7 +54,7 @@ export function RunTimeline({ session }: { session: { id: string; runs?: RunSumm
             return <li key={event.id} className={failed ? "trace-failed" : ""}>
               <span className="trace-icon">{failed ? <CircleAlert size={14} /> : event.source === "model" ? <Bot size={14} /> : event.source === "gateway" ? <ShieldCheck size={14} /> : event.source === "mcp" ? <Plug size={14} /> : event.source === "executor" ? <Wrench size={14} /> : <Check size={14} />}</span>
               <div className="trace-entry"><strong>{event.label}</strong><div className="trace-meta"><span>{sources[event.source] || event.source}</span><time>{time(event.at)}</time>{event.duration_ms != null && <span>{elapsed(event.duration_ms)}</span>}</div>
-                {Object.keys(event.details || {}).length > 0 && <details><summary>查看参数与结果</summary><pre>{JSON.stringify(event.details, null, 2)}</pre></details>}
+                {Object.keys(event.details || {}).length > 0 && <details><summary>查看参数与结果</summary><pre>{providerJson(event.details)}</pre></details>}
               </div>
             </li>;
           })}</ol>

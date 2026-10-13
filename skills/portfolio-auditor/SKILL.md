@@ -22,5 +22,5 @@ description: 只读取本人持仓、历史与模拟估值，检查预算使用�
 - `get_history`
 - `analyze_portfolio`
 
-Onchain OS 数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
+链上数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
 未配置、数据源失败或要求付费时停止，不自动签名、广播或支付外部费用。

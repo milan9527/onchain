@@ -1,6 +1,6 @@
 # Order placement scenarios
 
-The **Agent 工作台 → 交易下单** panel provides paper market buys and sells between ETH and USDC on Base. It requires no OKX key
+The **Agent 工作台 → 交易下单** panel provides paper market buys and sells between ETH and USDC on Base. It requires no data provider key
 in the deployed demo mode. This is an order/settlement workflow against each user's own paper wallet;
 it is not a real exchange order book or an onchain broadcast. Limit orders and other execution pairs are not supported. Sell orders require existing ETH holdings.
 
@@ -65,7 +65,7 @@ later quote changes. Legacy orders and scheduled grants retain their existing ap
 this release does not rewrite old intents or broaden any Skill digest.
 
 Demo quotes remain 3,000 USDC/ETH. In explicit live data mode, order preparation requires configured
-OKX quotes and still settles only to the paper wallet. Live provider failures never use demo fallback.
+data provider quotes and still settles only to the paper wallet. Live provider failures never use demo fallback.
 
 ## Verification
 

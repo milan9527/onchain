@@ -27,10 +27,10 @@ def quote_eth(config):
     """No invented live prices. Local paper reference is conspicuously labeled."""
     timestamp = int(time.time())
     if config.onchain_data_mode == "live":
-        if not config.okx_secret_arn:
-            raise Denied("OKX_NOT_CONFIGURED", "尚未配置 OKX 数据凭据，无法查询实时链上数据。", 503)
+        if not config.data_provider_secret_arn:
+            raise Denied("PROVIDER_NOT_CONFIGURED", "尚未配置实时数据凭据，无法查询实时链上数据。", 503)
         secret = boto3.client("secretsmanager", region_name=config.region).get_secret_value(
-            SecretId=config.okx_secret_arn
+            SecretId=config.data_provider_secret_arn
         )
         creds = json.loads(secret["SecretString"])
         path = "/api/v6/dex/market/price"
@@ -51,9 +51,9 @@ def quote_eth(config):
         response.raise_for_status()
         payload = response.json()
         if payload.get("code") != "0" or not payload.get("data"):
-            raise Denied("QUOTE_UNAVAILABLE", "Onchain OS did not return a usable quote.", 503)
+            raise Denied("QUOTE_UNAVAILABLE", "Data provider did not return a usable quote.", 503)
         price = float(payload["data"][0]["price"])
-        return {"symbol": "ETH", "price": price, "source": "OKX Onchain OS",
+        return {"symbol": "ETH", "price": price, "source": "链上数据服务",
                 "as_of": timestamp, "expires_at": timestamp+30, "simulated": False}
     return {"symbol": "ETH", "price": 3000, "source": "Paper reference • not a live market price",
             "as_of": timestamp, "expires_at": timestamp+30, "simulated": True}

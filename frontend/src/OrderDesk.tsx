@@ -41,7 +41,7 @@ export function OrderDesk({ agents, skills, orders, wallet, subscriptions, execu
     try { await action(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   return <div className="order-desk">
-    <div className="order-intro"><ShoppingCart size={29} /><div><h2>从下单到成交，全程留有记录</h2><p>选择交易方向和数量 → 核对订单并验证身份 → 自动执行 → 查看成交回执。当前为模拟交易，无需 OKX Key。</p></div></div>
+    <div className="order-intro"><ShoppingCart size={29} /><div><h2>从下单到成交，全程留有记录</h2><p>选择交易方向和数量 → 核对订单并验证身份 → 自动执行 → 查看成交回执。当前为模拟交易，无需 API 密钥。</p></div></div>
     {error && <p role="alert" className="inline-error">{error}</p>}
     <div className="order-layout"><section className="panel order-ticket" aria-label={selling ? "卖出订单" : "买入订单"}>
       <div className="panel-heading"><h2>{selling ? "卖出 ETH" : "买入 ETH"}</h2><span className="paper-badge">模拟市价单</span></div>

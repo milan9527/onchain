@@ -381,12 +381,12 @@ def catalog(request: Request):
     from copy import deepcopy
     result = deepcopy(control.catalog())
     for product in result["products"]:
-        uses_provider = product.get("provider") == "okx" or (
+        uses_provider = product.get("provider") == "chain-data" or (
             config.onchain_data_mode == "live" and "get_quote" in product["tools"]
         )
         product["data_mode"] = config.onchain_data_mode if uses_provider else "paper"
         product["availability"] = (
-            "REQUIRES_OKX" if uses_provider and config.onchain_data_mode == "live" and not config.okx_secret_arn else "READY"
+            "REQUIRES_DATA_PROVIDER" if uses_provider and config.onchain_data_mode == "live" and not config.data_provider_secret_arn else "READY"
         )
     result["onchain_data_mode"] = config.onchain_data_mode
     result["templates"] = task_catalog(config)

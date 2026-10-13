@@ -18,7 +18,7 @@ does not expose dynamic client registration or accept arbitrary client IDs/callb
 | Resource / access-token audience | Exact public OAuth Gateway URL including `/mcp` |
 | Required scope | `RESOURCE/mcp.invoke` |
 | Read scope | `RESOURCE/portfolio.read` |
-| Public Onchain OS research scope | `RESOURCE/market.read` |
+| Public onchain data research scope | `RESOURCE/market.read` |
 | Prepare scope | `RESOURCE/trade.prepare` |
 | Execute scope | `RESOURCE/trade.execute` |
 | Authorization | `COGNITO_DOMAIN/oauth2/authorize` |

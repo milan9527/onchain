@@ -1,4 +1,4 @@
-"""Synthetic, deterministic Onchain OS scenarios. No network, wallet or credential access."""
+"""Synthetic, deterministic onchain data scenarios. No network, wallet or credential access."""
 from decimal import Decimal, localcontext
 
 from .extensions import CHAINS
@@ -6,7 +6,7 @@ from .security import Denied
 
 DATASET = "onchain-demo-v1"
 EPOCH = 1735689600  # Fixed scenario date, never presented as a current observation.
-NOTICE = "平台演示数据，非 OKX 返回、非实时行情；风险结果仅演示流程，不能证明真实合约安全。"
+NOTICE = "平台演示数据，由平台合成、非实时行情；风险结果仅演示流程，不能证明真实合约安全。"
 
 
 def tokens(chain):

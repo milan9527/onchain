@@ -44,7 +44,7 @@
 执行时价格超出批准范围、余额不足或日额度耗尽都会阻止成交，重复执行不会重复扣款。
 也可从「Agent 工作台 → 任务模板 → ETH 买入下单」创建专用 Agent。新增 `eth-buy` / `eth-sell` 模板和独立方向 Skill；卖出填写 ETH 数量，必须已有持仓，买入授权不能用于卖出。详见 [下单场景](docs/order-scenarios.md)。
 
-默认 `ONCHAIN_DATA_MODE=demo`，无需 OKX Key 即可运行全部任务模板。十个链上研究工具返回明确标注的合成演示数据，模拟交易使用 3,000 USD/ETH 参考价；Cognito、Bedrock、AgentCore Runtime、Gateway 和 MCP 均正常运行，认证与授权不会被跳过。真实数据需显式设置 `ONCHAIN_DATA_MODE=live` 并配置 `OKX_SECRET_ARN`，秘密结构为 `api_key`、`secret_key`、`passphrase`。真实数据模式失败不会回退到演示数据。实盘签名、用户钱包绑定和真实资金执行尚未实现，`TRADING_MODE` 设置为其他值会拒绝启动。
+默认 `ONCHAIN_DATA_MODE=demo`，无需 API 密钥即可运行全部任务模板。十个链上研究工具返回明确标注的合成演示数据，模拟交易使用 3,000 USD/ETH 参考价；Cognito、Bedrock、AgentCore Runtime、Gateway 和 MCP 均正常运行，认证与授权不会被跳过。真实数据需显式设置 `ONCHAIN_DATA_MODE=live` 并配置 `DATA_PROVIDER_SECRET_ARN`，秘密结构为 `api_key`、`secret_key`、`passphrase`。真实数据模式失败不会回退到演示数据。实盘签名、用户钱包绑定和真实资金执行尚未实现，`TRADING_MODE` 设置为其他值会拒绝启动。
 
 MCP 市场是可用的、平台维护的工具目录；不执行用户上传的 Skill 代码，不自动发布第三方远程 MCP。完整第三方商业市场、支付结算及任意链/币种不在本版本范围内。
 
@@ -228,7 +228,7 @@ Gateway/MCP 工具，保留结果与运行时间线。当前运行免 Key 演示
 选择「代币尽调报告」创建 Agent 后，直接用预填示例运行，即可查看资料、价格、持有人与风险扫描四个步骤。
 交易需选择「受控交易」Agent；输入金额并确认操作后，Cognito 验证会返回原会话并自动完成模拟交易。
 自动交易可使用「ETH 自动定投」模板，或从 Agent 市场购买策略并确认持续授权。
-详见 [Onchain OS 能力与配置](docs/onchain-os-capabilities.md)。
+详见 [链上数据能力与配置](docs/data-capabilities.md)。
 
 打开「Agent 工作台」，左侧按当前 Agent 列出历史会话，支持搜索与切换；中间显示消息，
 右侧显示每次运行的意图识别、MCP 连接、工具参数、Gateway 检查、执行结果、耗时与错误。

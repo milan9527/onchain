@@ -2,7 +2,7 @@ from functools import lru_cache
 from os import getenv
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class Settings(BaseModel):
@@ -29,7 +29,9 @@ class Settings(BaseModel):
     trading_mode: str = "paper"
     # Explicit mode: live failures never fall back to synthetic data.
     onchain_data_mode: Literal["demo", "live"] = "demo"
-    okx_secret_arn: str = ""
+    data_provider_secret_arn: str = Field(
+        default="", validation_alias=AliasChoices("data_provider_secret_arn", "okx_secret_arn"),
+    )
     queue_url: str = ""
 
     @property
@@ -39,12 +41,13 @@ class Settings(BaseModel):
 
 @lru_cache
 def settings() -> Settings:
-    s = Settings(
-        **{
-            name: getenv(name.upper(), str(field.default))
-            for name, field in Settings.model_fields.items()
-        }
-    )
+    values = {
+        name: getenv(name.upper(), str(field.default))
+        for name, field in Settings.model_fields.items()
+    }
+    # Continue accepting the previous deployment variable during upgrades.
+    values["data_provider_secret_arn"] = getenv("DATA_PROVIDER_SECRET_ARN", getenv("OKX_SECRET_ARN", ""))
+    s = Settings(**values)
     if s.production and not all(
         [s.table_name, s.signing_key_id, s.cognito_pool_id, s.cognito_client_id]
     ):

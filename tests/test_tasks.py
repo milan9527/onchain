@@ -99,12 +99,12 @@ def test_task_arguments_digest_and_stop_after_failure(env):
     calls = []
     async def call(tool, args):
         calls.append(tool)
-        return {"error": {"code": "OKX_NOT_CONFIGURED"}} if len(calls) == 2 else {"data": []}
+        return {"error": {"code": "PROVIDER_NOT_CONFIGURED"}} if len(calls) == 2 else {"data": []}
     async def progress(**event):
         pass
     result = asyncio.run(run_template(spec, {"task_hash": digest(spec)}, call, progress))
     assert calls == ["get_token_info", "get_token_price"]
-    assert result["tool_result"]["error"]["code"] == "OKX_NOT_CONFIGURED"
+    assert result["tool_result"]["error"]["code"] == "PROVIDER_NOT_CONFIGURED"
     with pytest.raises(Denied):
         asyncio.run(run_template(spec, {"task_hash": "forged"}, call, progress))
     with pytest.raises(Denied):
@@ -119,13 +119,13 @@ def test_live_tools_never_fabricate_data_when_unconfigured(env):
     from onchain.onchain_os import invoke
     with pytest.raises(Denied) as result:
         invoke(env[0].model_copy(update={"onchain_data_mode": "live"}), "get_token_price", {"chain": "8453", "token_address": "0x" + "a"*40})
-    assert result.value.code == "OKX_NOT_CONFIGURED"
+    assert result.value.code == "PROVIDER_NOT_CONFIGURED"
     assert len(LIVE_TOOLS) == 10
 
 
-def test_okx_adapter_exact_signature_endpoint_parameters_and_bounded_data(env, monkeypatch):
+def test_data_adapter_exact_signature_endpoint_parameters_and_bounded_data(env, monkeypatch):
     from onchain import onchain_os
-    config = env[0].model_copy(update={"okx_secret_arn": "test-secret", "onchain_data_mode": "live"})
+    config = env[0].model_copy(update={"data_provider_secret_arn": "test-secret", "onchain_data_mode": "live"})
     secrets = {"api_key": "test-key", "secret_key": "test-secret", "passphrase": "test-passphrase"}
     monkeypatch.setattr(onchain_os, "credentials", lambda *_: secrets)
     actual_client = httpx.Client
@@ -145,7 +145,7 @@ def test_okx_adapter_exact_signature_endpoint_parameters_and_bounded_data(env, m
     result = onchain_os.invoke(config, "search_tokens", {"chain": "8453", "query": "A B&?"})
     assert captured[0].url.params["search"] == "A B&?"
     assert result["simulated"] is False
-    assert result["provider"] == "OKX Onchain OS"
+    assert result["provider"] == "链上数据服务"
     onchain_os.invoke(config, "scan_token_risk", {"chain": "8453", "token_address": "0x" + "a"*40})
     body = json.loads(captured[1].content)
     assert body == {"source": "onchain_os_cli", "tokenList": [{"chainId": "8453", "contractAddress": "0x"+"a"*40}]}
@@ -168,7 +168,7 @@ def test_provider_challenges_do_not_pay_redirect_or_leak_errors(env, monkeypatch
         return httpx.Response(status, text="secret-error-body", headers={"location": "https://untrusted.invalid"})
     monkeypatch.setattr(onchain_os.httpx, "Client", lambda **kwargs: client(transport=httpx.MockTransport(handle), **kwargs))
     with pytest.raises(Denied) as result:
-        onchain_os.invoke(env[0].model_copy(update={"okx_secret_arn": "test", "onchain_data_mode": "live"}), "get_gas_price", {"chain": "8453"})
+        onchain_os.invoke(env[0].model_copy(update={"data_provider_secret_arn": "test", "onchain_data_mode": "live"}), "get_gas_price", {"chain": "8453"})
     assert result.value.code == code
     assert "secret" not in result.value.message
     assert len(calls) == 1

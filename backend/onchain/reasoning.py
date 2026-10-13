@@ -59,7 +59,7 @@ def recognize(config, message: str, history: list, skill: dict | None = None) ->
         modelId=config.model_id,
         system=[{"text": SYSTEM + (
             "\n当前链上研究数据模式：平台演示数据，非实时行情；只用于完整流程演示。"
-            if config.onchain_data_mode == "demo" else "\n当前链上研究数据模式：OKX 实时数据。"
+            if config.onchain_data_mode == "demo" else "\n当前链上研究数据模式：实时数据源。"
         ) + ("\n当前已审核 Skill（权限仍由 Gateway 校验）：\n" + json.dumps(
             {key: skill[key] for key in ("id", "description", "tools", "instructions", "trade_sides") if key in skill},
             ensure_ascii=False,

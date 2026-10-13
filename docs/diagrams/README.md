@@ -11,7 +11,7 @@ CloudFront、S3、DynamoDB、SQS、EventBridge、KMS、Secrets Manager 和 Cloud
 
 | 页面 | 内容 | PNG 预览 |
 |---|---|---|
-| 01 整体部署 | 前后端分离、内部与公共 Gateway、独立 Agent/MCP Runtime、执行器、数据和可选 OKX 接入 | [整体部署](01-aws-architecture.png) |
+| 01 整体部署 | 前后端分离、内部与公共 Gateway、独立 Agent/MCP Runtime、执行器、数据和可选数据源接入 | [整体部署](01-aws-architecture.png) |
 | 02 交易认证与拦截 | 意图准备、Cognito 重新认证、一次性确认、Gateway 拦截、原子成交、回执和撤权 | [交易流程](02-trade-control.png) |
 | 03 用户会话隔离 | 卖家发布、买家购买独立 Agent、Runtime/MCP 会话绑定、数据归属与删除后的行为 | [用户隔离](03-user-isolation.png) |
 
@@ -38,7 +38,7 @@ CloudFront、S3、DynamoDB、SQS、EventBridge、KMS、Secrets Manager 和 Cloud
   固定模板不必再次调用模型来规划步骤。
 - 第三页的 A/B 图标表示同一服务部署中的独立 Agent、Runtime session 与数据归属，
   不表示为每位用户新建一套 AWS 资源。DynamoDB 的两个数据框是逻辑 owner 分区。
-- 当前为 `demo` 数据和 `paper` 交易。虚线的 Secrets Manager/OKX 路径是可选 live
+- 当前为 `demo` 数据和 `paper` 交易。虚线的 Secrets Manager/数据源路径是可选 live
   数据接入，当前未配置；图中没有实盘 signer 或链上广播组件，也没有配置 Guardrails。
 
 ## 维护

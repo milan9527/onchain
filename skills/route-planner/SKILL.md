@@ -22,5 +22,5 @@ description: 查询兑换路由、Gas 和网络支持情况，仅提供报价研
 - `get_gas_price`
 - `get_supported_chains`
 
-Onchain OS 数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
+链上数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
 未配置、数据源失败或要求付费时停止，不自动签名、广播或支付外部费用。

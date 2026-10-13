@@ -24,5 +24,5 @@ description: 检查代币资料、价格、持有人与风险，保留数据来�
 - `get_token_holders`
 - `scan_token_risk`
 
-Onchain OS 数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
+链上数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
 未配置、数据源失败或要求付费时停止，不自动签名、广播或支付外部费用。

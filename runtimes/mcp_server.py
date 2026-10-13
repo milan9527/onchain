@@ -72,13 +72,13 @@ def get_operation(operation_id: str, security_context: str = "") -> dict:
 
 @mcp.tool()
 def search_tokens(chain: str, query: str, security_context: str = "") -> dict:
-    """Search Onchain OS token metadata on a specified network. Read only."""
+    """Search the chain data service token metadata on a specified network. Read only."""
     return dispatch("search_tokens", {"chain": chain, "query": query}, security_context)
 
 
 @mcp.tool()
 def get_token_info(chain: str, token_address: str, security_context: str = "") -> dict:
-    """Read token identity and decimals from Onchain OS."""
+    """Read token identity and decimals from the chain data service."""
     return dispatch("get_token_info", {"chain": chain, "token_address": token_address}, security_context)
 
 
@@ -90,7 +90,7 @@ def get_token_price(chain: str, token_address: str, security_context: str = "") 
 
 @mcp.tool()
 def get_candles(chain: str, token_address: str, bar: str, limit: int, security_context: str = "") -> dict:
-    """Read a bounded set of Onchain OS candlesticks."""
+    """Read a bounded set of the chain data service candlesticks."""
     return dispatch("get_candles", {"chain": chain, "token_address": token_address, "bar": bar, "limit": limit}, security_context)
 
 
@@ -121,13 +121,13 @@ def get_swap_quote(chain: str, from_token: str, to_token: str, amount_raw: str, 
 
 @mcp.tool()
 def get_gas_price(chain: str, security_context: str = "") -> dict:
-    """Read current Onchain OS gas prices for a network."""
+    """Read current the chain data service gas prices for a network."""
     return dispatch("get_gas_price", {"chain": chain}, security_context)
 
 
 @mcp.tool()
 def get_supported_chains(security_context: str = "") -> dict:
-    """Read networks supported by the Onchain OS transaction gateway."""
+    """Read networks supported by the the chain data service transaction gateway."""
     return dispatch("get_supported_chains", {}, security_context)
 
 

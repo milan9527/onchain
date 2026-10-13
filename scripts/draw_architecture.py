@@ -133,7 +133,7 @@ def overview(file):
     p.zone("gateway-zone", 830, 770, 1120, 440, "两座 AgentCore Gateway 共用 REQUEST / RESPONSE 拦截器 + Policy", GREEN, "#F3FAF8")
     p.card("browser", 60, 190, 265, 155, "users", "用户浏览器", "React / Vite\n买卖双方各自的工作空间")
     p.card("external", 60, 850, 265, 170, "client", "外部 MCP 客户端", "Cognito Access Token\n连接授权 + MCP scopes\n无需 AWS IAM 凭据")
-    p.card("okx", 60, 1300, 265, 165, "general", "OKX Onchain OS", "外部实时数据服务（可选）\n当前未配置 OKX Key\n不含实盘签名与广播", dashed=True)
+    p.card("data-provider", 60, 1300, 265, 165, "general", "链上数据服务", "外部实时数据服务（可选）\n实时数据源尚未配置\n不含实盘签名与广播", dashed=True)
     p.card("cf", 440, 190, 260, 140, "cloudfront", "Amazon CloudFront", "HTTPS 静态站点 / API 代理\nAPI 请求不缓存")
     p.card("s3", 440, 380, 260, 135, "s3", "Amazon S3", "私有前端资源\nOrigin Access Control")
     p.card("http", 800, 190, 290, 140, "api_gateway", "Amazon API Gateway", "HTTP API\n/api/*")
@@ -154,7 +154,7 @@ def overview(file):
     p.card("policy", 1545, 1030, 360, 155, "bedrock_agentcore", "AgentCore Policy", "Cedar · ENFORCE\n固定已审核工具 allowlist\n最终执行检查仍由 Executor 完成")
     p.card("mcp", 2050, 850, 330, 170, "bedrock_agentcore", "AgentCore · MCP Runtime", "独立托管的私有 MCP 服务\n仅 Gateway IAM role 可调用\n验证签名工具上下文")
     p.card("executor", 2050, 1150, 330, 170, "lambda", "AWS Lambda · Executor", "重新读取归属 / epoch / 授权\n余额 / 日额度 / 滑点 / 幂等检查\n原子提交 paper 交易")
-    p.card("demo", 2050, 1360, 330, 130, "general", "内置演示适配器", "明确标注 demo / paper\n无 OKX Key 也可运行完整流程")
+    p.card("demo", 2050, 1360, 330, 130, "general", "内置演示适配器", "明确标注 demo / paper\n无需 API 密钥即可体验完整流程")
     p.card("secrets", 1580, 1360, 325, 130, "secrets_manager", "AWS Secrets Manager", "可选 live 数据凭据\n当前未配置", dashed=True)
     p.card("logs", 440, 1100, 300, 150, "cloudwatch", "Amazon CloudWatch", "Lambda / Runtime 服务日志\n用户运行历史另存 DynamoDB")
     p.note("data-note", 440, 1300, 1050, 150, "状态与权限依赖",
@@ -194,7 +194,7 @@ def overview(file):
     p.edge("executor-demo", "executor", "demo", "demo", exit=(.5, 1), entry=(.5, 0))
     p.edge("executor-secrets", "executor", "secrets", "仅 live", ORANGE, True,
            exit=(0, .8), entry=(1, .5))
-    p.edge("live-okx", "executor", "okx", "可选 live adapter · 当前关闭", ORANGE, True,
+    p.edge("live-data-provider", "executor", "data-provider", "可选 live adapter · 当前关闭", ORANGE, True,
            points=((1990, 1290), (1990, 1510), (192, 1510)), exit=(0, .8), entry=(.5, 1))
     p.note("legend", 60, 1570, 2380, 100, "阅读说明",
            "蓝线：业务 / 工具调用    绿线：身份与权限    橙线：已批准自动执行或可选 live    虚线：控制依赖 / 可选配置\n"

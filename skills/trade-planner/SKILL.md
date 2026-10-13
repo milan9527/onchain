@@ -24,5 +24,5 @@ description: 检查余额和额度，准备具体交易意图；无执行权限�
 - `prepare_trade`
 - `get_operation`
 
-Onchain OS 数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
+链上数据使用固定 API 适配器，凭据由执行器从 Secrets Manager 读取。
 未配置、数据源失败或要求付费时停止，不自动签名、广播或支付外部费用。

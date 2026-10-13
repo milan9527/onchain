@@ -20,7 +20,7 @@ def test_explicit_mode_and_catalog_do_not_change_audited_versions():
     demo = task_catalog(Settings())
     live = task_catalog(Settings(onchain_data_mode="live"))
     assert all(t["availability"] == "READY" for t in demo)
-    assert sum(t["availability"] == "REQUIRES_OKX" for t in live) == 12
+    assert sum(t["availability"] == "REQUIRES_DATA_PROVIDER" for t in live) == 12
     assert [t["digest"] for t in demo] == [t["digest"] for t in live] == [t["digest"] for t in TASKS]
     assert not any("examples" in t for t in live)
     with pytest.raises(ValidationError):
@@ -33,7 +33,7 @@ def test_every_demo_template_runs_signed_plan_with_normal_authorization_without_
         pytest.fail("Demo must not access credentials or external HTTP")
     monkeypatch.setattr(onchain_os, "credentials", forbidden)
     monkeypatch.setattr(onchain_os.httpx, "Client", forbidden)
-    config = Settings(onchain_data_mode="demo", okx_secret_arn="ignored-in-demo")
+    config = Settings(onchain_data_mode="demo", data_provider_secret_arn="ignored-in-demo")
     control = Control(MemoryStore())
     owner = Principal(sub="demo-user", tenant="demo-user", auth_key="demo-login")
     seen = set()
@@ -52,7 +52,7 @@ def test_every_demo_template_runs_signed_plan_with_normal_authorization_without_
             result = execute_tool(control, config, claims, tool, args)
             assert result["simulated"] is True
             assert result["dataset"] == DATASET
-            assert result["provider"] != "OKX Onchain OS"
+            assert result["provider"] != "链上数据服务"
             assert result["data"]  # Every provided example actually returns useful data.
             return result
         async def progress(**_event):
@@ -132,8 +132,27 @@ def test_trading_quote_respects_explicit_demo_mode_even_if_a_secret_is_retained(
         pytest.fail("A retained live secret must not be used in demo mode")
     monkeypatch.setattr("onchain.services.boto3.client", forbidden)
     monkeypatch.setattr("onchain.services.httpx.post", forbidden)
-    quote = quote_eth(Settings(okx_secret_arn="retained-secret"))
+    quote = quote_eth(Settings(data_provider_secret_arn="retained-secret"))
     assert quote["simulated"] is True and quote["price"] == 3000
     with pytest.raises(Denied) as error:
         quote_eth(Settings(onchain_data_mode="live"))
-    assert error.value.code == "OKX_NOT_CONFIGURED"
+    assert error.value.code == "PROVIDER_NOT_CONFIGURED"
+
+
+def test_provider_configuration_preserves_legacy_deployments_and_prefers_new_variable(monkeypatch):
+    from onchain.config import settings
+    assert Settings(okx_secret_arn="legacy-secret").data_provider_secret_arn == "legacy-secret"
+    monkeypatch.setenv("ENVIRONMENT", "local")
+    monkeypatch.setenv("OKX_SECRET_ARN", "legacy-secret")
+    monkeypatch.delenv("DATA_PROVIDER_SECRET_ARN", raising=False)
+    try:
+        settings.cache_clear()
+        assert settings().data_provider_secret_arn == "legacy-secret"
+        monkeypatch.setenv("DATA_PROVIDER_SECRET_ARN", "new-secret")
+        settings.cache_clear()
+        assert settings().data_provider_secret_arn == "new-secret"
+        monkeypatch.setenv("DATA_PROVIDER_SECRET_ARN", "")
+        settings.cache_clear()
+        assert settings().data_provider_secret_arn == ""
+    finally:
+        settings.cache_clear()
