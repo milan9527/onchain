@@ -1,0 +1,50 @@
+import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
+import { cognitoLogin, cognitoSignIn } from "./cognito";
+
+test("real Cognito confirmation returns to the originating Agent conversation and execution timeline", async ({ page }) => {
+  test.skip(!process.env.TEST_BASE_URL?.startsWith("https://"), "Requires the deployed Cognito and AgentCore services");
+  test.setTimeout(300_000);
+  const credentials = JSON.parse(fs.readFileSync(path.resolve("../.deployment/smoke-credentials.json"), "utf8")).bob;
+  await cognitoLogin(page, credentials);
+  const me = await (await page.request.get("/api/auth/me")).json();
+  const before = await (await page.request.get("/api/dashboard")).json();
+  const agent = before.agents.filter((a: any) => a.status === "ACTIVE" && a.skill_id === "controlled-trader").at(-1);
+  expect(agent).toBeTruthy();
+  await page.getByRole("button", { name: "Agent 工作台" }).click();
+  await page.getByLabel("选择 Agent").selectOption(agent.id);
+  await page.getByRole("button", { name: "新会话", exact: true }).click();
+  await page.getByLabel("输入操作意图").fill("用 1 USDC 买入 ETH");
+  await page.getByRole("button", { name: "发送", exact: true }).click();
+  await expect(page.getByRole("button", { name: "查看操作详情" })).toBeVisible({ timeout: 130_000 });
+  const originId = await page.evaluate(key => localStorage.getItem(key),
+    `onchain:last-session:${me.user.sub}:${agent.id}`);
+  expect(originId).toBeTruthy();
+  const prepared = await (await page.request.get("/api/dashboard")).json();
+  const op = prepared.operations.find((o: any) => o.conversation_id === originId && o.status === "PENDING");
+  expect(op).toBeTruthy();
+  await page.getByRole("button", { name: "查看操作详情" }).click();
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "验证并执行", exact: true }).click();
+  await cognitoSignIn(page, credentials);
+  await expect(page.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
+  await expect(page.getByLabel("选择 Agent")).toHaveValue(agent.id);
+  await expect(page.getByTestId("conversation-" + originId)).toHaveClass(/selected/);
+  await expect(page.getByTestId("operation-" + op.id).getByText("已完成", { exact: true }))
+    .toBeVisible({ timeout: 100_000 });
+  const session = await (await page.request.get("/api/conversations/" + originId)).json();
+  expect(session.can_resume).toBe(true);
+  expect(session.runs.at(-1).kind).toBe("execute");
+  const timeline = page.getByRole("region", { name: "运行过程" });
+  await expect(timeline.getByText("Gateway 权限检查通过", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("输入操作意图")).toBeVisible();
+  const after = await (await page.request.get("/api/dashboard")).json();
+  expect(Number(after.wallet.USDC)).toBe(Number(before.wallet.USDC) - 1);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
+  await expect(page.getByTestId("conversation-" + originId)).toHaveClass(/selected/);
+  await expect(page.getByTestId("operation-" + op.id).getByText("已完成", { exact: true })).toBeVisible();
+  expect(Number((await (await page.request.get("/api/dashboard")).json()).wallet.USDC)).toBe(Number(after.wallet.USDC));
+  await page.screenshot({ path: "../.deployment/oauth-return-conversation.png", fullPage: true });
+});
