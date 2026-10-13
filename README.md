@@ -6,6 +6,14 @@
 
 已部署网站：<https://d2omddnartt627.cloudfront.net>。资源与验收方法见 [部署记录](docs/deployment.md)。
 
+## AWS 架构图
+
+[可编辑 draw.io 文件](docs/diagrams/onchain-architecture.drawio)使用 AWS 原生风格图标，包含三页：
+整体部署、交易认证与拦截、用户与 Session 隔离。
+[查看 PNG 预览与编辑说明](docs/diagrams/README.md)。
+
+![AWS 平台架构](docs/diagrams/01-aws-architecture.png)
+
 ## 已实现
 
 - Cognito managed login：OAuth 授权码 + PKCE、注册、密码恢复及 TOTP MFA。

@@ -1,0 +1,1028 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="Onchain Control architecture generator" version="29.0.0" type="device" compressed="false">
+  <diagram id="page-1" name="01 整体部署 / AWS architecture">
+    <mxGraphModel dx="2520" dy="1740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2520" pageHeight="1740" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Onchain Control · AWS 部署架构" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="2220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="前后端分离  |  Agent 市场 · Agent 管理 · Agent 工作台 · MCP / Skill 管理  |  AWS Region: us-east-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="86" width="2360" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="number" value="01 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1688" width="2400" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="aws" value="" style="rounded=0;html=1;fillColor=#FAFBFC;strokeColor=#69788A;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="370" y="145" width="2090" height="1385" as="geometry" />
+        </mxCell>
+        <mxCell id="aws-label" value="AWS Cloud  ·  us-east-1 区域服务 + CloudFront 全球边缘服务" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#69788A;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="157" width="2050" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-zone" value="" style="rounded=0;html=1;fillColor=#F3FAF8;strokeColor=#087F75;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="770" width="1120" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-zone-label" value="两座 AgentCore Gateway 共用 REQUEST / RESPONSE 拦截器 + Policy" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="850" y="782" width="1080" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="browser" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="190" width="265" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="browser">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-title" value="用户浏览器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry x="80" y="16" width="169" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-detail" value="React / Vite&lt;br&gt;买卖双方各自的工作空间" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry x="20" y="77" width="225" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="external" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="850" width="265" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="external-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.client;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="external">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="external-title" value="外部 MCP 客户端" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="external">
+          <mxGeometry x="80" y="16" width="169" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="external-detail" value="Cognito Access Token&lt;br&gt;连接授权 + MCP scopes&lt;br&gt;无需 AWS IAM 凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="external">
+          <mxGeometry x="20" y="77" width="225" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="okx" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1300" width="265" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="okx-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="okx">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="okx-title" value="OKX Onchain OS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="okx">
+          <mxGeometry x="80" y="16" width="169" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="okx-detail" value="外部实时数据服务（可选）&lt;br&gt;当前未配置 OKX Key&lt;br&gt;不含实盘签名与广播" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="okx">
+          <mxGeometry x="20" y="77" width="225" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="cf" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="190" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cf-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudfront;fillColor=#8C4FFF;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="cf">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="cf-title" value="Amazon CloudFront" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="cf">
+          <mxGeometry x="80" y="16" width="164" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="cf-detail" value="HTTPS 静态站点 / API 代理&lt;br&gt;API 请求不缓存" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="cf">
+          <mxGeometry x="20" y="77" width="220" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="380" width="260" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;fillColor=#7AA116;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="s3">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-title" value="Amazon S3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="s3">
+          <mxGeometry x="80" y="16" width="164" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-detail" value="私有前端资源&lt;br&gt;Origin Access Control" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="s3">
+          <mxGeometry x="20" y="77" width="220" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="http" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="190" width="290" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="http-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;fillColor=#E7157B;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="http">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="http-title" value="Amazon API Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="http">
+          <mxGeometry x="80" y="16" width="194" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="http-detail" value="HTTP API&lt;br&gt;/api/*" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="http">
+          <mxGeometry x="20" y="77" width="250" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="190" width="330" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="api-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="api">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="api-title" value="AWS Lambda · API / BFF" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="api">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="api-detail" value="用户与会话 · 市场交易 · Agent 管理&lt;br&gt;意图确认 / CSRF / 操作审批" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="api">
+          <mxGeometry x="20" y="77" width="290" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="380" width="310" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="cognito">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-title" value="Amazon Cognito" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="cognito">
+          <mxGeometry x="80" y="16" width="214" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-detail" value="User Pool / managed login&lt;br&gt;OAuth code + PKCE / 重新认证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="cognito">
+          <mxGeometry x="20" y="77" width="270" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="kms" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="365" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="kms-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.key_management_service;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="kms">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="kms-title" value="AWS KMS · 两把密钥" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="kms">
+          <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="kms-detail" value="执行凭据签名 + 公钥验证&lt;br&gt;OAuth refresh-token 加密&lt;br&gt;仅 BFF 可解密 OAuth 凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="kms">
+          <mxGeometry x="20" y="77" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="190" width="330" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="db-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="db">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="db-title" value="Amazon DynamoDB" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="db">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="db-detail" value="用户 / Session / 操作 / 授权 / 历史&lt;br&gt;市场目录 / 买卖双方订单&lt;br&gt;条件更新 + 原子事务" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="db">
+          <mxGeometry x="20" y="77" width="290" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="model" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="380" width="330" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="model-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="model">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="model-title" value="Amazon Bedrock" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="model">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="model-detail" value="us.openai.gpt-6-sol&lt;br&gt;自然语言意图识别" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="model">
+          <mxGeometry x="20" y="77" width="290" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="events" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="565" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="events-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eventbridge;fillColor=#E7157B;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="events">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="events-title" value="Amazon EventBridge" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="events">
+          <mxGeometry x="80" y="16" width="164" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="events-detail" value="定时 Rule · 每分钟&lt;br&gt;仅触发调度器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="events">
+          <mxGeometry x="20" y="77" width="220" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduler" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="565" width="290" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduler-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="scheduler">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduler-title" value="AWS Lambda · Scheduler" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="scheduler">
+          <mxGeometry x="80" y="16" width="194" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduler-detail" value="已批准的定投 grant&lt;br&gt;额度 / 到期 / 撤销校验" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="scheduler">
+          <mxGeometry x="20" y="77" width="250" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="queue" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="565" width="330" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;fillColor=#E7157B;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="queue">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-title" value="Amazon SQS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="queue">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-detail" value="持久任务队列 + DLQ&lt;br&gt;稳定 job / operation ID" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="queue">
+          <mxGeometry x="20" y="77" width="290" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="worker" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="565" width="280" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="worker">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-title" value="AWS Lambda · Worker" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="worker">
+          <mxGeometry x="80" y="16" width="184" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-detail" value="核验签名与归属&lt;br&gt;调用 Runtime / 保存 SSE 运行事件" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="worker">
+          <mxGeometry x="20" y="77" width="240" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="agent" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="565" width="330" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="agent">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-title" value="AgentCore · Agent Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="agent">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-detail" value="独立 runtime_session_id&lt;br&gt;聊天意图 / 固定模板任务&lt;br&gt;无数据库写权限，无批准工具" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="agent">
+          <mxGeometry x="20" y="77" width="290" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="public-gw" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="880" y="840" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="public-gw-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="public-gw">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="public-gw-title" value="公共 OAuth Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="public-gw">
+          <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="public-gw-detail" value="Cognito JWT / audience / scope&lt;br&gt;用户已授权的 Agent 连接" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="public-gw">
+          <mxGeometry x="20" y="77" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-gw" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="840" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-gw-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="internal-gw">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-gw-title" value="内部 Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="internal-gw">
+          <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-gw-detail" value="KMS 签名的短期 capability&lt;br&gt;owner / session / run 绑定" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="internal-gw">
+          <mxGeometry x="20" y="77" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="875" y="1030" width="295" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="request-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="request">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="request-title" value="REQUEST 拦截器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="request">
+          <mxGeometry x="80" y="16" width="199" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="request-detail" value="身份 / 会话 / Skill / MCP 订阅&lt;br&gt;工具 schema / 审批 / 额度&lt;br&gt;签名绑定工具与参数摘要" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="request">
+          <mxGeometry x="20" y="77" width="255" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="response" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="1030" width="295" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="response-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="response">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="response-title" value="RESPONSE 拦截器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="response">
+          <mxGeometry x="80" y="16" width="199" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="response-detail" value="过滤可发现工具&lt;br&gt;清理敏感输出" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="response">
+          <mxGeometry x="20" y="77" width="255" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="policy" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1545" y="1030" width="360" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="policy">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-title" value="AgentCore Policy" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="policy">
+          <mxGeometry x="80" y="16" width="264" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-detail" value="Cedar · ENFORCE&lt;br&gt;固定已审核工具 allowlist&lt;br&gt;最终执行检查仍由 Executor 完成" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="policy">
+          <mxGeometry x="20" y="77" width="320" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="850" width="330" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="mcp">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-title" value="AgentCore · MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="mcp">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-detail" value="独立托管的私有 MCP 服务&lt;br&gt;仅 Gateway IAM role 可调用&lt;br&gt;验证签名工具上下文" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="mcp">
+          <mxGeometry x="20" y="77" width="290" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="executor" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="1150" width="330" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="executor">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-title" value="AWS Lambda · Executor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="executor">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-detail" value="重新读取归属 / epoch / 授权&lt;br&gt;余额 / 日额度 / 滑点 / 幂等检查&lt;br&gt;原子提交 paper 交易" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="executor">
+          <mxGeometry x="20" y="77" width="290" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="demo" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="1360" width="330" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="demo-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="demo">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="demo-title" value="内置演示适配器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="demo">
+          <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="demo-detail" value="明确标注 demo / paper&lt;br&gt;无 OKX Key 也可运行完整流程" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="demo">
+          <mxGeometry x="20" y="77" width="290" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="secrets" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="1360" width="325" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="secrets-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="secrets">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="secrets-title" value="AWS Secrets Manager" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="secrets">
+          <mxGeometry x="80" y="16" width="229" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="secrets-detail" value="可选 live 数据凭据&lt;br&gt;当前未配置" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="secrets">
+          <mxGeometry x="20" y="77" width="285" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="logs" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1100" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="logs-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch;fillColor=#E7157B;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="logs">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="logs-title" value="Amazon CloudWatch" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="logs">
+          <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="logs-detail" value="Lambda / Runtime 服务日志&lt;br&gt;用户运行历史另存 DynamoDB" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="logs">
+          <mxGeometry x="20" y="77" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="data-note" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1300" width="1050" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="data-note-title" value="状态与权限依赖" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="data-note">
+          <mxGeometry x="20" y="12" width="1010" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="data-note-body" value="API、拦截器、Executor 与调度器按服务角色访问 DynamoDB / KMS。&lt;br&gt;Worker 将 SSE 事件写入 owner 绑定的运行记录；前端通过 BFF 轮询。&lt;br&gt;Agent Runtime 不直接访问用户数据库，也不能授权或签名交易。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="data-note">
+          <mxGeometry x="20" y="51" width="1010" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="web-cf" value="HTTPS" source="browser" target="cf" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cf-api" value="/api/*" source="cf" target="http" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="api-bff" value="HTTP" source="http" target="api" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cf-s3" value="静态资源" source="cf" target="s3" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="login" value="OAuth / PKCE" source="browser" target="cognito" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="192" y="540" />
+              <mxPoint x="750" y="540" />
+              <mxPoint x="750" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oauth-callback" value="回调 / code exchange" source="cognito" target="api" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.36;entryY=1;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1145" y="450" />
+              <mxPoint x="1145" y="355" />
+              <mxPoint x="1320" y="355" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bff-state" value="会话 / 市场事务 / 操作" source="api" target="db" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#69788A;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#69788A;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-kms" value="签名 / OAuth vault" source="api" target="kms" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.85;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1730" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bff-job" value="签名任务" source="api" target="queue" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tick" value="触发" source="events" target="scheduler" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="schedule-job" value="已批准定投" source="scheduler" target="queue" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-worker" value="SQS event" source="queue" target="worker" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-agent" value="chat / task" source="worker" target="agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-model" value="聊天调用模型" source="agent" target="model" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-gateway" value="工具请求" source="agent" target="internal-gw" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2010" y="745" />
+              <mxPoint x="1490" y="745" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="execute-gateway" value="已批准 execute（不再经过模型）" source="worker" target="internal-gw" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.34;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1780" y="730" />
+              <mxPoint x="1380" y="730" />
+            </Array>
+            <mxPoint x="0" y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="external-gw" value="Cognito OAuth MCP" source="external" target="public-gw" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="public-mcp" value="IAM 服务调用" source="public-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.26;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="815" />
+              <mxPoint x="1990" y="815" />
+              <mxPoint x="1990" y="895" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="internal-mcp" value="IAM + 签名用户工具上下文" source="internal-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="public-gw-request" value="" source="public-gw" target="request" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="1010" />
+              <mxPoint x="1022" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="public-gw-response" value="" source="public-gw" target="response" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="1010" />
+              <mxPoint x="1357" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="public-gw-policy" value="" source="public-gw" target="policy" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="1010" />
+              <mxPoint x="1725" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="internal-gw-request" value="" source="internal-gw" target="request" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1430" y="1010" />
+              <mxPoint x="1022" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="internal-gw-response" value="" source="internal-gw" target="response" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1430" y="1010" />
+              <mxPoint x="1357" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="internal-gw-policy" value="" source="internal-gw" target="policy" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1430" y="1010" />
+              <mxPoint x="1725" y="1010" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mcp-executor" value="仅调用受信任 Executor" source="mcp" target="executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-state" value="" source="executor" target="db" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#69788A;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#69788A;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2420" y="1235" />
+              <mxPoint x="2420" y="265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="executor-demo" value="demo" source="executor" target="demo" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-secrets" value="仅 live" source="executor" target="secrets" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="live-okx" value="可选 live adapter · 当前关闭" source="executor" target="okx" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1990" y="1290" />
+              <mxPoint x="1990" y="1510" />
+              <mxPoint x="192" y="1510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F3F5F7;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1570" width="2380" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="阅读说明" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="legend">
+          <mxGeometry x="20" y="12" width="2340" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-body" value="蓝线：业务 / 工具调用    绿线：身份与权限    橙线：已批准自动执行或可选 live    虚线：控制依赖 / 可选配置&lt;br&gt;Gateway 的 Policy 与拦截器顺序不作假设；Executor 必须最终核验。当前没有 Guardrails、实盘 signer 或链上广播。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="legend">
+          <mxGeometry x="20" y="51" width="2340" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page-2" name="02 交易认证与拦截 / Trade control">
+    <mxGraphModel dx="2520" dy="1740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2520" pageHeight="1680" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="从用户意图到受控成交" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="2220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="示例：Base 上用 20 USDC 买入 ETH  |  Cognito 确认绑定不可变 intent_hash  |  当前为模拟成交" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="86" width="2360" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="number" value="02 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1628" width="2400" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare" value="" style="rounded=0;html=1;fillColor=#F3F8FC;strokeColor=#147EBA;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="2380" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare-label" value="A · 准备订单：提出意图不等于授权" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#147EBA;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="172" width="2340" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="consent" value="" style="rounded=0;html=1;fillColor=#F1F9F6;strokeColor=#087F75;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="2380" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="consent-label" value="B · 用户确认：独立于模型与 MCP" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="612" width="2340" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="settle" value="" style="rounded=0;html=1;fillColor=#FFFAF0;strokeColor=#B56500;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1040" width="2380" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="settle-label" value="C · 执行与回执：同一订单只结算一次" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#B56500;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1052" width="2340" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="intent" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="230" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="intent-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="intent">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="intent-title" value="01 · 用户在 Agent 工作台提出意图" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="intent">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="intent-detail" value="选择本人的 Agent / 会话&lt;br&gt;输入「用 20 USDC 买入 ETH」&lt;br&gt;或选择该 Agent 的下单示例" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="intent">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="recognize" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="695" y="230" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="recognize-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="recognize">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="recognize-title" value="02 · Agent Runtime 准备请求" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="recognize">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="recognize-detail" value="聊天：Bedrock GPT-6 Sol 识别意图&lt;br&gt;模板：按已签名的固定步骤运行&lt;br&gt;模型输出是待验证的输入，不是授权" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="recognize">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare-tools" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="230" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare-tools-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="prepare-tools">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare-tools-title" value="03 · Gateway → MCP → Executor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="prepare-tools">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="prepare-tools-detail" value="余额 / 报价 / prepare_trade&lt;br&gt;逐次检查用户、Session、Skill、订阅&lt;br&gt;工具 schema 与交易单笔上限" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="prepare-tools">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="pending" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1905" y="230" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="pending-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="pending">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="pending-title" value="04 · 保存 PENDING 操作" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="pending">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="pending-detail" value="绑定 owner / Agent / conversation_id&lt;br&gt;金额、资产、网络、滑点、最低接收量&lt;br&gt;生成不可变 intent_hash；尚未扣款" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="pending">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="review" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="670" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="review-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="review">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="review-title" value="05 · 用户核对并勾选确认" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="review">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="review-detail" value="查看金额、参考价与最低接收量&lt;br&gt;点击「验证并执行」&lt;br&gt;浏览器保存原 Agent / 会话返回位置" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="review">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="stepup" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="695" y="670" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="stepup-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="stepup">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="stepup-title" value="06 · Cognito 重新认证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="stepup">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="stepup-detail" value="Authorization Code + PKCE&lt;br&gt;prompt=login / max_age=0&lt;br&gt;校验 state / nonce / auth_time / 用户" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="stepup">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="approve" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="670" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="approve-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="approve">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="approve-title" value="07 · BFF 消费一次性确认凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="approve">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="approve-detail" value="CSRF + 同一登录 + 操作 ID + intent_hash&lt;br&gt;凭据仅供当前操作使用且短期有效&lt;br&gt;恢复原会话，批准并提交该笔执行" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="approve">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="queued" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1905" y="670" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="queued-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;fillColor=#E7157B;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="queued">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="queued-title" value="08 · SQS 持久化执行任务" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="queued">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="queued-detail" value="只携带已批准的 operation_id&lt;br&gt;KMS 签名 owner / Session / Agent / run&lt;br&gt;不存储用户密码" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="queued">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-worker" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="1110" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-worker-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="execution-worker">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-worker-title" value="09 · Worker 直接调用 Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="execution-worker">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-worker-detail" value="验证 capability 与当前生命周期&lt;br&gt;调用 execute_trade(operation_id)&lt;br&gt;交易执行不重新依赖模型做决定" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="execution-worker">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="enforce" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="695" y="1110" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="enforce-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="enforce">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="enforce-title" value="10 · Gateway / MCP 权限检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="enforce">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="enforce-detail" value="REQUEST 拦截器 + Policy ENFORCE&lt;br&gt;Agent epoch / scope / Skill / MCP 订阅&lt;br&gt;MCP 验签后仅调用受信任 Executor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="enforce">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="commit" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="1110" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="commit-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="commit">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="commit-title" value="11 · Executor 原子核验并成交" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="commit">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="commit-detail" value="重读 owner / operation / grant / epoch&lt;br&gt;检查余额、日额度、滑点与意图摘要&lt;br&gt;按本人 paper 钱包结算；拒绝未批准操作" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="commit">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1905" y="1110" width="500" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="receipt">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt-title" value="12 · CONFIRMED + 唯一回执" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="receipt">
+          <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt-detail" value="扣减 USDC、增加 ETH、记录预算消耗&lt;br&gt;同一原子更新写入 paper_… 回执&lt;br&gt;重试返回原结果，前端轮询原会话展示" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="receipt">
+          <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="step-0" value="" source="intent" target="recognize" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-1" value="" source="recognize" target="prepare-tools" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-2" value="" source="prepare-tools" target="pending" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-3" value="" source="review" target="stepup" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-4" value="" source="stepup" target="approve" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-5" value="" source="approve" target="queued" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-6" value="" source="execution-worker" target="enforce" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-7" value="" source="enforce" target="commit" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step-8" value="" source="commit" target="receipt" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pending-review" value="订单交给用户核对，不自动批准" source="pending" target="review" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2155" y="550" />
+              <mxPoint x="340" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="queued-worker" value="持久任务 → 当前执行状态重新核验" source="queued" target="execution-worker" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B56500;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#B56500;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2155" y="990" />
+              <mxPoint x="340" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fail" value="" style="rounded=1;arcSize=8;html=1;fillColor=#FFF2F3;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1430" width="1160" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="fail-title" value="任一安全检查失败：阻止执行，不扣款" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#C5354A;fontStyle=1;spacing=0;" vertex="1" parent="fail">
+          <mxGeometry x="20" y="12" width="1120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fail-body" value="越权 / 会话串用 / 非法工具参数 / 意图变更 / 过期授权 / 超额 / 滑点不满足 → 拒绝并记录。&lt;br&gt;一分钟内至少 3 次严重越权事件可触发 Agent 暂停与 epoch 递增。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="fail">
+          <mxGeometry x="20" y="51" width="1120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="return" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1430" width="1180" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="return-title" value="用户行为可控，认证返回与执行结果可追踪" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="return">
+          <mxGeometry x="20" y="12" width="1140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="return-body" value="Gateway 输出过滤不替代成交前校验；模型没有批准工具，OAuth scope 也不等于交易批准。&lt;br&gt;定投只在用户已确认的 grant 范围内运行；暂停、撤销或删除后，旧凭据不能继续执行。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="return">
+          <mxGeometry x="20" y="51" width="1140" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page-3" name="03 用户会话隔离 / User isolation">
+    <mxGraphModel dx="2520" dy="1740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2520" pageHeight="1740" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="卖家与买家的 Agent、Session 与数据隔离" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="2220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="共享平台与服务部署，分别绑定身份、会话和数据权限  |  购买复制经审核的配置，不复制卖家私有会话" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="86" width="2360" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="number" value="03 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1688" width="2400" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-zone" value="" style="rounded=0;html=1;fillColor=#F2F8FC;strokeColor=#147EBA;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="170" width="670" height="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-zone-label" value="用户 A · 卖家 / owner A" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#147EBA;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="182" width="630" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-zone" value="" style="rounded=0;html=1;fillColor=#F3F9F7;strokeColor=#087F75;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="840" y="170" width="830" height="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-zone-label" value="共享控制面与服务（不是共享用户权限）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="860" y="182" width="790" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-zone" value="" style="rounded=0;html=1;fillColor=#F7F4FC;strokeColor=#8C4FFF;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="170" width="670" height="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-zone-label" value="用户 B · 买家 / owner B" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=16;fontColor=#8C4FFF;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1800" y="182" width="630" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-id" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="230" width="590" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-id-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="seller-id">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-id-title" value="Cognito 用户 A" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="seller-id">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-id-detail" value="服务端从认证结果确定 tenant / sub&lt;br&gt;个人租户：一个用户对应一个 owner" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="seller-id">
+          <mxGeometry x="20" y="77" width="550" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-id" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1820" y="230" width="590" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-id-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="buyer-id">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-id-title" value="Cognito 用户 B" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="buyer-id">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-id-detail" value="独立登录 Cookie / OAuth token family&lt;br&gt;不能使用 A 的 Session 或操作批准" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="buyer-id">
+          <mxGeometry x="20" y="77" width="550" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="catalog" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="890" y="230" width="730" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="catalog-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="catalog">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="catalog-title" value="共享 Agent 市场目录" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="catalog">
+          <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="catalog-detail" value="MARKETPLACE#CATALOG：任务版本、Skill 摘要、价格、发布介绍&lt;br&gt;对外不公开 source_agent_id / owner；不含私有消息或凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="catalog">
+          <mxGeometry x="20" y="77" width="690" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="source-agent" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="470" width="590" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="source-agent-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="source-agent">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="source-agent-title" value="卖家来源 Agent A" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="source-agent">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="source-agent-detail" value="本人创建 / 选择任务模板&lt;br&gt;仅发布该 Skill 支持的已审核任务&lt;br&gt;发布版本与价格形成不可变条款" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="source-agent">
+          <mxGeometry x="20" y="77" width="550" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="purchase" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="890" y="470" width="730" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="purchase-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="purchase">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="purchase-title" value="BFF · Cognito 购买确认与原子结算" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="purchase">
+          <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="purchase-detail" value="校验 listing / template / Skill digest、买方身份与服务费&lt;br&gt;DynamoDB 事务：买方扣费、卖方收入、双边订单、买方新 Agent&lt;br&gt;普通任务不创建交易 grant；ETH 定投须另有明确交易范围" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="purchase">
+          <mxGeometry x="20" y="77" width="690" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-agent" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1820" y="470" width="590" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-agent-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="buyer-agent">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-agent-title" value="买家独立 Agent B" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="buyer-agent">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-agent-detail" value="新 agent_id / owner B / epoch&lt;br&gt;独立运行任务，按 Skill 展示示例动作&lt;br&gt;购买任务不会自动批准单笔交易" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="buyer-agent">
+          <mxGeometry x="20" y="77" width="550" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-session" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="760" width="590" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-session-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="seller-session">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-session-title" value="A 的 Runtime / MCP 会话" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="seller-session">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-session-detail" value="conversation_A → runtime_session_A&lt;br&gt;签名绑定 owner A / Agent A / run A&lt;br&gt;microVM 首次身份绑定&lt;br&gt;每次调用使用新的 MCP ClientSession" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="seller-session">
+          <mxGeometry x="20" y="77" width="550" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-session" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1820" y="760" width="590" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-session-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="buyer-session">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-session-title" value="B 的 Runtime / MCP 会话" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="buyer-session">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-session-detail" value="conversation_B → runtime_session_B&lt;br&gt;签名绑定 owner B / Agent B / run B&lt;br&gt;不能指定另一个用户的 Runtime session&lt;br&gt;认证返回仅恢复经过后端核实的本人会话" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="buyer-session">
+          <mxGeometry x="20" y="77" width="550" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-gateway" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="890" y="760" width="730" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-gateway-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="shared-gateway">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-gateway-title" value="Gateway 拦截器 / 私有 MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="shared-gateway">
+          <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-gateway-detail" value="JWT principal + conversation / run 绑定；禁止同用户跨会话复用&lt;br&gt;外部连接还绑定 client / token family / connection version&lt;br&gt;工具参数禁止注入 tenant、userId、wallet 或 runtime_sid&lt;br&gt;工具能力 = OAuth scopes ∩ 连接授权 ∩ MCP 订阅 ∩ Skill allowlist" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-gateway">
+          <mxGeometry x="20" y="77" width="690" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-data" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1070" width="590" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-data-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="seller-data">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-data-title" value="DynamoDB · owner A 数据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="seller-data">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-data-detail" value="USER#A：Agents / operations / grants / paper wallet&lt;br&gt;SESSION：每条记录带 owner，读取时校验&lt;br&gt;HISTORY#A#agent_id / RUN#A#conversation#run&lt;br&gt;卖家可见自己的收入与销售订单&lt;br&gt;不返回买方 Agent、钱包、会话或运行数据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="seller-data">
+          <mxGeometry x="20" y="77" width="550" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-data" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1820" y="1070" width="590" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-data-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;fillColor=#C925D1;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="buyer-data">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-data-title" value="DynamoDB · owner B 数据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="buyer-data">
+          <mxGeometry x="80" y="16" width="494" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-data-detail" value="USER#B：Agents / operations / grants / paper wallet&lt;br&gt;每个会话拥有独立平台 ID 与 Runtime ID&lt;br&gt;HISTORY#B#agent_id / RUN#B#conversation#run&lt;br&gt;订单、历史、审批、预算均按 owner 校验&lt;br&gt;本人的 Agents 共用本人钱包，不共享跨用户资金" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="buyer-data">
+          <mxGeometry x="20" y="77" width="550" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-executor" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="890" y="1070" width="730" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-executor-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="shared-executor">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-executor-title" value="Executor · 最终数据访问与写入边界" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="shared-executor">
+          <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="shared-executor-detail" value="验证 audience=onchain-tools、工具名与 arguments_hash&lt;br&gt;依据签名 owner 查找资源，不信任模型或客户端传入的身份&lt;br&gt;重读 Agent 状态 / epoch / 用户批准 / grant / 预算&lt;br&gt;交易只修改当前 owner 的状态；重复执行返回同一回执&lt;br&gt;市场服务费的双边事务仅由已确认的购买流程处理" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-executor">
+          <mxGeometry x="20" y="77" width="690" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-agent-edge" value="本人创建" source="seller-id" target="source-agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-agent-edge" value="本人持有" source="buyer-id" target="buyer-agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="publish" value="发布快照" source="source-agent" target="catalog" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="770" y="565" />
+              <mxPoint x="770" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="listing-purchase" value="已审核条款" source="catalog" target="purchase" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="purchase-clone" value="创建独立实例" source="purchase" target="buyer-agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-runtime" value="独立会话" source="source-agent" target="seller-session" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-runtime" value="独立会话" source="buyer-agent" target="buyer-session" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-tool" value="A 的签名调用" source="seller-session" target="shared-gateway" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-tool" value="B 的签名调用" source="buyer-session" target="shared-gateway" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#8C4FFF;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#8C4FFF;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checked-execution" value="验证后的工具上下文" source="shared-gateway" target="shared-executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="owner-a-access" value="仅 owner=A" source="shared-executor" target="seller-data" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="owner-b-access" value="仅 owner=B" source="shared-executor" target="buyer-data" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#8C4FFF;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#8C4FFF;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="seller-retention" value="A 不能读取 / 删除 B 的 Agent、Session、run 或订单。&lt;br&gt;共享 Runtime 部署不等于共享会话或权限。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#147EBA;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="105" y="1345" width="580" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="buyer-retention" value="B 不继承卖家会话、授权 grant、钱包或密钥。&lt;br&gt;卖家下架不会改变已售任务的买方批准范围。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#8C4FFF;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1825" y="1345" width="580" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="denial" value="" style="rounded=1;arcSize=8;html=1;fillColor=#FFF1F3;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="890" y="1340" width="730" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="denial-title" value="跨 owner / 跨 Session 请求 → DENY" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#C5354A;fontStyle=1;spacing=0;" vertex="1" parent="denial">
+          <mxGeometry x="20" y="12" width="690" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="denial-body" value="不以资源 ID、模型指令或 IAM 服务角色替代用户授权。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="denial">
+          <mxGeometry x="20" y="51" width="690" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="bound-claims" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1490" width="1170" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="bound-claims-title" value="短期签名绑定与后台强制检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="bound-claims">
+          <mxGeometry x="20" y="12" width="1130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bound-claims-body" value="owner + conversation + runtime_sid + Agent epoch + Skill digest + run&lt;br&gt;工具执行上下文再绑定 tool + arguments_hash；篡改、过期或权限撤销均拒绝。&lt;br&gt;同一 AWS 服务角色只表示服务身份，用户权限由签名上下文与当前状态共同决定。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="bound-claims">
+          <mxGeometry x="20" y="51" width="1130" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="revoke-history" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="1490" width="1180" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="revoke-history-title" value="删除 / 撤销后的行为" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="revoke-history">
+          <mxGeometry x="20" y="12" width="1140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="revoke-history-body" value="删除 Agent：标记 DELETED、递增 epoch、撤销 grants、取消 PENDING / APPROVED 操作。&lt;br&gt;旧 capability、旧 MCP 连接与排队执行无法恢复权限；历史保留只读。&lt;br&gt;会话与运行默认保留 30 天；用户身份从 Cognito 获取，模型不能选择 owner。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="revoke-history">
+          <mxGeometry x="20" y="51" width="1140" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,15 +1,25 @@
 # Architecture
 
+The editable [AWS draw.io diagram](diagrams/onchain-architecture.drawio) contains three pages:
+deployment, trade authentication/enforcement, and buyer/seller session isolation. It uses native
+AWS 4 service icons, including Bedrock AgentCore. See [previews and editing instructions](diagrams/README.md).
+
+![AWS deployment architecture](diagrams/01-aws-architecture.png)
+
 ```mermaid
 flowchart TD
-    Browser[React frontend / CloudFront] --> BFF[FastAPI BFF / Lambda]
+    Browser[React frontend] --> CF[CloudFront]
+    CF --> S3[Private S3 frontend / OAC]
+    CF --> HTTP[API Gateway HTTP API]
+    HTTP --> BFF[FastAPI BFF / Lambda]
     Browser --> Cognito[Cognito OAuth code + PKCE / managed login]
     Cognito --> BFF
     BFF --> KMS[KMS capability signer]
     BFF --> DB[DynamoDB user and session aggregates]
     BFF --> Queue[SQS jobs]
     Queue --> Worker[Trusted worker]
-    Worker --> Agent[AgentCore Agent Runtime]
+    Worker -->|chat / task| Agent[AgentCore Agent Runtime]
+    Worker -->|approved execute| Gateway
     Agent --> Bedrock[Bedrock us.openai.gpt-6-sol]
     Agent --> Gateway[AgentCore Gateway / JWT + Policy]
     Gateway --> Request[REQUEST interceptor]
@@ -24,7 +34,8 @@ flowchart TD
     OAuthGateway --> Request
     OAuthGateway --> MCP
     OAuthGateway --> Response
-    Schedule[EventBridge scheduler] --> Queue
+    Schedule[EventBridge periodic rule] --> Scheduler[Trusted Lambda scheduler]
+    Scheduler --> Queue
 ```
 
 The frontend and backend have independent sources, build artifacts and deployment commands.
