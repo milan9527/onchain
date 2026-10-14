@@ -3,6 +3,8 @@
 The editable [AWS draw.io diagram](diagrams/onchain-architecture.drawio) contains three pages:
 deployment, trade authentication/enforcement, and buyer/seller session isolation. It uses native
 AWS 4 service icons, including Bedrock AgentCore. See [previews and editing instructions](diagrams/README.md).
+For credentials on each hop and first-time consent, see the [two focused authentication diagrams](../README.md#runtime--gateway--mcp-的认证与用户隔离)
+and their [editable draw.io file](diagrams/identity-auth-flow.drawio).
 
 ![AWS deployment architecture](diagrams/01-aws-architecture.png)
 
@@ -21,18 +23,23 @@ flowchart TD
     Worker -->|chat / task| Agent[AgentCore Agent Runtime]
     Worker -->|approved execute| Gateway
     Agent --> Bedrock[Bedrock us.openai.gpt-6-sol]
-    Agent --> Gateway[AgentCore Gateway / JWT + Policy]
+    Agent -->|gateway_token| Gateway[AgentCore Gateway / JWT + Policy]
     Gateway --> Request[REQUEST interceptor]
     Request --> DB
     Request --> KMS
-    Gateway --> MCP[AgentCore MCP Runtime]
-    MCP --> Executor[Trusted tool executor]
+    Gateway -->|User OAuth + context_id| MCP[AgentCore MCP Runtime]
+    Gateway -->|Workload + user| Identity[AgentCore Identity]
+    Identity --> Vault[Token Vault / downstream user credentials]
+    Identity -->|User access token| Gateway
+    MCP -->|IAM + original user token + context_id| Executor[Trusted tool executor]
     Executor --> DB
     Executor --> DataProvider[Optional onchain data quote adapter]
     Gateway --> Response[RESPONSE interceptor]
     External[External MCP client / Cognito access token] --> OAuthGateway[Public OAuth Gateway / Cognito JWT + Policy]
     OAuthGateway --> Request
-    OAuthGateway --> MCP
+    OAuthGateway -->|Workload + user| Identity
+    Identity -->|User access token| OAuthGateway
+    OAuthGateway -->|User OAuth + context_id| MCP
     OAuthGateway --> Response
     Schedule[EventBridge periodic rule] --> Scheduler[Trusted Lambda scheduler]
     Scheduler --> Queue
@@ -52,14 +59,18 @@ API calls are never cached. Private S3 origin access is granted only to the dist
 6. A separate audience-bound Gateway capability carries the same verified binding.
 7. Gateway sessions are tied to authenticated user identity. The interceptor additionally binds each MCP
    session to the conversation and run, preventing same-user cross-conversation reuse.
-8. The request interceptor signs a short-lived tool capability bound to the exact tool and argument digest.
-9. The MCP runtime verifies it and invokes a trusted executor. The executor verifies it again and rereads
-   authoritative authorization state.
+8. The request interceptor writes a short-lived invocation record bound to the user, Agent, session,
+   exact tool and argument digest, then injects its opaque `context_id`.
+9. Identity supplies the user's downstream Cognito access token from Token Vault. MCP validates it,
+   calls Executor to validate the record, binds its process session, and only then requests execution.
+   Executor independently revalidates the token, record and current permissions before accessing user data.
 10. Both Runtime processes pin the first authenticated session identity for the lifetime of their microVM.
 
 Agent Runtime has no database, KMS signing, wallet signing, or arbitrary Lambda execution permissions.
-MCP Runtime can verify signatures and invoke exactly the trusted executor. Only API/interceptor/scheduler
-roles may sign capabilities. The MCP runtime resource policy restricts invocation to the Gateway role.
+MCP Runtime can verify signatures and invoke exactly the trusted executor. Only API/scheduler roles
+may sign routing capabilities; the interceptor does not sign tool JWTs. MCP uses Cognito JWT authentication.
+Its old Gateway-only IAM resource policy has been removed; OAuth alone still cannot authorize a tool effect
+without a valid invocation record and current business permissions.
 
 ## Durable state
 

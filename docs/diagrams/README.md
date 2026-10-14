@@ -9,11 +9,16 @@ CloudFront、S3、DynamoDB、SQS、EventBridge、KMS、Secrets Manager 和 Cloud
 图标、服务卡片、文字和连线均为可编辑对象，主文件不是嵌入的一张图片。
 以下 PNG 用于 GitHub 预览；可点击查看原始尺寸。
 
+要看清用户认证和凭证传递，先看 **04 数据流 → 05 首次授权**。
+这两张图保存在独立的[认证流程 draw.io 文件](identity-auth-flow.drawio)，可编辑节点、AWS 图标及所有连线。
+
 | 页面 | 内容 | PNG 预览 |
 |---|---|---|
 | 01 整体部署 | 前后端分离、内部与公共 Gateway、独立 Agent/MCP Runtime、执行器、数据和可选数据源接入 | [整体部署](01-aws-architecture.png) |
 | 02 交易认证与拦截 | 意图准备、Cognito 重新认证、一次性确认、Gateway 拦截、原子成交、回执和撤权 | [交易流程](02-trade-control.png) |
 | 03 用户会话隔离 | 卖家发布、买家购买独立 Agent、Runtime/MCP 会话绑定、数据归属与删除后的行为 | [用户隔离](03-user-isolation.png) |
+| 04 认证数据流 | 用户 → Runtime → Gateway → MCP；Identity / Token Vault 提供哪种凭证；在哪里验证 | [数据与凭证](04-identity-data-flow.png) |
+| 05 首次工具授权 | 缺少凭证 → Cognito 授权 → 原身份绑定 → Vault 保存 → 原会话续跑 | [授权时序](05-identity-consent.png) |
 
 ## 打开与编辑
 
@@ -55,10 +60,19 @@ CloudFront、S3、DynamoDB、SQS、EventBridge、KMS、Secrets Manager 和 Cloud
 
 ```bash
 python scripts/draw_architecture.py
+python scripts/draw_identity_flow.py
 ```
 
-生成器会重建 `.drawio` 文件；手工修改图后若需继续用生成器维护，也应同步修改生成器。
-结构修改后重新导出三张 PNG 预览。
+两个生成器分别重建整体架构（三页）与认证流程（两页）文件；手工修改图后若需继续用生成器维护，也应同步修改生成器。
+结构修改后重新导出对应的 PNG 预览。
+
+## 04 · 数据与凭证传递
+
+![用户、Runtime、Gateway、Identity、Token Vault 和 MCP 的数据流](04-identity-data-flow.png)
+
+## 05 · 首次授权与原会话续跑
+
+![Cognito / Identity 首次授权时序](05-identity-consent.png)
 
 ## 01 · 整体部署
 

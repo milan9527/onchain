@@ -1,0 +1,427 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="Onchain Control identity flow generator" version="29.0.0" type="device" compressed="false">
+  <diagram id="page-1" name="01 每次工具调用 / Authentication">
+    <mxGraphModel dx="2520" dy="1740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1180" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="每次工具调用：凭证怎么传，在哪里验证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="1300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="蓝线 = 工具调用；结果经 Gateway RESPONSE 脱敏后返回    绿线 = 登录与凭证管理    下游 token 不进入模型或浏览器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="86" width="1440" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="number" value="01 / 02" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="35" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1128" width="1480" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="user" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="165" width="350" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="user-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="user">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="user-title" value="用户 / 浏览器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="user">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="user-detail" value="Cognito 登录后获得会话 Cookie&lt;br&gt;发送任务，不指定其他用户身份" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="user">
+          <mxGeometry x="20" y="77" width="310" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="bff" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="165" width="350" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="bff">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-title" value="平台后端" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="bff">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-detail" value="校验登录、Agent 与会话&lt;br&gt;签发短期 JWT&lt;br&gt;Worker 调用 Agent Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="bff">
+          <mxGeometry x="20" y="77" width="310" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="165" width="400" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="cognito">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-title" value="Amazon Cognito" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="cognito">
+          <mxGeometry x="80" y="16" width="304" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-detail" value="签发登录与 MCP 用户 token&lt;br&gt;首次工具账户授权见图 2" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="cognito">
+          <mxGeometry x="20" y="77" width="360" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="agent" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="435" width="350" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="agent">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-title" value="Agent Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="agent">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-detail" value="验 runtime_token；绑定会话&lt;br&gt;生成工具名与参数&lt;br&gt;用 gateway_token 调 Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="agent">
+          <mxGeometry x="20" y="77" width="310" height="91" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="435" width="350" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="gateway">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-title" value="AgentCore Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="gateway">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-detail" value="验 JWT；检查 Skill / 工具权限&lt;br&gt;REQUEST 生成 context_id&lt;br&gt;Policy ENFORCE；失败即拦截" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="gateway">
+          <mxGeometry x="20" y="77" width="310" height="91" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="435" width="400" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="mcp">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-title" value="MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="mcp">
+          <mxGeometry x="80" y="16" width="304" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-detail" value="验证实际 Cognito access token&lt;br&gt;调用 Executor 授权并绑定会话&lt;br&gt;通过后才进入 execute" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="mcp">
+          <mxGeometry x="20" y="77" width="360" height="91" as="geometry" />
+        </mxCell>
+        <mxCell id="vault" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="770" width="350" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="vault">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-title" value="Token Vault" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="vault">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-detail" value="Identity 内的托管凭证存储&lt;br&gt;按 workload + 用户隔离&lt;br&gt;保管 access / refresh token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="vault">
+          <mxGeometry x="20" y="77" width="310" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="identity" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="770" width="350" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="identity">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-title" value="AgentCore Identity" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="identity">
+          <mxGeometry x="80" y="16" width="254" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-detail" value="按工作负载 + 用户取凭证&lt;br&gt;缺少凭证 → 发起 OAuth 授权&lt;br&gt;已有凭证 → 取用 / 刷新" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="identity">
+          <mxGeometry x="20" y="77" width="310" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="executor" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="770" width="400" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="executor">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-title" value="Executor → 用户数据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;fontSize=23;" vertex="1" parent="executor">
+          <mxGeometry x="80" y="16" width="304" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="executor-detail" value="再验 token、调用记录与当前权限&lt;br&gt;只读写已验证 owner 的钱包 / 订单&lt;br&gt;成交另外校验用户批准与额度" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;fontSize=20;" vertex="1" parent="executor">
+          <mxGeometry x="20" y="77" width="360" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="user-bff" value="Cookie + 任务" source="user" target="bff" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-cognito" value="登录 OAuth / PKCE" source="bff" target="cognito" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bff-agent" value="runtime_token（入站）+ gateway_token（供出站）" source="bff" target="agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="785" y="370" />
+              <mxPoint x="235" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="agent-gateway" value="gateway_token" source="agent" target="gateway" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-mcp" value="access token&lt;br&gt;+ context_id" source="gateway" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-identity" value="IAM / workload&lt;br&gt;+ 当前用户" source="gateway" target="identity" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-70" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="identity-gateway" value="本人下游&lt;br&gt;access token" source="identity" target="gateway" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="identity-vault" value="读写用户凭证" source="identity" target="vault" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-executor" value="IAM 服务调用&lt;br&gt;传 token + context_id" source="mcp" target="executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=19;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="record-box" value="" style="rounded=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="975" width="900" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="record-title" value="context_id 是服务端调用记录的编号，不是用户 token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=23;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="990" width="850" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="record-detail" value="记录绑定：用户 + Agent + 会话 + 工具 + 参数摘要；最长有效 120 秒。&lt;br&gt;Executor 比对 token 用户与记录用户，再检查会话、权限和撤销状态。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=20;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1030" width="850" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="deny-box" value="" style="rounded=1;fillColor=#FFF2F3;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="975" width="530" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="deny-title" value="用户或会话不匹配 → 拒绝" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=23;fontColor=#C5354A;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="990" width="490" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="deny-detail" value="共享 AWS 服务角色，不共享用户权限。&lt;br&gt;授权工具账户不等于批准交易。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=20;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="1030" width="490" height="65" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page-2" name="02 首次授权 / Consent">
+    <mxGraphModel dx="2520" dy="1740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1570" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="首次没有工具凭证：用户授权，再回原会话继续" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=32;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="1300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="平台 = BFF / Worker / Agent Runtime    本图展开图 1 的 Identity 旁路；已有有效凭证时跳过用户授权" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="86" width="1440" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="number" value="02 / 02" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="35" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1518" width="1480" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="user" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="user-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;fillColor=#232F3E;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="150" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="user-name" value="用户 / 浏览器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="user-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="platform" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="320" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;fillColor=#ED7100;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="410" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-name" value="平台" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="580" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="670" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-name" value="Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="identity" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="840" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="930" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-name" value="Identity" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="850" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-name" value="Cognito" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="vault" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="170" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-name" value="Token Vault" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="232" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-line" value="" style="shape=line;direction=south;strokeColor=#CDD4DC;dashed=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="280" width="1" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="lookup" value="" style="rounded=0;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="295" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lookup-label" value="1 · 首次调用：Gateway 找不到当前用户的下游凭证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=21;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="299" width="1480" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="lookup-identity" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="690" y="395" as="sourcePoint" />
+            <mxPoint x="950" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lookup-identity-label" value="取当前用户的 token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="700" y="347" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="lookup-vault" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="455" as="sourcePoint" />
+            <mxPoint x="1470" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lookup-vault-label" value="按 Gateway workload + 用户查询凭证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="407" width="500" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="no-token" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1470" y="510" as="sourcePoint" />
+            <mxPoint x="950" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="no-token-label" value="没有已授权凭证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="462" width="500" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="challenge" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="575" as="sourcePoint" />
+            <mxPoint x="170" y="575" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="challenge-label" value="授权链接经 Gateway → 平台返回；任务暂停，显示「授权并继续任务」" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="527" width="760" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="authorize" value="" style="rounded=0;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="authorize-label" value="2 · 用户授权：Cognito 验证本人；平台将此次授权绑定回原用户" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=21;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="604" width="1480" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="user-login" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="700" as="sourcePoint" />
+            <mxPoint x="1210" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="user-login-label" value="点击链接，经 Identity 跳转到 Cognito，登录 / 授权本人的工具账户" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="652" width="1020" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="oauth-code" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1210" y="760" as="sourcePoint" />
+            <mxPoint x="950" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oauth-code-label" value="回调携带授权码 code" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="712" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="return-platform" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="820" as="sourcePoint" />
+            <mxPoint x="170" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="return-platform-label" value="浏览器返回平台，携带 session_id（授权流程编号，不是 access token）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="772" width="760" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-complete" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="900" as="sourcePoint" />
+            <mxPoint x="430" y="900" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="browser-complete-label" value="Cookie + CSRF&lt;br&gt;+ session_id" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="852" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="complete" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="985" as="sourcePoint" />
+            <mxPoint x="950" y="985" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="complete-label" value="校验原用户 / 登录 / 会话；CompleteResourceTokenAuth&lt;br&gt;提交 session_id + 发起时原始 gateway_token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="937" width="500" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="code-exchange" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="1050" as="sourcePoint" />
+            <mxPoint x="1210" y="1050" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="code-exchange-label" value="兑换授权码" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1002" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="provider-tokens" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1210" y="1115" as="sourcePoint" />
+            <mxPoint x="950" y="1115" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="provider-tokens-label" value="access / refresh token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1067" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="store-tokens" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="1180" as="sourcePoint" />
+            <mxPoint x="1470" y="1180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="store-tokens-label" value="按 workload + 用户保存凭证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1132" width="500" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="complete-result" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="1245" as="sourcePoint" />
+            <mxPoint x="430" y="1245" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="complete-result-label" value="授权完成；下游 token 不返回浏览器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#087F75;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1197" width="500" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="resume" value="" style="rounded=0;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1270" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="resume-label" value="3 · 返回原 Agent 会话：重试原任务，重新通过图 1 的每一层检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=21;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="1274" width="1480" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="retry" edge="1" parent="1" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="1370" as="sourcePoint" />
+            <mxPoint x="690" y="1370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="retry-label" value="原任务&lt;br&gt;+ 新 gateway_token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=19;fontColor=#147EBA;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1322" width="240" height="43" as="geometry" />
+        </mxCell>
+        <mxCell id="result-note" value="" style="rounded=1;fillColor=#FFFAF0;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1410" width="1480" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="result-text" value="此后：Gateway 取得本人 access token + 新 context_id → MCP → Executor。&lt;br&gt;首次授权只连接工具账户；下单成交仍需要独立的用户确认。授权了另一个账号，会被用户匹配校验拒绝。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#B56500;fontStyle=0;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1425" width="1440" height="65" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -33,7 +33,7 @@ AWS = {
 
 
 class Page:
-    def __init__(self, file, name, number, title, subtitle, width=2520, height=1740):
+    def __init__(self, file, name, number, title, subtitle, width=2520, height=1740, total=3):
         diagram = ET.SubElement(file, "diagram", id=f"page-{number}", name=name)
         model = ET.SubElement(
             diagram, "mxGraphModel", dx="2520", dy="1740", grid="1", gridSize="10",
@@ -47,7 +47,7 @@ class Page:
         self.ids = {"0", "1"}
         self.text("title", 60, 30, width-300, 50, title, 32, INK, bold=True)
         self.text("subtitle", 60, 86, width-160, 45, subtitle, 17, GRAY)
-        self.text("number", width-200, 35, 140, 40, f"0{number} / 03", 22, GREEN, bold=True)
+        self.text("number", width-200, 35, 140, 40, f"{number:02} / {total:02}", 22, GREEN, bold=True)
         self.text("footer", 60, height-52, width-120, 28,
                   "ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形",
                   13, GRAY)
