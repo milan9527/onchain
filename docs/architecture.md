@@ -124,11 +124,15 @@ External calls appear in the conversation history and execution journal.
 The internal Gateway remains available to trusted BFF/worker/scheduler workloads using short-lived
 KMS-signed execution capabilities. Interactive capabilities inherit Cognito scopes and token expiry.
 The scheduler uses a separately approved, bounded, revocable offline grant, not a stored user password.
-Both Gateways invoke the private MCP Runtime using an IAM service role. IAM identifies that service
-hop; signed tool context carries user and exact-operation authority to the executor.
+Both Gateways use AgentCore Identity Token Vault to obtain user OAuth credentials for the MCP Runtime.
+The dedicated Cognito client/resource authenticates the downstream user. A short-lived database invocation
+record binds that user to the exact Agent, session, tool and arguments. MCP pins its process identity before
+execution; Executor independently verifies OAuth and the record and rechecks current permissions.
+IAM still permits service access to Vault and invocation of the designated Executor Lambda.
+The MCP Runtime uses PUBLIC networking with JWT authentication, not a VPC-private endpoint.
 
-Only the BFF can decrypt Cognito refresh tokens, with KMS encryption context bound to the login key.
-Neither Runtime receives refresh tokens. See [OAuth MCP setup](oauth-mcp.md) for client parameters,
+Only the BFF can decrypt application-stored Cognito login refresh tokens, with KMS encryption context bound to the login key.
+Neither Runtime receives refresh tokens. The BFF login store is separate from the managed downstream Token Vault. See [OAuth MCP setup](oauth-mcp.md) for client parameters,
 discovery, callback restrictions and the distinction between connection consent and trade approval.
 
 ## Execution

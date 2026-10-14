@@ -104,9 +104,10 @@ def test_interceptor_cannot_be_fooled_by_user_parameters(env):
     result = request_handler(gateway_event(token, "get_portfolio", {"userId": "bob"}), None)
     assert result["mcp"]["transformedGatewayResponse"]["body"]["error"]["data"]["code"] == "INVALID_TOOL_ARGUMENTS"
     result = request_handler(gateway_event(token, "get_portfolio", {}), None)
-    signed = result["mcp"]["transformedGatewayRequest"]["body"]["params"]["arguments"]["security_context"]
-    checked = env[3].verify(signed, "onchain-tools")
-    assert checked["owner"] == claims["owner"]
+    from onchain.security import digest
+    reference = result["mcp"]["transformedGatewayRequest"]["body"]["params"]["arguments"]["context_id"]
+    checked = env[1].get("CALL#" + digest(reference))
+    assert checked["claims"]["owner"] == claims["owner"]
     assert checked["tool"] == "get_portfolio"
 
 
@@ -178,8 +179,10 @@ def test_executor_rejects_argument_substitution(env):
     from onchain.services import executor_handler
     _, token = capability(env)
     response = request_handler(gateway_event(token, "get_portfolio", {}), None)
-    signed = response["mcp"]["transformedGatewayRequest"]["body"]["params"]["arguments"]["security_context"]
-    result = executor_handler({"security_context": signed, "tool": "get_history", "arguments": {}}, None)
+    reference = response["mcp"]["transformedGatewayRequest"]["body"]["params"]["arguments"]["context_id"]
+    access = env[3].issue("onchain-mcp-local", {"sub": env[4].sub, "tenant": env[4].tenant})
+    result = executor_handler({"phase": "execute", "access_token": access, "context_id": reference,
+                               "tool": "get_history", "arguments": {}}, None)
     assert result["error"]["code"] == "ARGUMENTS_CHANGED"
 
 

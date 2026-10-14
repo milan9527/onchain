@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import re
 import secrets
 import time
 import webbrowser
@@ -11,7 +12,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import httpx
-from mcp import ClientSession
+from mcp import ClientSession, McpError
 from mcp.client.streamable_http import streamable_http_client
 from mcp.shared._httpx_utils import create_mcp_http_client
 
@@ -74,7 +75,23 @@ async def invoke(gateway, token, tool, arguments):
                 if tool == "list":
                     result = await session.list_tools()
                 else:
-                    result = await session.call_tool("onchain___" + tool, arguments)
+                    try:
+                        result = await session.call_tool("onchain___" + tool, arguments)
+                    except McpError as error:
+                        data = error.error.data if isinstance(error.error.data, dict) else {}
+                        requests = data.get("elicitations", [])
+                        if error.error.code != -32042 or len(requests) != 1:
+                            raise
+                        url = requests[0].get("url", "")
+                        parsed = urlparse(url)
+                        if (parsed.scheme != "https" or not re.fullmatch(
+                                r"bedrock-agentcore\.[a-z0-9-]+\.amazonaws\.com", parsed.netloc)
+                                or parsed.path != "/identities/oauth2/authorize"):
+                            raise RuntimeError("Unexpected tool-account authorization URL") from error
+                        print("Authorize your own tool account, then return here:\n" + url, flush=True)
+                        webbrowser.open(url)
+                        await asyncio.to_thread(input, "After the platform confirms authorization, press Enter: ")
+                        result = await session.call_tool("onchain___" + tool, arguments)
                 print(result.model_dump_json(indent=2))
 
 

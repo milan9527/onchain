@@ -30,16 +30,17 @@ CloudFront、S3、DynamoDB、SQS、EventBridge、KMS、Secrets Manager 和 Cloud
 
 - 描述的是本仓库已实现的平台，区域为 `us-east-1`；CloudFront 是全球边缘服务。
   Bedrock 使用 `us.openai.gpt-6-sol` 推理配置，实际模型路由由该配置决定。
-- Cognito **User Pool** 为用户和外部 MCP 提供 OAuth；Gateway 到 MCP Runtime 的 IAM
-  role 表示服务身份，用户权限来自已验证的签名上下文和当前授权状态。
+- Cognito **User Pool** 为用户、外部 MCP 和下游 MCP Runtime 提供 OAuth。AgentCore Identity
+  Token Vault 管理下游用户凭证；短期服务端调用记录绑定 Agent、会话、工具、参数和当前授权。
+  MCP → Executor 仍使用 IAM 服务调用，同时独立验证用户 OAuth 和调用记录。
 - 内部和公共 Gateway 共用 REQUEST/RESPONSE 拦截器及 Policy ENFORCE。图中的控制依赖
   不规定 Policy 与拦截器的内部调用顺序，Executor 仍须在成交前最终核验。
 - 聊天及模板任务经过 Agent Runtime；已批准的单笔/定投执行由 Worker 直接调用 Gateway。
   固定模板不必再次调用模型来规划步骤。
 - 第三页的 A/B 图标表示同一服务部署中的独立 Agent、Runtime session 与数据归属，
   不表示为每位用户新建一套 AWS 资源。DynamoDB 的两个数据框是逻辑 owner 分区。
-- 当前为 `demo` 数据和 `paper` 交易。虚线的 Secrets Manager/数据源路径是可选 live
-  数据接入，当前未配置；图中没有实盘 signer 或链上广播组件，也没有配置 Guardrails。
+- 当前为 `demo` 数据和 `paper` 交易。橙色虚线的数据源路径是可选 live
+  数据接入，当前未配置；Secrets Manager 还保存 Identity provider 的 OAuth client secret；图中没有实盘 signer 或链上广播组件，也没有配置 Guardrails。
 
 ## 维护
 

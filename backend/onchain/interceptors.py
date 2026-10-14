@@ -81,11 +81,9 @@ def request_handler(event, _context):
         trace_claims(control, claims, "GATEWAY_ALLOWED", "gateway", "Gateway 权限检查通过",
                      {"mcp_server": "onchain", "tool": tool, "arguments": args,
                       "checks": ["身份与会话", "Skill 与 MCP 订阅", "参数规则", "操作权限"]})
-        # Agent-provided context is rejected by the public schema, then replaced with a signed envelope.
-        clean_claims = {k: v for k, v in claims.items() if k not in {"iss", "aud", "iat", "nbf", "exp", "jti"}}
-        request["params"]["arguments"]["security_context"] = tokens.issue(
-            "onchain-tools", {**clean_claims, "tool": tool, "arguments_hash": digest(args)}, ttl=120,
-        )
+        # The caller cannot supply this reference; OAuth and the authoritative record bind it to a user.
+        from .invocations import create_context
+        request["params"]["arguments"]["context_id"] = create_context(store, claims, tool, args)
         return {"interceptorOutputVersion": "1.0",
                 "mcp": {"transformedGatewayRequest": {"body": request}}}
     except Denied as e:
@@ -102,7 +100,7 @@ def request_handler(event, _context):
         return error_response(request, Denied("CONTROL_UNAVAILABLE", "Authorization checks unavailable."))
 
 
-SENSITIVE_KEYS = {"security_context", "access_token", "refresh_token", "id_token", "private_key", "api_key",
+SENSITIVE_KEYS = {"security_context", "context_id", "workload_access_token", "access_token", "refresh_token", "id_token", "private_key", "api_key",
                   "secret_key", "passphrase", "authorization", "gateway_token", "runtime_token"}
 
 
@@ -129,6 +127,24 @@ def response_handler(event, _context):
     result = copy.deepcopy(mcp.get("gatewayResponse", {}))
     try:
         body = result.get("body", {})
+        if req.get("body", {}).get("method") == "tools/call" and body.get("error", {}).get("code") == -32042:
+            from .identity import authorization_challenge, connection_key, pending_consent
+            challenge = authorization_challenge(body, config)
+            if challenge:
+                claims, p, _agent, _scopes = gateway_identity(
+                    config, store, control, tokens, req.get("headers", {}), req["body"], create=False)
+                if claims and claims.get("external"):
+                    key = connection_key(p.owner, "external")
+                    def pending(value):
+                        if not value or not value["active"]:
+                            raise Denied("IDENTITY_CONNECTION_REVOKED", "Tool connection authorization changed.")
+                        value["pending"] = True
+                        return value, value["epoch"]
+                    epoch = store.mutate(key, pending)
+                    pending_consent(config, store, p, bearer(req["headers"]), challenge["authorization_url"],
+                                    "external", epoch, claims=claims)
+                    control.run_status(p, claims["sid"], claims["run_id"], "BLOCKED")
+                    trace_claims(control, claims, "IDENTITY_REQUIRED", "gateway", "请完成工具账户授权", {}, "BLOCKED")
         if req.get("body", {}).get("method") == "tools/list" and "result" in body:
             claims, p, agent, scopes = gateway_identity(
                 config, store, control, tokens, req.get("headers", {}), req.get("body", {}), create=False,
@@ -143,8 +159,9 @@ def response_handler(event, _context):
                 if scopes is not None and TOOL_SCOPES.get(name) not in scopes:
                     continue
                 schema = tool.get("inputSchema", {})
-                schema.get("properties", {}).pop("security_context", None)
-                schema["required"] = [x for x in schema.get("required", []) if x != "security_context"]
+                for internal in ("context_id", "security_context"):
+                    schema.get("properties", {}).pop(internal, None)
+                schema["required"] = [x for x in schema.get("required", []) if x not in {"context_id", "security_context"}]
                 filtered.append(tool)
             body["result"]["tools"] = filtered
         return response(redact(body), result.get("statusCode", 200))

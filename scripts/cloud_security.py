@@ -75,10 +75,10 @@ def main():
             agentRuntimeArn=state["onchain_control_mcp"]["arn"],
             payload=b'{"jsonrpc":"2.0","id":1,"method":"tools/list"}',
         )
-        raise AssertionError("A non-Gateway IAM principal reached the MCP runtime")
+        raise AssertionError("IAM-only invocation reached the OAuth MCP runtime")
     except ClientError as error:
-        assert error.response["Error"]["Code"] == "AccessDeniedException"
-        print("PASS: direct MCP runtime bypass rejected by its resource policy")
+        assert error.response["Error"]["Code"] in {"AccessDeniedException", "UnauthorizedException"}
+        print("PASS: IAM-only invocation cannot replace the MCP user's OAuth token")
 
 
 if __name__ == "__main__":

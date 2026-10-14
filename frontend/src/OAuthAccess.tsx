@@ -4,7 +4,13 @@ import { api } from "./api";
 
 export function CognitoLogin() {
   const error = new URLSearchParams(window.location.search).get("auth_error");
-  const review = new URLSearchParams(window.location.search).get("review_operation");
+  const query = new URLSearchParams(window.location.search);
+  const review = query.get("review_operation");
+  const loginQuery = new URLSearchParams();
+  for (const key of ["review_operation", "identity_session", "identity_source"]) {
+    const value = query.get(key);
+    if (value) loginQuery.set(key, value);
+  }
   return <div className="login-page">
     <div className="login-story"><div className="brand"><span className="brand-icon"><Layers3 /></span><span>onchain<span className="brand-sub">CONTROL</span></span></div>
       <div><span className="eyebrow">YOUR INTENT. YOUR CONTROL.</span><h1>把执行交给 Agent。<br />把控制留给你。</h1><p>独立会话、明确授权、逐次验证。<br />身份与敏感操作统一由 Cognito 验证。</p></div>
@@ -12,7 +18,7 @@ export function CognitoLogin() {
     <div className="login-form-wrap"><div className="login-form"><span className="login-lock"><LockKeyhole size={27} /></span><h2>登录工作空间</h2>
       <p>前往 Cognito 登录、注册或恢复账号。启用验证器后，登录也需要动态验证码。</p>
       {error && <div role="alert" className="inline-error">认证未完成（{error}），请重新登录。</div>}
-      <button className="primary full" onClick={() => { window.location.assign("/api/auth/oauth/start" + (review ? "?review_operation=" + encodeURIComponent(review) : "")); }}>通过 Cognito 登录 <ArrowUpRight size={17} /></button>
+      <button className="primary full" onClick={() => { window.location.assign("/api/auth/oauth/start" + (loginQuery.size ? "?" + loginQuery : "")); }}>通过 Cognito 登录 <ArrowUpRight size={17} /></button>
       <div className="login-note"><ShieldCheck size={15} />密码只提交给 Cognito，不进入平台或模型。</div>
     </div></div>
   </div>;

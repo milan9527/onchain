@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
-import { cognitoLogin, cognitoSignIn } from "./cognito";
+import { cognitoLogin, cognitoSignIn, connectToolAccount } from "./cognito";
 
 test("seller publishes buy/sell Agents; buyer purchases both and confirms a round trip through AgentCore", async ({ browser }) => {
   test.skip(!process.env.TEST_BASE_URL?.startsWith("https://"), "Requires deployed Cognito and AgentCore");
@@ -49,6 +49,11 @@ test("seller publishes buy/sell Agents; buyer purchases both and confirms a roun
       await expect(buyer.getByRole("heading", { name: "Agent 工作台", exact: true })).toBeVisible();
       const aid = await buyer.getByLabel("选择 Agent").inputValue();
       purchased.push(aid);
+      await connectToolAccount(buyer, credentials.buyer);
+      // Tool-account consent can return to MCP management; restore the purchased Agent.
+      await buyer.getByRole("button", { name: "Agent 工作台", exact: true }).click();
+      await buyer.getByRole("tab", { name: "我的 Agents", exact: true }).click();
+      await buyer.getByTestId("agent-" + aid).getByRole("button", { name: "运行 Agent" }).click();
       let me = await (await buyer.request.get("/api/auth/me")).json();
       const purchasedState = await (await buyer.request.get("/api/dashboard")).json();
       expect(purchasedState.agents.find((a: any) => a.id === aid).template_id).toBe(template);

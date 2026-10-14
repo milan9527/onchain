@@ -12,6 +12,7 @@ import { AccountAccess, MfaSettings } from "./AccountAccess";
 import { ConversationHistory, type Conversation } from "./ConversationHistory";
 import { RunTimeline } from "./RunTimeline";
 import { CognitoLogin, McpConnections } from "./OAuthAccess";
+import { IdentityAuthorization, IdentityConnections, identityReturn, clearIdentityReturn } from "./IdentityConnections";
 import { AgentMarketplace, PurchaseSummary } from "./AgentMarketplace";
 import { TaskTemplates, CreateFromTemplate, TaskRunForm, TaskReport, supportsTask, type Task } from "./TaskTemplates";
 import { OrderDesk } from "./OrderDesk";
@@ -189,7 +190,27 @@ function App() {
     if (saved) { setView(["overview", "templates", "trading"].includes(saved.view) ? "workspace" : saved.view); setWorkspacePanel(saved.view === "templates" ? "templates" : saved.view === "overview" ? "agents" : "conversation"); }
     if (params.get("auth_error")) setError("认证未完成（" + params.get("auth_error") + "），操作尚未批准。");
     if (params.get("mcp") === "connected") { setView("market"); setNotice("MCP 连接授权已生效，可随时撤销。"); }
-    if (verified || review) {
+    if (params.get("identity_session")) {
+      const owner = user.sub;
+      restoringNavigation.current = true;
+      (async () => {
+        const result = await api("/identity/complete", "POST", {
+          session_uri: params.get("identity_session"), source: params.get("identity_source") || "internal",
+          resume_id: params.get("identity_source") === "external" ? "" : identityReturn(owner),
+        });
+        if (identity.current !== owner) return;
+        clearIdentityReturn(owner);
+        if (result.agent_id && result.conversation_id) {
+          await restoreConversation(result.agent_id, result.conversation_id);
+          setNotice("工具授权已完成，正在继续原会话的任务。");
+        } else {
+          setView("market"); setMcpTab("oauth"); setNotice("工具账户连接已生效。");
+        }
+        await refresh();
+        window.history.replaceState({}, "", "/");
+      })().catch(e => { if (identity.current === owner) fail(e); })
+        .finally(() => { if (identity.current === owner) restoringNavigation.current = false; });
+    } else if (verified || review) {
       const owner = user.sub;
       const origin = verified ? takeAuthReturn(owner, verified) : null;
       restoringNavigation.current = true;
@@ -214,7 +235,7 @@ function App() {
       })().catch(e => { if (identity.current === owner) fail(e); })
         .finally(() => { if (identity.current === owner) restoringNavigation.current = false; });
     }
-    window.history.replaceState({}, "", "/");
+    if (!params.get("identity_session")) window.history.replaceState({}, "", "/");
   }, [user]);
   useEffect(() => {
     if (!user || !state?.agents.some(agent => agent.id === selected) || restoringNavigation.current) return;
@@ -423,7 +444,7 @@ function App() {
           </div>}</>}</>}
           {view === "market" && <>
             <div className="market-tabs mcp-tabs">{[["all", "全部能力"], ["mcp", "MCP 服务"], ["skills", "Skills"], ["oauth", "OAuth 连接"]].map(([id, name]) => <button key={id} className={mcpTab === id ? "active" : ""} onClick={() => setMcpTab(id)}>{name}</button>)}</div>
-            {health.oauth && ["all", "oauth"].includes(mcpTab) && <McpConnections agents={state.agents} />}
+            {health.oauth && ["all", "oauth"].includes(mcpTab) && <><IdentityConnections /><McpConnections agents={state.agents} /></>}
             {mcpTab === "oauth" && !health.oauth && <p className="muted">外部 MCP OAuth 连接在 Cognito 云端环境启用。</p>}
             {["all", "mcp"].includes(mcpTab) && <>
             <div className="section-caption"><h2>MCP 服务</h2><span>平台托管 · 固定版本 · 逐次鉴权</span></div>
@@ -565,7 +586,7 @@ function Result({ result, operations, executions, onReview, onExecute }: {
   result: any; operations: Operation[]; executions: Record<string, Execution>;
   onReview: (op: Operation) => void; onExecute: (op: Operation) => Promise<void>;
 }) {
-  if (result.error) return <div className="tool-error"><ShieldAlert size={17} />{providerText(result.error.message || result.error.code)}</div>;
+  if (result.error) return result.error.code === "MCP_AUTH_REQUIRED" ? <IdentityAuthorization error={result.error} /> : <div className="tool-error"><ShieldAlert size={17} />{providerText(result.error.message || result.error.code)}</div>;
   const tool = result.tool_result;
   const op: Operation | undefined = operations.find(o => o.id === tool?.operation?.id) || tool?.operation;
   const running = op && executions[op.id]?.status === "EXECUTING" && op.status !== "CONFIRMED";
@@ -576,7 +597,7 @@ function Result({ result, operations, executions, onReview, onExecute }: {
     : op?.status === "APPROVED" ? "这笔交易已通过身份验证和批准，可以继续执行。"
     : op?.status === "PENDING" && result.action === "task" ? "订单已生成，核对金额、参考价与最低接收数量后验证身份，即可自动执行。"
     : result.action === "task" ? (tool?.error ? "任务调用被阻止，请查看原因。" : "已按模板完成工具调用，结果如下。") : result.intent?.explanation || (result.action === "execute" ? "执行服务已返回操作状态。" : "请求已处理。");
-  return <><p>{providerText(explanation)}</p>{result.intent?.action && <span className="intent-tag">意图 · {result.intent.action}</span>}{tool?.error && <div className="tool-error"><ShieldAlert size={16} />{providerText(tool.error.message || providerJson(tool.error))}</div>}{tool?.wallet && <div className="tool-result"><span>模拟资产</span><strong>{fmt(tool.wallet.USDC)} USDC</strong><strong>{fmt(tool.wallet.ETH, 6)} ETH</strong></div>}{tool?.price && <div className="tool-result"><span>ETH / USD</span><strong>${fmt(tool.price)}</strong><small>{tool.source && providerText(tool.source)}</small></div>}
+  return <><p>{providerText(explanation)}</p>{result.intent?.action && <span className="intent-tag">意图 · {result.intent.action}</span>}{tool?.error && (tool.error.code === "MCP_AUTH_REQUIRED" ? <IdentityAuthorization error={tool.error} /> : <div className="tool-error"><ShieldAlert size={16} />{providerText(tool.error.message || providerJson(tool.error))}</div>)}{tool?.wallet && <div className="tool-result"><span>模拟资产</span><strong>{fmt(tool.wallet.USDC)} USDC</strong><strong>{fmt(tool.wallet.ETH, 6)} ETH</strong></div>}{tool?.price && <div className="tool-result"><span>ETH / USD</span><strong>${fmt(tool.price)}</strong><small>{tool.source && providerText(tool.source)}</small></div>}
     {op && <div className="operation-card" data-testid={"operation-" + op.id}>
       <div><Fingerprint size={20} /><strong>{tradeAmount(op.intent)} → {receiveAsset(op.intent)}</strong></div>
       <Pill status={running ? "EXECUTING" : expired ? "EXPIRED" : op.status} />

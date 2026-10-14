@@ -67,7 +67,25 @@ platform exposes only owner-scoped conversation history and sanitized Gateway/ex
 The internal Gateway used by trusted workers has a different issuer and audience. It carries delegated
 execution context and supports separately approved offline schedules. Neither a Cognito token sent to
 that Gateway nor a platform capability sent to the public OAuth Gateway is accepted. Both Gateways
-use IAM only to reach the IAM-protected MCP Runtime, which independently verifies exact signed tool context.
+use AgentCore Identity Token Vault with OAuth AUTHORIZATION_CODE to reach the Cognito-protected MCP Runtime.
+Use MCP **2025-11-25 or newer**, including that version in `MCP-Protocol-Version` after initialization.
+An older protocol header cannot carry Gateway's URL authorization challenge.
+The first tool call without a Gateway credential returns JSON-RPC error `-32042` with
+`data.elicitations[].url`. Open this Identity URL and authorize the same Cognito user.
+The RESPONSE interceptor stores an encrypted copy of the original, verified inbound token bound to
+the authorization URI, MCP session and connection epoch. The platform callback requires the same user
+to be logged in, rechecks that original grant/session, and completes Identity's session binding.
+If browser login is needed, its OAuth state preserves the authorization continuation.
+This downstream authorization is distinct from the external client’s Agent/scope connection and from trade approval.
+After the platform confirms authorization, retry the original tool call. The included CLI opens
+the authorization URL and waits for the user before retrying. Access tokens stay in client memory.
+The callback role needs both `CompleteResourceTokenAuth` and `secretsmanager:GetSecretValue` on
+the credential provider's exact client-secret ARN, because Identity exchanges the code on that caller's behalf.
+If platform tool access was revoked, explicitly restore it in MCP / Skill management first.
+Each Gateway owns its Vault credential context; an independent BFF workload's consent is not shared with it.
+The internal Agent UI provides automatic task continuation for first-time consent.
+MCP and Executor validate the downstream user token and a Gateway-created, short-lived invocation record.
+Revoking the external tool connection stops downstream execution even if its Vault access token is unexpired.
 The Runtime uses `networkMode=PUBLIC`; it is not a VPC-private endpoint. For the full token flow,
 per-hop validation, user/session isolation and implementation links, see
 [Runtime → Gateway → MCP authentication](../README.md#runtime--gateway--mcp-的认证与用户隔离).

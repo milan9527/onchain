@@ -162,8 +162,8 @@ read-only history under a new login, and rejection of another user's return oper
 
 The existing user pool and accounts are preserved. Refresh the website and sign in through Cognito;
 legacy password sessions require a fresh OAuth login. Public MCP access uses a pre-registered client.
-The internal Gateway still carries scoped service-issued execution context; IAM remains the private
-Gateway-to-MCP Runtime service authentication. See [OAuth setup](oauth-mcp.md).
+At this earlier release, Gateway-to-MCP authentication used IAM. The 2026-10-14 Identity migration
+replaces that hop with user OAuth; see the current README and migration section below.
 
 Verified on 2026-10-12: 23 backend security tests passed, frontend production build passed,
 and all four cloud acceptance paths below passed. The final browser regression completed
@@ -228,3 +228,117 @@ immutable audit sink, operational alarms and independent wallet/security review.
 
 See [operations](operations.md) for independent releases, stopping automation, test-user removal
 and retained AWS resources.
+
+## Identity Token Vault migration (2026-10-14)
+
+The current downstream path is Gateway → user OAuth → MCP Runtime. `scripts/identity_setup.py`
+reconciles a dedicated confidential Cognito client and a CustomOauth2 credential provider.
+The existing login pool, public MCP client and user records are
+preserved. No client secret value is saved in deployment metadata; Identity stores it in Secrets Manager.
+The provider callback is the only callback registered on the downstream client. Both Gateways
+register their permitted application return URLs.
+
+Gateway MCP targets use `OAUTH / AUTHORIZATION_CODE`, the `openid` scope, the Cognito
+resource audience, and inline tool schemas. Static schema provisioning avoids requiring an admin user’s
+OAuth consent during tool synchronization. The MCP Runtime uses Cognito custom JWT authorization and
+forwards the Authorization header to application code. Before switching an existing IAM Runtime to JWT,
+the deployment removes its old runtime and DEFAULT-endpoint resource policies, as required by AgentCore.
+
+The Gateway role requires `GetWorkloadAccessTokenForJWT` for its two managed workloads. Credential
+retrieval also requires `GetResourceOauth2Token` on the workload directory, permitted workload identities,
+Vault and specific provider—not only the provider ARN. The BFF needs `CompleteResourceTokenAuth`
+and `secretsmanager:GetSecretValue` on the provider's exact client-secret ARN. Identity uses the latter
+permission when exchanging the authorization code on the completion caller's behalf. Omitting it
+causes consent completion to fail, even with the correct original JWT. The BFF does not retrieve
+Gateway workload tokens or downstream Vault tokens. The REQUEST role no longer has `kms:Sign`,
+the MCP role no longer reads the platform KMS key, and Gateway no longer invokes MCP with SigV4.
+The MCP role still invokes the designated Executor Lambda with IAM; Executor validates user OAuth itself.
+
+New configuration keys are `MCP_OAUTH_CLIENT_ID`, `MCP_OAUTH_AUDIENCE`, `MCP_OAUTH_SCOPE`, `IDENTITY_PROVIDER_ARN`,
+`IDENTITY_PROVIDER_NAME`. The deployment supplies them; do not paste
+client secrets or tokens into environment examples. Both Runtime and Lambda bundles need redeployment.
+Callers using an old active Runtime session should create a new conversation after the migration.
+
+The old `security_context` JWT is no longer accepted. The request interceptor creates bounded
+`CALL#...` records, and a user token plus current invocation record is required at MCP/Executor.
+Revocation uses `IDENTITY_CONNECTION#...` epochs. Consent continuation uses owner/login-bound
+`IDENTITY_RESUME#...`, `IDENTITY_PENDING#...` and `IDENTITY_CALLBACK#...` records with TTLs.
+Downstream refresh tokens remain in Token Vault; the existing encrypted BFF login store remains separate.
+
+Before an unattended schedule runs, its user must connect the internal tool account once. If authorization
+is missing or revoked, the scheduled call is blocked; a scheduling grant never supplies OAuth consent.
+Tool-account authorization does not approve a financial operation. Internal and external entry points
+have different workloads and issuers, so the UI exposes separate connection controls.
+
+MCP Gateway automatically supplies the target endpoint as RFC 8707 `resource`. The Runtime audience
+therefore equals its full encoded invocation URL (including `?qualifier=DEFAULT`). The dedicated client requests only
+`openid`. Gateway limits individual scopes to 128 characters; a Cognito custom scope prefixed by the
+188-character Runtime resource URL exceeds that limit. Cognito also rejects custom scopes from another
+resource. Exact tool authorization remains in the interceptor and invocation record; the downstream
+OAuth token only proves the user/client/resource identity. Do not add `resource` to target
+`customParameters`: it conflicts with Gateway’s managed `resources` input. Standalone acceptance probes use
+the same resource URL and custom parameters explicitly. Identity returns `session_id` to the application callback, which forwards it
+through a same-origin CSRF-protected completion request. Native Identity authorization URLs use the
+regional `/identities/oauth2/authorize?request_uri=...` endpoint before redirecting to Cognito.
+
+`CompleteResourceTokenAuth` requires the **exact original user JWT**, not a newly issued token with
+the same issuer/sub (verified against the live API). Pending Gateway flows and internal consent continuations
+therefore keep a short-lived KMS-encrypted proof with owner/continuation encryption context. The BFF
+revalidates current login and CSRF before decrypting it, and deletes proof after successful completion.
+External proof expires within 10 minutes; internal proof is also bounded by its original 5-minute
+Gateway JWT. Worker and RESPONSE interceptor receive only `kms:Encrypt` for `purpose=identity-consent`;
+only BFF can decrypt. These are inbound authorization proofs, not stored downstream refresh tokens.
+External clients must negotiate MCP 2025-11-25 or newer and send the protocol header on subsequent calls.
+Gateway otherwise returns a generic tool error instead of the URL authorization challenge.
+An independent live check completed authorization after normal SDK transport/session cleanup and
+closure of the application's read-only probe conversation. The platform retains normal SDK cleanup.
+
+Vault credentials are workload-scoped. A standalone BFF workload's completed consent does not authorize
+either Gateway. AWS also rejects direct `GetWorkloadAccessTokenForJWT` calls for service-linked workloads.
+The platform therefore initiates all real tool authorization through the relevant Gateway. Internal
+connection checks use an owned Agent's permitted read-only tool; external clients receive native URL
+elicitation and retry after browser completion. Restoring platform tool access can reuse a still-valid
+Gateway credential; it does not force provider reauthentication or approve a trade.
+
+Identity acceptance uses dedicated synthetic Cognito accounts; it does not modify the primary user's
+Agents, wallet or approvals. Create a fresh first-consent account once:
+
+```bash
+.venv/bin/python scripts/demo_test_user.py --identity
+cd frontend
+TEST_BASE_URL=https://d2omddnartt627.cloudfront.net npx playwright test identity-cloud.spec.ts
+TEST_BASE_URL=https://d2omddnartt627.cloudfront.net npx playwright test oauth-cloud.spec.ts trade-market-cloud.spec.ts
+```
+
+After provisioning the synthetic Identity and OAuth users, run
+`.venv/bin/python scripts/cloud_identity.py` from the repository root. It checks the deployed Executor
+and real MCP Runtime with both users' Vault-issued access tokens, without printing those tokens.
+The script uses its own standalone acceptance workload and completes consent there when necessary;
+that test workload cannot preauthorize the production Gateways and is not accessible to the BFF role.
+The probe creates and deletes its own temporary Agent and verifies that its wallet is unchanged.
+
+The first-consent browser acceptance passed on 2026-10-14 (2.2 minutes): a new user's task received
+the native Gateway challenge, completed Cognito/Identity authorization, returned to the original Agent
+and conversation, and completed all four research tools. Revoking the internal connection blocked a
+new task despite cached Vault credentials; explicit restoration recovered access. History omitted
+tokens, invocation references and authorization URLs. External native Gateway consent is covered separately.
+
+Final release validation on 2026-10-14:
+
+- 126 backend tests, Ruff and the production frontend build passed. Seven browser regressions passed
+  for consent return, transaction return, account changes and conversation-history navigation.
+- External Cognito/MCP acceptance passed in 1.4 minutes: native Gateway consent with the original
+  user JWT, PKCE and refresh, ID-token rejection, scope filtering, cross-user/session isolation,
+  unapproved-execution rejection, fresh transaction confirmation and connection revocation.
+- Published buy/sell Agent acceptance passed in 2.8 minutes: two purchases with independent buyer
+  Agents, confirmed buy and sell paper fills, duplicate-execution protection, seller/buyer privacy,
+  Agent management and a natural-language sell proposal through real Bedrock.
+- `scripts/cloud_identity.py` passed against the deployed Executor and MCP Runtime: another user's
+  reference, substituted tool, missing/expired references and same-user session substitution were
+  rejected. The probe wallet was unchanged and its temporary Agent/conversations were closed.
+- Six Lambda functions and both Runtimes matched the final bundle; both Gateways were READY with
+  Policy ENFORCE, and CloudFront matched the frontend build. Temporary diagnostic log deliveries and
+  their log groups were removed; Gateway DEBUG mode is off.
+
+All transaction acceptance used isolated synthetic users and paper funds. The primary user's wallet,
+Agents and approvals were not used for these tests.

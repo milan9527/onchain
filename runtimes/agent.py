@@ -1,7 +1,6 @@
 import asyncio
 import json
 import time
-
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from mcp import ClientSession, McpError
@@ -39,14 +38,20 @@ async def call_gateway(url, token, tool, args, progress=no_progress):
                     result = await session.call_tool("onchain___"+tool, args)
                 except McpError as e:
                     data = e.error.data if isinstance(e.error.data, dict) else {}
-                    payload = {"error": {"code": data.get("code", "MCP_ERROR"),
-                                         "message": e.error.message}}
+                    from onchain.identity import authorization_challenge
+                    challenge = authorization_challenge(e.error.model_dump(), settings())
+                    payload = {"error": challenge or {"code": data.get("code", "MCP_ERROR"),
+                                                      "message": e.error.message}}
                     await progress(kind="TOOL_RESULT", source="mcp", label=tool+" 调用被拒绝",
                                    details=payload, status="BLOCKED",
                                    duration_ms=int((time.monotonic()-started)*1000))
                     return payload
                 texts = [block.text for block in result.content if block.type == "text"]
                 text = "\n".join(texts)
+                from onchain.identity import authorization_challenge
+                challenge = authorization_challenge(result.model_dump(), settings()) if result.isError else None
+                if challenge:
+                    return {"error": challenge}
                 try:
                     payload = json.loads(text)
                 except ValueError:

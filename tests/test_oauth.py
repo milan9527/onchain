@@ -23,6 +23,8 @@ def oauth_env(tmp_path, monkeypatch):
     control, tokens = Control(store), TokenService(config)
     oauth = CognitoOAuth(config, store)
     p = Principal(sub="alice", tenant="personal-alice", email="alice@example.test")
+    from onchain.identity import connection_key
+    store.put(connection_key(p.owner, "external"), {"owner": p.owner, "active": True, "connected": True, "epoch": 1})
     agent = control.create_agent(p, AgentSpec(name="OAuth agent"))
     class Keys:
         def get_signing_key_from_jwt(self, _token):

@@ -51,7 +51,9 @@ identity, wallet, Agent, grant or conversation data.
 
 `POST /api/operations/{id}/approve` remains the only purchase-approval path, with CSRF, Cognito
 scope and a single-use proof for the reviewed intent. There is no approval MCP tool. Automation
-uses Scheduler → SQS worker → AgentCore Gateway interceptors → private MCP Runtime → executor.
+uses Scheduler → SQS worker → AgentCore Gateway interceptors → OAuth MCP Runtime → executor.
+Connect the internal tool account once through Identity Token Vault before enabling unattended runs;
+user OAuth credential consent and the financial scheduling grant are independent requirements.
 Both Gateway and executor enforce the current buyer-owned grant and Agent permissions.
 
 `Store.transact` uses DynamoDB conditional `TransactWriteItems`, SQLite `BEGIN IMMEDIATE`, or an

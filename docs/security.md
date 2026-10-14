@@ -14,14 +14,14 @@ IAM/OAuth choices and code references, see
 | User/tenant injection in tool arguments | Strict public tool JSON schema rejects extra properties |
 | Skill escalation | Platform-pinned manifest digest and tool allowlist checked on each call |
 | Approval fabrication | Only BFF accepts fresh user auth; no approval-issuing tool is exposed |
-| Changed operation arguments | Immutable intent digest, operation-specific approval, signed tool argument digest |
+| Changed operation arguments | Immutable intent digest, operation-specific approval, server-side invocation argument digest |
 | Order execution at an unapproved price | New manual orders bind reference price/minimum output in the approval hash; executor checks a fresh quote before settlement |
-| JWT audience confusion | Separate `onchain-runtime`, `onchain-gateway`, `onchain-tools` audiences |
+| JWT audience confusion | Separate Runtime/Gateway routing audiences and a dedicated Cognito MCP resource audience |
 | Replay / duplicate execution | One atomic operation transition; duplicate execution returns stored paper receipt |
 | Concurrent overspend | User aggregate conditional update atomically changes balance, daily budget and grant spend |
 | Revocation race | Capability epoch and active grant rechecked at execution commit |
 | Changed/disabled subscriptions | Tool call rechecks database state, not merely the tool listing |
-| Agent bypass of Gateway | No data/signing credentials in Agent runtime; MCP inbound restricted to Gateway role |
+| Agent bypass of Gateway | No data/signing credentials in Agent runtime; MCP requires dedicated user OAuth plus a short-lived Gateway-created invocation record |
 | Secrets in outputs | Backend-only auth flow, output redaction, sanitized validation and application errors |
 | Infrastructure check failure | Interceptor and executor fail closed |
 
@@ -73,6 +73,48 @@ Login and operation approvals have separate state. Approval challenges are tied 
 and operation; step-up proof expires after two minutes and is consumed once. A rejected digest requires
 fresh re-authentication. Session records are revoked on logout; conversations bound to that login can
 no longer invoke tools. Approved scheduled grants remain active until explicitly revoked or expired.
+
+## Managed downstream credentials
+
+Both Gateway targets use AgentCore Identity Token Vault with OAuth `AUTHORIZATION_CODE`. A dedicated
+confidential Cognito client issues resource-bound access tokens for MCP; its client secret is managed
+by the credential provider. Gateway obtains user credentials through Identity, and the MCP Runtime
+uses a Cognito JWT authorizer. The old IAM-only Runtime resource policy has been removed. The public
+network endpoint still requires valid OAuth, and no tool effect can occur without a valid invocation record.
+
+Vault credentials are associated with the workload and user identity, not a business Agent/session.
+Both Gateways initiate their own native authorization flows; a standalone broker's consent cannot
+preauthorize a Gateway, and service-linked workload tokens cannot be obtained directly by the BFF.
+Internal connection checks invoke a permitted read-only tool through the actual Gateway.
+Authorization completion submits the exact original inbound JWT to `CompleteResourceTokenAuth`,
+after verifying the current owner/login. AWS rejects a freshly issued JWT even for the same issuer/sub.
+The original proof is temporarily KMS encrypted with owner/continuation AAD and removed on completion.
+Worker and RESPONSE interceptor can only encrypt such proofs, not decrypt them. Internal connection
+checks and task continuations also bind to the original platform login. External consent proofs bind
+to the verified original MCP grant/session and must be completed by the same user with a current BFF
+login and CSRF token. Completion rechecks the external session/grant and connection epoch.
+A different downstream Cognito account fails owner comparison.
+The BFF completion role also has `secretsmanager:GetSecretValue` restricted to this provider's client
+secret, which Identity needs for the authorization-code exchange. It has no permission to obtain
+Gateway workload tokens or retrieve users' downstream Vault tokens directly.
+
+The REQUEST interceptor writes `CALL#sha256(context_id)` with a maximum 120-second lifetime,
+user/Agent/session/run, exact tool/arguments hash and connection epoch. Public tool schemas reject
+caller-supplied references. MCP verifies the actual access token, asks Executor to authorize without
+side effects, pins its process identity, then calls execute. Executor independently verifies the token
+and record at both phases. The MCP role has no database access; the request role no longer signs JWTs.
+
+Revoking a tool connection increments its epoch and stops future Gateway/Executor authorization even
+while Vault tokens remain cryptographically valid. It does not delete provider tokens or reverse committed
+effects. The reference allows retries; financial replay protection remains the atomic order transition.
+An authenticated user may explicitly restore platform tool access; still-valid Vault credentials can
+then be reused. This is not a promise to force a new provider login.
+Calls already beyond their final authorization check may finish; pause/revoke financial grants use the
+existing checks at settlement. No claim of per-user IAM roles or database-layer ABAC is made.
+
+The BFF login refresh-token store remains separately KMS encrypted. Downstream refresh tokens stay
+in Token Vault, not DynamoDB. Downstream access tokens pass only through trusted Gateway/MCP/Executor
+components and are excluded from model input, browser responses, invocation records, history and logs.
 
 ## Incident handling
 

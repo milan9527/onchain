@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { cognitoSignIn, cognitoLogin as login } from "./cognito";
+import { cognitoSignIn, cognitoLogin as login, connectToolAccount } from "./cognito";
 
 const cloud = process.env.TEST_BASE_URL?.startsWith("https://");
 test.skip(!cloud, "Requires the deployed Cognito and AgentCore environment");
@@ -71,7 +71,7 @@ async function rpc(url: string, token: string, method: string, params: any = {},
     signal: AbortSignal.timeout(35_000),
     method: "POST", headers: {
       Authorization: "Bearer " + token, "Content-Type": "application/json",
-      Accept: "application/json, text/event-stream", "MCP-Protocol-Version": "2025-03-26",
+      Accept: "application/json, text/event-stream", "MCP-Protocol-Version": "2025-11-25",
       ...(sid ? { "Mcp-Session-Id": sid } : {}),
     }, body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
   });
@@ -79,7 +79,7 @@ async function rpc(url: string, token: string, method: string, params: any = {},
     const notified = await fetch(url, {
       method: "POST", signal: AbortSignal.timeout(15_000), headers: {
         Authorization: "Bearer " + token, "Content-Type": "application/json",
-        Accept: "application/json, text/event-stream", "MCP-Protocol-Version": "2025-03-26",
+        Accept: "application/json, text/event-stream", "MCP-Protocol-Version": "2025-11-25",
         "Mcp-Session-Id": response.headers.get("mcp-session-id")!,
       }, body: JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }),
     });
@@ -103,6 +103,8 @@ test("Cognito OAuth: login, scope enforcement, operation continuation and extern
   expect(refreshedMe.status()).toBe(200);
   expect((await refreshedMe.json()).user.sub).toBe(me.user.sub);
   console.info("PASS: BFF refresh with the real KMS-encrypted Cognito credential");
+  await connectToolAccount(page, actor, "internal");
+  await connectToolAccount(page, actor, "external");
   let before = await (await page.request.get("/api/dashboard")).json();
   let agent = before.agents.filter((a: any) => a.status === "ACTIVE" && a.skill_id === "controlled-trader").at(-1);
   if (!agent) {
@@ -133,28 +135,41 @@ test("Cognito OAuth: login, scope enforcement, operation continuation and extern
   const claims = JSON.parse(Buffer.from(access.access_token.split(".")[1], "base64url").toString());
   expect(claims.aud).toBe(info.gateway_url);
   expect(claims.token_use).toBe("access");
-  const idTokenAttempt = await rpc(info.gateway_url, access.id_token, "tools/list");
-  expect([401, 403]).toContain(idTokenAttempt.response.status);
-  expect(idTokenAttempt.body.error).toBeTruthy();
-  expect(idTokenAttempt.body.result).toBeUndefined();
   console.info("PASS: external authorization code and PKCE exchange");
   const initialized = await rpc(info.gateway_url, access.access_token, "initialize", {
-    protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "oauth-acceptance", version: "1.0" },
+    protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "oauth-acceptance", version: "1.0" },
   });
   expect(initialized.response.status).toBe(200); expect(initialized.sid).toBeTruthy();
   const sid = initialized.sid!;
   const tools = await rpc(info.gateway_url, access.access_token, "tools/list", {}, sid, 2);
   expect(tools.body.error).toBeUndefined();
   expect(tools.body.result.tools).toHaveLength(6);
-  expect(JSON.stringify(tools.body.result.tools)).not.toContain("security_context");
+  expect(JSON.stringify(tools.body.result.tools)).not.toMatch(/security_context|context_id/);
   console.info("PASS: authenticated MCP discovery");
-  const prepared = await rpc(info.gateway_url, access.access_token, "tools/call", {
+  let prepared = await rpc(info.gateway_url, access.access_token, "tools/call", {
     name: "onchain___prepare_trade", arguments: { amount: "20", buy_asset: "ETH", chain: "8453", max_slippage_bps: 50 },
   }, sid, 3);
+  if (prepared.body.error?.code === -32042) {
+    const authorization = prepared.body.error.data.elicitations[0].url;
+    const completion = page.waitForResponse(r => r.url().endsWith("/api/identity/complete"));
+    await page.goto(authorization);
+    await cognitoSignIn(page, actor);
+    const finished = await completion;
+    expect(finished.status(), JSON.stringify(await finished.json())).toBe(200);
+    await expect(page.getByText("工具账户连接已生效。", { exact: true })).toBeVisible();
+    prepared = await rpc(info.gateway_url, access.access_token, "tools/call", {
+      name: "onchain___prepare_trade", arguments: { amount: "20", buy_asset: "ETH", chain: "8453", max_slippage_bps: 50 },
+    }, sid, 3);
+    console.info("PASS: external Gateway native consent completed with its original user JWT");
+  }
   expect(prepared.body.error).toBeUndefined();
   const result = JSON.parse(prepared.body.result.content[0].text);
   expect(result.status).toBe("approval_required");
   const op = result.operation;
+  const idTokenAttempt = await rpc(info.gateway_url, access.id_token, "tools/list");
+  expect([401, 403]).toContain(idTokenAttempt.response.status);
+  expect(idTokenAttempt.body.error).toBeTruthy();
+  expect(idTokenAttempt.body.result).toBeUndefined();
   const denied = await rpc(info.gateway_url, access.access_token, "tools/call", {
     name: "onchain___execute_trade", arguments: { operation_id: op.id },
   }, sid, 4);
@@ -162,7 +177,7 @@ test("Cognito OAuth: login, scope enforcement, operation continuation and extern
   console.info("PASS: external prepare; unapproved execute blocked");
   const other = await browser.newContext();
   const otherPage = await other.newPage();
-  await login(otherPage, credentials.alice);
+  await login(otherPage, JSON.parse(fs.readFileSync(path.resolve("../.deployment/demo-credentials.json"), "utf8")));
   expect((await otherPage.request.get("/api/operations/" + op.id)).status()).toBe(404);
   expect((await otherPage.request.get("/api/conversations/" + op.conversation_id)).status()).toBe(404);
   await other.close();
@@ -193,7 +208,7 @@ test("Cognito OAuth: login, scope enforcement, operation continuation and extern
   const narrow = await externalToken(browser, info, actor,
     [info.gateway_url + "/mcp.invoke", info.gateway_url + "/portfolio.read"]);
   const narrowInit = await rpc(info.gateway_url, narrow.access_token, "initialize", {
-    protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "read-only", version: "1" },
+    protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "read-only", version: "1" },
   });
   const narrowTools = await rpc(info.gateway_url, narrow.access_token, "tools/list", {}, narrowInit.sid!, 2);
   expect(narrowTools.body.result.tools).toHaveLength(4);

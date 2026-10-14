@@ -10,7 +10,7 @@ RETENTION = 30 * 86400
 SECRET_KEYS = {
     "authorization", "cookie", "setcookie", "password", "secret", "secretkey", "apikey",
     "privatekey", "passphrase", "securitycontext", "accesstoken", "refreshtoken", "idtoken",
-    "gatewaytoken", "runtimetoken", "authkey", "runtimesessionid",
+    "gatewaytoken", "runtimetoken", "authkey", "runtimesessionid", "contextid", "authorizationurl", "workloadaccesstoken",
 }
 
 

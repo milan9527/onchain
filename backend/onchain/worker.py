@@ -7,11 +7,13 @@ import httpx
 
 from .domain import now
 from .security import Denied, Principal
-from .services import dependencies, execute_tool
+from .services import dependencies
+from .invocations import local_execute
+from .identity import hold_for_consent
 
 
 async def process(job):
-    config, _store, control, tokens = dependencies()
+    config, store, control, tokens = dependencies()
     p = Principal.model_validate(job["principal"])
     sid, run_id = job["sid"], job["run_id"]
     async def progress(**event):
@@ -49,9 +51,10 @@ async def process(job):
                 if "transformedGatewayResponse" in check:
                     result = check["transformedGatewayResponse"]["body"]
                 else:
-                    result = execute_tool(control, config, claims, "execute_trade",
+                    result = local_execute(config, control, tokens, claims, "execute_trade",
                                           {"operation_id": job["operation_id"]})
                 await progress(kind="TOOL_RESULT", source="local", label="execute_trade 返回结果", details=result)
+            result = hold_for_consent(result, job, store, p, config)
             control.append_message(p, sid, "assistant", {"action": "execute", "tool_result": result})
             outcome = result
         else:
@@ -97,7 +100,7 @@ async def process(job):
                 from runtimes.task_runner import run_template
                 async def local_call(tool, args):
                     control.authorize_tool(claims, tool, args)
-                    return execute_tool(control, config, claims, tool, args)
+                    return local_execute(config, control, tokens, claims, tool, args)
                 result = await run_template(job["task"], claims, local_call, progress)
             else:
                 from .reasoning import recognize, tool_for_intent
@@ -125,11 +128,12 @@ async def process(job):
                     if "transformedGatewayResponse" in check:
                         result["tool_result"] = check["transformedGatewayResponse"]["body"]
                     else:
-                        result["tool_result"] = execute_tool(control, config, claims, tool, args)
+                        result["tool_result"] = local_execute(config, control, tokens, claims, tool, args)
                     await progress(kind="TOOL_RESULT", source="local", label=tool+" 返回结果",
                                    details=result["tool_result"])
             # Recheck ownership/lifecycle after long-running inference.
             control.conversation(p, sid)
+            result = hold_for_consent(result, job, store, p, config)
             control.append_message(p, sid, "assistant", result)
             outcome = result.get("tool_result", result)
         error = outcome.get("error") if isinstance(outcome, dict) else None

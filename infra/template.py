@@ -131,11 +131,16 @@ def template(artifact_bucket, artifact_key, region, account, public_url="https:/
         log_policy, table_policy, verify_policy, sign_policy, vault_policy, queue_send,
         {"Effect": "Allow", "Action": ["cognito-idp:AdminListGroupsForUser"], "Resource": att("UserPool", "Arn")},
     ])
-    role("RequestRole", "lambda.amazonaws.com", [log_policy, table_policy, verify_policy, sign_policy])
-    role("ResponseRole", "lambda.amazonaws.com", [log_policy, table_policy, verify_policy])
+    role("RequestRole", "lambda.amazonaws.com", [log_policy, table_policy, verify_policy])
+    role("ResponseRole", "lambda.amazonaws.com", [log_policy, table_policy, verify_policy,
+        {"Effect": "Allow", "Action": ["kms:Encrypt"], "Resource": att("OAuthVaultKey", "Arn"),
+         "Condition": {"StringEquals": {"kms:EncryptionContext:purpose": "identity-consent"}}},
+    ])
     role("ExecutorRole", "lambda.amazonaws.com", [log_policy, table_policy, verify_policy])
     role("WorkerRole", "lambda.amazonaws.com", [
         log_policy, table_policy, verify_policy,
+        {"Effect": "Allow", "Action": ["kms:Encrypt"], "Resource": att("OAuthVaultKey", "Arn"),
+         "Condition": {"StringEquals": {"kms:EncryptionContext:purpose": "identity-consent"}}},
         {"Effect": "Allow", "Action": ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"],
          "Resource": att("JobsQueue", "Arn")},
     ])
@@ -270,7 +275,7 @@ def template(artifact_bucket, artifact_key, region, account, public_url="https:/
         ]},
     ])
     role("McpRuntimeRole", "bedrock-agentcore.amazonaws.com", [
-        artifact_read, runtime_logs, verify_policy,
+        artifact_read, runtime_logs,
         {"Effect": "Allow", "Action": ["lambda:InvokeFunction"], "Resource": att("ExecutorFunction", "Arn")},
     ])
     role("GatewayRole", "bedrock-agentcore.amazonaws.com", [
@@ -285,12 +290,12 @@ def template(artifact_bucket, artifact_key, region, account, public_url="https:/
          ]},
         {"Effect": "Allow", "Action": ["lambda:InvokeFunction"],
          "Resource": [att("RequestFunction", "Arn"), att("ResponseFunction", "Arn")]},
-        {"Effect": "Allow", "Action": ["bedrock-agentcore:InvokeAgentRuntime"],
-         "Resource": f"arn:aws:bedrock-agentcore:{region}:{account}:runtime/onchain_control_mcp-*"},
-        {"Effect": "Allow", "Action": ["bedrock-agentcore:GetWorkloadAccessToken"],
+        {"Effect": "Allow", "Action": ["bedrock-agentcore:GetWorkloadAccessToken",
+                                     "bedrock-agentcore:GetWorkloadAccessTokenForJWT"],
          "Resource": [
              f"arn:aws:bedrock-agentcore:{region}:{account}:workload-identity-directory/default",
-             f"arn:aws:bedrock-agentcore:{region}:{account}:workload-identity-directory/default/workload-identity/*",
+             f"arn:aws:bedrock-agentcore:{region}:{account}:workload-identity-directory/default/workload-identity/onchain-control-gateway-*",
+             f"arn:aws:bedrock-agentcore:{region}:{account}:workload-identity-directory/default/workload-identity/onchain-oauth-gateway-*",
          ]},
     ])
     outputs = {

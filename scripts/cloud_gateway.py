@@ -47,7 +47,8 @@ async def main():
                         await session.initialize()
                         tools = await session.list_tools()
                         assert len(tools.tools) == 6
-                        assert all("security_context" not in t.inputSchema.get("properties", {}) for t in tools.tools)
+                        assert all(not {"security_context", "context_id"} & t.inputSchema.get("properties", {}).keys()
+                                   for t in tools.tools)
                         result = await session.call_tool("onchain___get_portfolio", {})
                         assert not result.isError, result
                         assert "wallet" in result.content[0].text

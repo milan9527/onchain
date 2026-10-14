@@ -43,7 +43,7 @@ def b64(value: bytes) -> str:
 
 
 class TokenService:
-    """Only API and interceptor roles may sign. Agent and MCP roles verify only."""
+    """API/worker/scheduler issue routing JWTs. Gateway verifies; MCP uses Cognito OAuth."""
 
     def __init__(self, config):
         self.config = config

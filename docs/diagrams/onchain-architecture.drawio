@@ -14,7 +14,7 @@
         <mxCell id="number" value="01 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="1688" width="2400" height="28" as="geometry" />
         </mxCell>
         <mxCell id="aws" value="" style="rounded=0;html=1;fillColor=#FAFBFC;strokeColor=#69788A;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
@@ -134,7 +134,7 @@
         <mxCell id="kms-title" value="AWS KMS · 两把密钥" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="kms">
           <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="kms-detail" value="执行凭据签名 + 公钥验证&lt;br&gt;OAuth refresh-token 加密&lt;br&gt;仅 BFF 可解密 OAuth 凭据" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="kms">
+        <mxCell id="kms-detail" value="平台路由 JWT 签名 + 公钥验证&lt;br&gt;BFF 登录 refresh-token 加密&lt;br&gt;下游凭证另由 Token Vault 保管" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="kms">
           <mxGeometry x="20" y="77" width="260" height="66" as="geometry" />
         </mxCell>
         <mxCell id="db" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -221,6 +221,18 @@
         <mxCell id="agent-detail" value="独立 runtime_session_id&lt;br&gt;聊天意图 / 固定模板任务&lt;br&gt;无数据库写权限，无批准工具" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="agent">
           <mxGeometry x="20" y="77" width="290" height="56" as="geometry" />
         </mxCell>
+        <mxCell id="vault" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="765" width="300" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="vault">
+          <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-title" value="AgentCore Identity" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="vault">
+          <mxGeometry x="80" y="16" width="204" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="vault-detail" value="Token Vault · 用户 OAuth&lt;br&gt;授权码 / 托管凭证刷新&lt;br&gt;按 workload + 用户隔离凭证" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="vault">
+          <mxGeometry x="20" y="77" width="260" height="71" as="geometry" />
+        </mxCell>
         <mxCell id="public-gw" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#01A88D;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
           <mxGeometry x="880" y="840" width="300" height="150" as="geometry" />
         </mxCell>
@@ -254,7 +266,7 @@
         <mxCell id="request-title" value="REQUEST 拦截器" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="request">
           <mxGeometry x="80" y="16" width="199" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="request-detail" value="身份 / 会话 / Skill / MCP 订阅&lt;br&gt;工具 schema / 审批 / 额度&lt;br&gt;签名绑定工具与参数摘要" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="request">
+        <mxCell id="request-detail" value="身份 / 会话 / Skill / MCP 订阅&lt;br&gt;工具 schema / 审批 / 额度&lt;br&gt;写短期调用记录 context_id" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="request">
           <mxGeometry x="20" y="77" width="255" height="71" as="geometry" />
         </mxCell>
         <mxCell id="response" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -290,7 +302,7 @@
         <mxCell id="mcp-title" value="AgentCore · MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="mcp">
           <mxGeometry x="80" y="16" width="234" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="mcp-detail" value="独立托管的私有 MCP 服务&lt;br&gt;仅 Gateway IAM role 可调用&lt;br&gt;验证签名工具上下文" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="mcp">
+        <mxCell id="mcp-detail" value="Cognito JWT / client / audience&lt;br&gt;用户 OAuth + 调用记录验证&lt;br&gt;执行前绑定用户与 Session" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="mcp">
           <mxGeometry x="20" y="77" width="290" height="86" as="geometry" />
         </mxCell>
         <mxCell id="executor" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -317,7 +329,7 @@
         <mxCell id="demo-detail" value="明确标注 demo / paper&lt;br&gt;无需 API 密钥即可体验完整流程" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="demo">
           <mxGeometry x="20" y="77" width="290" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="secrets" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=1;container=0;" vertex="1" parent="1">
+        <mxCell id="secrets" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
           <mxGeometry x="1580" y="1360" width="325" height="130" as="geometry" />
         </mxCell>
         <mxCell id="secrets-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;fillColor=#DD344C;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="secrets">
@@ -326,7 +338,7 @@
         <mxCell id="secrets-title" value="AWS Secrets Manager" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="secrets">
           <mxGeometry x="80" y="16" width="229" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="secrets-detail" value="可选 live 数据凭据&lt;br&gt;当前未配置" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="secrets">
+        <mxCell id="secrets-detail" value="Identity OAuth client secret&lt;br&gt;可选 live 数据凭据（未配置）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="secrets">
           <mxGeometry x="20" y="77" width="285" height="46" as="geometry" />
         </mxCell>
         <mxCell id="logs" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -428,7 +440,7 @@
         <mxCell id="external-gw" value="Cognito OAuth MCP" source="external" target="public-gw" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="public-mcp" value="IAM 服务调用" source="public-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.26;entryDx=0;entryDy=0;">
+        <mxCell id="public-mcp" value="用户 OAuth + context_id" source="public-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.26;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1030" y="815" />
@@ -437,8 +449,19 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="internal-mcp" value="IAM + 签名用户工具上下文" source="internal-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="internal-mcp" value="用户 OAuth + context_id" source="internal-gw" target="mcp" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="public-vault" value="用户凭证" source="public-gw" target="vault" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.2;exitDx=0;exitDy=0;entryX=1;entryY=0.65;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-vault" value="托管 OAuth" source="internal-gw" target="vault" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.15;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1245" y="755" />
+              <mxPoint x="590" y="755" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="public-gw-request" value="" source="public-gw" target="request" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry">
@@ -488,7 +511,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="mcp-executor" value="仅调用受信任 Executor" source="mcp" target="executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+        <mxCell id="mcp-executor" value="IAM + 原始用户 token / 引用" source="mcp" target="executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="executor-state" value="" source="executor" target="db" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#69788A;dashed=1;fontFamily=Arial;fontSize=14;fontColor=#69788A;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
@@ -540,7 +563,7 @@
         <mxCell id="number" value="02 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="1628" width="2400" height="28" as="geometry" />
         </mxCell>
         <mxCell id="prepare" value="" style="rounded=0;html=1;fillColor=#F3F8FC;strokeColor=#147EBA;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
@@ -594,7 +617,7 @@
         <mxCell id="prepare-tools-title" value="03 · Gateway → MCP → Executor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="prepare-tools">
           <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="prepare-tools-detail" value="余额 / 报价 / prepare_trade&lt;br&gt;逐次检查用户、Session、Skill、订阅&lt;br&gt;工具 schema 与交易单笔上限" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="prepare-tools">
+        <mxCell id="prepare-tools-detail" value="首次连接工具账户，由 Token Vault 保管凭证&lt;br&gt;OAuth + context_id；逐次检查 Session / Skill&lt;br&gt;余额 / 报价 / prepare_trade / 单笔上限" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="prepare-tools">
           <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
         </mxCell>
         <mxCell id="pending" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -678,7 +701,7 @@
         <mxCell id="enforce-title" value="10 · Gateway / MCP 权限检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="enforce">
           <mxGeometry x="80" y="16" width="404" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="enforce-detail" value="REQUEST 拦截器 + Policy ENFORCE&lt;br&gt;Agent epoch / scope / Skill / MCP 订阅&lt;br&gt;MCP 验签后仅调用受信任 Executor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="enforce">
+        <mxCell id="enforce-detail" value="REQUEST 拦截器 + Policy ENFORCE&lt;br&gt;用户 OAuth + 短期记录 / 连接 epoch&lt;br&gt;MCP 先授权并绑定会话，再执行" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="enforce">
           <mxGeometry x="20" y="77" width="460" height="131" as="geometry" />
         </mxCell>
         <mxCell id="commit" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -783,7 +806,7 @@
         <mxCell id="number" value="03 / 03" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=22;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="2320" y="35" width="140" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
+        <mxCell id="footer" value="ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=13;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="1688" width="2400" height="28" as="geometry" />
         </mxCell>
         <mxCell id="seller-zone" value="" style="rounded=0;html=1;fillColor=#F2F8FC;strokeColor=#147EBA;strokeWidth=1.5;dashed=0;container=0;pointerEvents=0;" vertex="1" parent="1">
@@ -906,10 +929,10 @@
         <mxCell id="shared-gateway-icon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock_agentcore;fillColor=#01A88D;strokeColor=#FFFFFF;gradientColor=none;html=1;outlineConnect=0;pointerEvents=1;" vertex="1" parent="shared-gateway">
           <mxGeometry x="18" y="18" width="46" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="shared-gateway-title" value="Gateway 拦截器 / 私有 MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="shared-gateway">
+        <mxCell id="shared-gateway-title" value="Gateway / Token Vault / MCP Runtime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="shared-gateway">
           <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="shared-gateway-detail" value="JWT principal + conversation / run 绑定；禁止同用户跨会话复用&lt;br&gt;外部连接还绑定 client / token family / connection version&lt;br&gt;工具参数禁止注入 tenant、userId、wallet 或 runtime_sid&lt;br&gt;工具能力 = OAuth scopes ∩ 连接授权 ∩ MCP 订阅 ∩ Skill allowlist" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-gateway">
+        <mxCell id="shared-gateway-detail" value="Vault 按 workload / 用户取 OAuth；调用记录绑定 conversation/run&lt;br&gt;外部连接还绑定 client / token family / connection version&lt;br&gt;工具参数禁止注入 context_id、userId、wallet 或 runtime_sid&lt;br&gt;工具能力 = OAuth scopes ∩ 连接授权 ∩ MCP 订阅 ∩ Skill allowlist" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-gateway">
           <mxGeometry x="20" y="77" width="690" height="121" as="geometry" />
         </mxCell>
         <mxCell id="seller-data" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;dashed=0;container=0;" vertex="1" parent="1">
@@ -945,7 +968,7 @@
         <mxCell id="shared-executor-title" value="Executor · 最终数据访问与写入边界" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=18;fontColor=#232F3E;fontStyle=1;spacing=0;" vertex="1" parent="shared-executor">
           <mxGeometry x="80" y="16" width="634" height="51" as="geometry" />
         </mxCell>
-        <mxCell id="shared-executor-detail" value="验证 audience=onchain-tools、工具名与 arguments_hash&lt;br&gt;依据签名 owner 查找资源，不信任模型或客户端传入的身份&lt;br&gt;重读 Agent 状态 / epoch / 用户批准 / grant / 预算&lt;br&gt;交易只修改当前 owner 的状态；重复执行返回同一回执&lt;br&gt;市场服务费的双边事务仅由已确认的购买流程处理" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-executor">
+        <mxCell id="shared-executor-detail" value="独立验证 Cognito access token + context_id / 工具 / 参数摘要&lt;br&gt;OAuth sub 必须匹配记录 owner，不信任模型传入的身份&lt;br&gt;重读 Agent / Session / 连接 epoch / 用户批准 / grant / 预算&lt;br&gt;交易只修改当前 owner 的状态；重复执行返回同一回执&lt;br&gt;市场服务费的双边事务仅由已确认的购买流程处理" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#69788A;fontStyle=0;spacing=0;" vertex="1" parent="shared-executor">
           <mxGeometry x="20" y="77" width="690" height="166" as="geometry" />
         </mxCell>
         <mxCell id="seller-agent-edge" value="本人创建" source="seller-id" target="source-agent" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
@@ -980,7 +1003,7 @@
         <mxCell id="buyer-tool" value="B 的签名调用" source="buyer-session" target="shared-gateway" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#8C4FFF;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#8C4FFF;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="checked-execution" value="验证后的工具上下文" source="shared-gateway" target="shared-executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+        <mxCell id="checked-execution" value="原始 OAuth token + context_id" source="shared-gateway" target="shared-executor" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#087F75;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#087F75;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="owner-a-access" value="仅 owner=A" source="shared-executor" target="seller-data" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=20;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#147EBA;dashed=0;fontFamily=Arial;fontSize=14;fontColor=#147EBA;labelBackgroundColor=#FFFFFF;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
@@ -1007,10 +1030,10 @@
         <mxCell id="bound-claims" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="60" y="1490" width="1170" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="bound-claims-title" value="短期签名绑定与后台强制检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="bound-claims">
+        <mxCell id="bound-claims-title" value="用户 OAuth、短期记录与后台强制检查" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=17;fontColor=#087F75;fontStyle=1;spacing=0;" vertex="1" parent="bound-claims">
           <mxGeometry x="20" y="12" width="1130" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="bound-claims-body" value="owner + conversation + runtime_sid + Agent epoch + Skill digest + run&lt;br&gt;工具执行上下文再绑定 tool + arguments_hash；篡改、过期或权限撤销均拒绝。&lt;br&gt;同一 AWS 服务角色只表示服务身份，用户权限由签名上下文与当前状态共同决定。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="bound-claims">
+        <mxCell id="bound-claims-body" value="owner + conversation + runtime_sid + Agent epoch + Skill digest + run&lt;br&gt;调用记录再绑定 tool + arguments_hash；篡改、过期或连接 epoch 变化均拒绝。&lt;br&gt;Token Vault 保管凭证；同一用户的不同 Agent / Session 仍由平台分别授权。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Arial;fontSize=15;fontColor=#232F3E;fontStyle=0;spacing=0;" vertex="1" parent="bound-claims">
           <mxGeometry x="20" y="51" width="1130" height="90" as="geometry" />
         </mxCell>
         <mxCell id="revoke-history" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F0F8F6;strokeColor=none;" vertex="1" parent="1">

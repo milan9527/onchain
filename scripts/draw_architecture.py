@@ -49,7 +49,7 @@ class Page:
         self.text("subtitle", 60, 86, width-160, 45, subtitle, 17, GRAY)
         self.text("number", width-200, 35, 140, 40, f"0{number} / 03", 22, GREEN, bold=True)
         self.text("footer", 60, height-52, width-120, 28,
-                  "ONCHAIN CONTROL  ·  2026-10-13  ·  当前部署：demo 数据 + paper 交易  ·  AWS 4 原生可编辑图形",
+                  "ONCHAIN CONTROL  ·  2026-10-14  ·  当前部署：Identity Token Vault + demo / paper  ·  AWS 4 原生可编辑图形",
                   13, GRAY)
 
     def cell(self, id, x, y, w, h, value="", style="", parent="1"):
@@ -139,7 +139,7 @@ def overview(file):
     p.card("http", 800, 190, 290, 140, "api_gateway", "Amazon API Gateway", "HTTP API\n/api/*")
     p.card("api", 1200, 190, 330, 140, "lambda", "AWS Lambda · API / BFF", "用户与会话 · 市场交易 · Agent 管理\n意图确认 / CSRF / 操作审批")
     p.card("cognito", 800, 380, 310, 140, "cognito", "Amazon Cognito", "User Pool / managed login\nOAuth code + PKCE / 重新认证")
-    p.card("kms", 1580, 365, 300, 150, "key_management_service", "AWS KMS · 两把密钥", "执行凭据签名 + 公钥验证\nOAuth refresh-token 加密\n仅 BFF 可解密 OAuth 凭据")
+    p.card("kms", 1580, 365, 300, 150, "key_management_service", "AWS KMS · 两把密钥", "平台路由 JWT 签名 + 公钥验证\nBFF 登录 refresh-token 加密\n下游凭证另由 Token Vault 保管")
     p.card("db", 2050, 190, 330, 150, "dynamodb", "Amazon DynamoDB", "用户 / Session / 操作 / 授权 / 历史\n市场目录 / 买卖双方订单\n条件更新 + 原子事务")
     p.card("model", 2050, 380, 330, 135, "bedrock", "Amazon Bedrock", "us.openai.gpt-6-sol\n自然语言意图识别")
     p.card("events", 440, 565, 260, 140, "eventbridge", "Amazon EventBridge", "定时 Rule · 每分钟\n仅触发调度器")
@@ -147,15 +147,16 @@ def overview(file):
     p.card("queue", 1200, 565, 330, 140, "sqs", "Amazon SQS", "持久任务队列 + DLQ\n稳定 job / operation ID")
     p.card("worker", 1640, 565, 280, 140, "lambda", "AWS Lambda · Worker", "核验签名与归属\n调用 Runtime / 保存 SSE 运行事件")
     p.card("agent", 2050, 565, 330, 140, "bedrock_agentcore", "AgentCore · Agent Runtime", "独立 runtime_session_id\n聊天意图 / 固定模板任务\n无数据库写权限，无批准工具")
+    p.card("vault", 440, 765, 300, 155, "bedrock_agentcore", "AgentCore Identity", "Token Vault · 用户 OAuth\n授权码 / 托管凭证刷新\n按 workload + 用户隔离凭证")
     p.card("public-gw", 880, 840, 300, 150, "bedrock_agentcore", "公共 OAuth Gateway", "Cognito JWT / audience / scope\n用户已授权的 Agent 连接")
     p.card("internal-gw", 1280, 840, 300, 150, "bedrock_agentcore", "内部 Gateway", "KMS 签名的短期 capability\nowner / session / run 绑定")
-    p.card("request", 875, 1030, 295, 155, "lambda", "REQUEST 拦截器", "身份 / 会话 / Skill / MCP 订阅\n工具 schema / 审批 / 额度\n签名绑定工具与参数摘要")
+    p.card("request", 875, 1030, 295, 155, "lambda", "REQUEST 拦截器", "身份 / 会话 / Skill / MCP 订阅\n工具 schema / 审批 / 额度\n写短期调用记录 context_id")
     p.card("response", 1210, 1030, 295, 155, "lambda", "RESPONSE 拦截器", "过滤可发现工具\n清理敏感输出")
     p.card("policy", 1545, 1030, 360, 155, "bedrock_agentcore", "AgentCore Policy", "Cedar · ENFORCE\n固定已审核工具 allowlist\n最终执行检查仍由 Executor 完成")
-    p.card("mcp", 2050, 850, 330, 170, "bedrock_agentcore", "AgentCore · MCP Runtime", "独立托管的私有 MCP 服务\n仅 Gateway IAM role 可调用\n验证签名工具上下文")
+    p.card("mcp", 2050, 850, 330, 170, "bedrock_agentcore", "AgentCore · MCP Runtime", "Cognito JWT / client / audience\n用户 OAuth + 调用记录验证\n执行前绑定用户与 Session")
     p.card("executor", 2050, 1150, 330, 170, "lambda", "AWS Lambda · Executor", "重新读取归属 / epoch / 授权\n余额 / 日额度 / 滑点 / 幂等检查\n原子提交 paper 交易")
     p.card("demo", 2050, 1360, 330, 130, "general", "内置演示适配器", "明确标注 demo / paper\n无需 API 密钥即可体验完整流程")
-    p.card("secrets", 1580, 1360, 325, 130, "secrets_manager", "AWS Secrets Manager", "可选 live 数据凭据\n当前未配置", dashed=True)
+    p.card("secrets", 1580, 1360, 325, 130, "secrets_manager", "AWS Secrets Manager", "Identity OAuth client secret\n可选 live 数据凭据（未配置）")
     p.card("logs", 440, 1100, 300, 150, "cloudwatch", "Amazon CloudWatch", "Lambda / Runtime 服务日志\n用户运行历史另存 DynamoDB")
     p.note("data-note", 440, 1300, 1050, 150, "状态与权限依赖",
            "API、拦截器、Executor 与调度器按服务角色访问 DynamoDB / KMS。\nWorker 将 SSE 事件写入 owner 绑定的运行记录；前端通过 BFF 轮询。\nAgent Runtime 不直接访问用户数据库，也不能授权或签名交易。")
@@ -181,14 +182,17 @@ def overview(file):
     p.edge("execute-gateway", "worker", "internal-gw", "已批准 execute（不再经过模型）", ORANGE,
            points=((1780, 730), (1380, 730)), exit=(.5, 1), entry=(.34, 0), label_offset=(0, -20))
     p.edge("external-gw", "external", "public-gw", "Cognito OAuth MCP", GREEN)
-    p.edge("public-mcp", "public-gw", "mcp", "IAM 服务调用", GREEN,
+    p.edge("public-mcp", "public-gw", "mcp", "用户 OAuth + context_id", GREEN,
            points=((1030, 815), (1990, 815), (1990, 895)), exit=(.5, 0), entry=(0, .26))
-    p.edge("internal-mcp", "internal-gw", "mcp", "IAM + 签名用户工具上下文")
+    p.edge("internal-mcp", "internal-gw", "mcp", "用户 OAuth + context_id")
+    p.edge("public-vault", "public-gw", "vault", "用户凭证", GREEN, True, exit=(0, .2), entry=(1, .65))
+    p.edge("internal-vault", "internal-gw", "vault", "托管 OAuth", GREEN, True,
+           points=((1245, 755), (590, 755)), exit=(0, .15), entry=(.5, 0))
     for gw, gx in (("public-gw", 1030), ("internal-gw", 1430)):
         for control, cx in (("request", 1022), ("response", 1357), ("policy", 1725)):
             p.edge(f"{gw}-{control}", gw, control, "", GREEN, True,
                    points=((gx, 1010), (cx, 1010)), exit=(.5, 1), entry=(.5, 0))
-    p.edge("mcp-executor", "mcp", "executor", "仅调用受信任 Executor", exit=(.5, 1), entry=(.5, 0))
+    p.edge("mcp-executor", "mcp", "executor", "IAM + 原始用户 token / 引用", exit=(.5, 1), entry=(.5, 0))
     p.edge("executor-state", "executor", "db", "", GRAY, True,
            points=((2420, 1235), (2420, 265)), exit=(1, .5), entry=(1, .5))
     p.edge("executor-demo", "executor", "demo", "demo", exit=(.5, 1), entry=(.5, 0))
@@ -217,7 +221,7 @@ def trade(file):
         ("recognize", 1, 230, "bedrock_agentcore", "02 · Agent Runtime 准备请求",
          "聊天：Bedrock GPT-6 Sol 识别意图\n模板：按已签名的固定步骤运行\n模型输出是待验证的输入，不是授权"),
         ("prepare-tools", 2, 230, "bedrock_agentcore", "03 · Gateway → MCP → Executor",
-         "余额 / 报价 / prepare_trade\n逐次检查用户、Session、Skill、订阅\n工具 schema 与交易单笔上限"),
+         "首次连接工具账户，由 Token Vault 保管凭证\nOAuth + context_id；逐次检查 Session / Skill\n余额 / 报价 / prepare_trade / 单笔上限"),
         ("pending", 3, 230, "dynamodb", "04 · 保存 PENDING 操作",
          "绑定 owner / Agent / conversation_id\n金额、资产、网络、滑点、最低接收量\n生成不可变 intent_hash；尚未扣款"),
         ("review", 0, 670, "users", "05 · 用户核对并勾选确认",
@@ -231,7 +235,7 @@ def trade(file):
         ("execution-worker", 0, 1110, "lambda", "09 · Worker 直接调用 Gateway",
          "验证 capability 与当前生命周期\n调用 execute_trade(operation_id)\n交易执行不重新依赖模型做决定"),
         ("enforce", 1, 1110, "bedrock_agentcore", "10 · Gateway / MCP 权限检查",
-         "REQUEST 拦截器 + Policy ENFORCE\nAgent epoch / scope / Skill / MCP 订阅\nMCP 验签后仅调用受信任 Executor"),
+         "REQUEST 拦截器 + Policy ENFORCE\n用户 OAuth + 短期记录 / 连接 epoch\nMCP 先授权并绑定会话，再执行"),
         ("commit", 2, 1110, "lambda", "11 · Executor 原子核验并成交",
          "重读 owner / operation / grant / epoch\n检查余额、日额度、滑点与意图摘要\n按本人 paper 钱包结算；拒绝未批准操作"),
         ("receipt", 3, 1110, "dynamodb", "12 · CONFIRMED + 唯一回执",
@@ -277,14 +281,14 @@ def isolation(file):
            "conversation_A → runtime_session_A\n签名绑定 owner A / Agent A / run A\nmicroVM 首次身份绑定\n每次调用使用新的 MCP ClientSession")
     p.card("buyer-session", 1820, 760, 590, 205, "bedrock_agentcore", "B 的 Runtime / MCP 会话",
            "conversation_B → runtime_session_B\n签名绑定 owner B / Agent B / run B\n不能指定另一个用户的 Runtime session\n认证返回仅恢复经过后端核实的本人会话")
-    p.card("shared-gateway", 890, 760, 730, 205, "bedrock_agentcore", "Gateway 拦截器 / 私有 MCP Runtime",
-           "JWT principal + conversation / run 绑定；禁止同用户跨会话复用\n外部连接还绑定 client / token family / connection version\n工具参数禁止注入 tenant、userId、wallet 或 runtime_sid\n工具能力 = OAuth scopes ∩ 连接授权 ∩ MCP 订阅 ∩ Skill allowlist")
+    p.card("shared-gateway", 890, 760, 730, 205, "bedrock_agentcore", "Gateway / Token Vault / MCP Runtime",
+           "Vault 按 workload / 用户取 OAuth；调用记录绑定 conversation/run\n外部连接还绑定 client / token family / connection version\n工具参数禁止注入 context_id、userId、wallet 或 runtime_sid\n工具能力 = OAuth scopes ∩ 连接授权 ∩ MCP 订阅 ∩ Skill allowlist")
     p.card("seller-data", 100, 1070, 590, 250, "dynamodb", "DynamoDB · owner A 数据",
            "USER#A：Agents / operations / grants / paper wallet\nSESSION：每条记录带 owner，读取时校验\nHISTORY#A#agent_id / RUN#A#conversation#run\n卖家可见自己的收入与销售订单\n不返回买方 Agent、钱包、会话或运行数据")
     p.card("buyer-data", 1820, 1070, 590, 250, "dynamodb", "DynamoDB · owner B 数据",
            "USER#B：Agents / operations / grants / paper wallet\n每个会话拥有独立平台 ID 与 Runtime ID\nHISTORY#B#agent_id / RUN#B#conversation#run\n订单、历史、审批、预算均按 owner 校验\n本人的 Agents 共用本人钱包，不共享跨用户资金")
     p.card("shared-executor", 890, 1070, 730, 250, "lambda", "Executor · 最终数据访问与写入边界",
-           "验证 audience=onchain-tools、工具名与 arguments_hash\n依据签名 owner 查找资源，不信任模型或客户端传入的身份\n重读 Agent 状态 / epoch / 用户批准 / grant / 预算\n交易只修改当前 owner 的状态；重复执行返回同一回执\n市场服务费的双边事务仅由已确认的购买流程处理")
+           "独立验证 Cognito access token + context_id / 工具 / 参数摘要\nOAuth sub 必须匹配记录 owner，不信任模型传入的身份\n重读 Agent / Session / 连接 epoch / 用户批准 / grant / 预算\n交易只修改当前 owner 的状态；重复执行返回同一回执\n市场服务费的双边事务仅由已确认的购买流程处理")
     p.edge("seller-agent-edge", "seller-id", "source-agent", "本人创建", exit=(.5, 1), entry=(.5, 0))
     p.edge("buyer-agent-edge", "buyer-id", "buyer-agent", "本人持有", exit=(.5, 1), entry=(.5, 0))
     p.edge("publish", "source-agent", "catalog", "发布快照", points=((770, 565), (770, 310)), entry=(0, .5))
@@ -294,17 +298,17 @@ def isolation(file):
     p.edge("buyer-runtime", "buyer-agent", "buyer-session", "独立会话", exit=(.5, 1), entry=(.5, 0))
     p.edge("seller-tool", "seller-session", "shared-gateway", "A 的签名调用")
     p.edge("buyer-tool", "buyer-session", "shared-gateway", "B 的签名调用", "#8C4FFF", exit=(0, .5), entry=(1, .5))
-    p.edge("checked-execution", "shared-gateway", "shared-executor", "验证后的工具上下文", GREEN, exit=(.5, 1), entry=(.5, 0))
+    p.edge("checked-execution", "shared-gateway", "shared-executor", "原始 OAuth token + context_id", GREEN, exit=(.5, 1), entry=(.5, 0))
     p.edge("owner-a-access", "shared-executor", "seller-data", "仅 owner=A", BLUE, exit=(0, .5), entry=(1, .5))
     p.edge("owner-b-access", "shared-executor", "buyer-data", "仅 owner=B", "#8C4FFF")
     p.text("seller-retention", 105, 1345, 580, 80, "A 不能读取 / 删除 B 的 Agent、Session、run 或订单。\n共享 Runtime 部署不等于共享会话或权限。", 15, BLUE)
     p.text("buyer-retention", 1825, 1345, 580, 80, "B 不继承卖家会话、授权 grant、钱包或密钥。\n卖家下架不会改变已售任务的买方批准范围。", 15, "#8C4FFF")
     p.note("denial", 890, 1340, 730, 92, "跨 owner / 跨 Session 请求 → DENY",
            "不以资源 ID、模型指令或 IAM 服务角色替代用户授权。", RED, "#FFF1F3")
-    p.note("bound-claims", 60, 1490, 1170, 150, "短期签名绑定与后台强制检查",
+    p.note("bound-claims", 60, 1490, 1170, 150, "用户 OAuth、短期记录与后台强制检查",
            "owner + conversation + runtime_sid + Agent epoch + Skill digest + run\n"
-           "工具执行上下文再绑定 tool + arguments_hash；篡改、过期或权限撤销均拒绝。\n"
-           "同一 AWS 服务角色只表示服务身份，用户权限由签名上下文与当前状态共同决定。")
+           "调用记录再绑定 tool + arguments_hash；篡改、过期或连接 epoch 变化均拒绝。\n"
+           "Token Vault 保管凭证；同一用户的不同 Agent / Session 仍由平台分别授权。")
     p.note("revoke-history", 1270, 1490, 1180, 150, "删除 / 撤销后的行为",
            "删除 Agent：标记 DELETED、递增 epoch、撤销 grants、取消 PENDING / APPROVED 操作。\n"
            "旧 capability、旧 MCP 连接与排队执行无法恢复权限；历史保留只读。\n"

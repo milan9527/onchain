@@ -94,15 +94,20 @@ def execute_tool(control, config, claims, tool, args):
 
 
 def executor_handler(event, _context):
-    """Invoked only by the MCP Runtime role; independently validates the invocation capability."""
-    config, _store, control, tokens = dependencies()
+    """MCP's IAM role invokes this service; user OAuth and the stored grant are independently checked."""
+    config, store, control, _tokens = dependencies()
     claims = None
     started = time.monotonic()
     try:
-        claims = tokens.verify(event.get("security_context", ""), "onchain-tools")
+        from .invocations import authorize_context, target_identity
+        p = target_identity(config, event.get("access_token", ""))
         tool, args = event["tool"], event["arguments"]
-        if claims.get("tool") != tool or claims.get("arguments_hash") != digest(args):
-            raise Denied("ARGUMENTS_CHANGED", "Signed tool request does not match.")
+        claims = authorize_context(store, control, p, event.get("context_id"), tool, args)
+        # The MCP process pins this identity BEFORE any tool effects. Execute rechecks all state.
+        if event.get("phase") == "authorize":
+            return {"ok": True, "result": {k: claims[k] for k in ("owner", "sid", "runtime_sid")}}
+        if event.get("phase") != "execute":
+            raise Denied("INVALID_EXECUTOR_PHASE", "Invalid invocation phase.")
         trace_claims(control, claims, "EXECUTOR_STARTED", "executor", "工具执行服务开始处理",
                      {"tool": tool, "arguments": args})
         result = execute_tool(control, config, claims, tool, args)

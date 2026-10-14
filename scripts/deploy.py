@@ -123,6 +123,8 @@ def main():
         if state.get("oauth_gateway"):
             env["OAUTH_GATEWAY_URL"] = state["oauth_gateway"]["url"]
         cognito = session.client("cognito-idp")
+        from scripts.identity_setup import configure_identity, register_gateway_callback, target_oauth, mcp_schema, mcp_endpoint
+        env.update(configure_identity(session, ac, cognito, state, outputs, account, args.region, save))
         # On a first deployment the website hostname is allocated after the client is created.
         client_info = cognito.describe_user_pool_client(
             UserPoolId=outputs["UserPoolId"], ClientId=outputs["UserClientId"],
@@ -181,7 +183,23 @@ def main():
                     "allowedAudience": ["onchain-runtime"],
                 }}
                 params["requestHeaderConfiguration"] = {"requestHeaderAllowlist": ["Authorization"]}
+            if protocol == "MCP":
+                params["authorizerConfiguration"] = {"customJWTAuthorizer": {
+                    "discoveryUrl": f"https://cognito-idp.{args.region}.amazonaws.com/{outputs['UserPoolId']}/.well-known/openid-configuration",
+                    "allowedClients": [env["MCP_OAUTH_CLIENT_ID"]],
+                    "allowedAudience": [env["MCP_OAUTH_AUDIENCE"]],
+                    "allowedScopes": [env["MCP_OAUTH_SCOPE"]],
+                }}
+                params["requestHeaderConfiguration"] = {"requestHeaderAllowlist": ["Authorization"]}
             if existing_id:
+                if protocol == "MCP":
+                    existing_arn = state[name]["arn"]
+                    # AgentCore forbids switching an IAM Runtime to JWT while a resource policy exists.
+                    for arn in [existing_arn, existing_arn + "/runtime-endpoint/DEFAULT"]:
+                        try:
+                            ac.delete_resource_policy(resourceArn=arn)
+                        except ac.exceptions.ResourceNotFoundException:
+                            pass
                 result = ac.update_agent_runtime(agentRuntimeId=existing_id, **params)
             else:
                 result = ac.create_agent_runtime(agentRuntimeName=name, **params)
@@ -198,22 +216,10 @@ def main():
             raise TimeoutError(name)
 
         mcp_arn = runtime("onchain_control_mcp", "runtimes/mcp_server.py", "McpRuntimeRole", "MCP")
-        policy = {
-            "Version": "2012-10-17", "Statement": [{
-                "Effect": "Allow", "Principal": {"AWS": outputs["GatewayRoleArn"]},
-                "Action": "bedrock-agentcore:InvokeAgentRuntime",
-                "Resource": [mcp_arn, mcp_arn+"/runtime-endpoint/DEFAULT"],
-            }, {
-                "Effect": "Deny", "Principal": "*", "Action": "bedrock-agentcore:InvokeAgentRuntime",
-                "Resource": [mcp_arn, mcp_arn+"/runtime-endpoint/DEFAULT"],
-                "Condition": {"ArnNotEquals": {"aws:PrincipalArn": outputs["GatewayRoleArn"]}},
-            }],
-        }
-        for arn in [mcp_arn, mcp_arn+"/runtime-endpoint/DEFAULT"]:
-            scoped = json.loads(json.dumps(policy))
-            for statement in scoped["Statement"]:
-                statement["Resource"] = arn
-            ac.put_resource_policy(resourceArn=arn, policy=json.dumps(scoped))
+        if env["MCP_OAUTH_AUDIENCE"] != mcp_endpoint(args.region, mcp_arn):
+            # The generated Runtime ARN is only known after first creation.
+            env.update(configure_identity(session, ac, cognito, state, outputs, account, args.region, save))
+            runtime("onchain_control_mcp", "runtimes/mcp_server.py", "McpRuntimeRole", "MCP")
         gateway_params = {
             "name": "onchain-control-gateway", "roleArn": outputs["GatewayRoleArn"],
             "protocolType": "MCP",
@@ -257,12 +263,11 @@ def main():
             "targetConfiguration": {"mcp": {"mcpServer": {
                 "endpoint": f"https://bedrock-agentcore.{args.region}.amazonaws.com/runtimes/"
                             f"{quote(mcp_arn, safe='')}/invocations?qualifier=DEFAULT",
+                "mcpToolSchema": mcp_schema(),
             }}},
-            "credentialProviderConfigurations": [{
-                "credentialProviderType": "GATEWAY_IAM_ROLE",
-                "credentialProvider": {"iamCredentialProvider": {"service": "bedrock-agentcore", "region": args.region}},
-            }],
+            "credentialProviderConfigurations": target_oauth(env, "internal"),
         }
+        register_gateway_callback(ac, gateway_id, env["PUBLIC_URL"], "internal")
         if state.get("target"):
             target = ac.update_gateway_target(targetId=state["target"]["id"], **target_params)
         else:
@@ -315,7 +320,7 @@ def main():
         gateway_params["policyEngineConfiguration"] = {"arn": state["policy_engine"]["arn"], "mode": "ENFORCE"}
         ac.update_gateway(gatewayIdentifier=gateway_id, **gateway_params)
         env["GATEWAY_URL"] = gateway["gatewayUrl"]
-        # External callers authenticate with Cognito. IAM is only the private Gateway→Runtime hop.
+        # External callers and the MCP target authenticate with distinct Cognito OAuth clients.
         oauth_params = json.loads(json.dumps(gateway_params))
         oauth_params["name"] = "onchain-oauth-gateway"
         oauth_params["authorizerConfiguration"] = {"customJWTAuthorizer": {
@@ -384,6 +389,8 @@ def main():
         oauth_params["authorizerConfiguration"]["customJWTAuthorizer"]["allowedAudience"] = [oauth_gateway["gatewayUrl"]]
         oauth_params["authorizerConfiguration"]["customJWTAuthorizer"]["allowedScopes"] = [resource_identifier + "/mcp.invoke"]
         oauth_target = dict(target_params, gatewayIdentifier=oauth_id)
+        oauth_target["credentialProviderConfigurations"] = target_oauth(env, "external")
+        register_gateway_callback(ac, oauth_id, env["PUBLIC_URL"], "external")
         if state.get("oauth_target"):
             target = ac.update_gateway_target(targetId=state["oauth_target"]["id"], **oauth_target)
         else:
